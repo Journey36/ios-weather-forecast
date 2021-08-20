@@ -29,7 +29,7 @@ class ViewController: UIViewController {
             print("\(currentAddress.administrativeArea) \(currentAddress.locality)")
         }
     }
-    private var currentWeather: CurrentWeather!
+    private var currentWeather: CurrentWeatherData!
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -47,6 +47,7 @@ class ViewController: UIViewController {
             switch result {
             case .success(let currentWeather):
                 print("\(currentWeather.cityName): \(currentWeather.temperature.currentCelsius)도")
+                print(currentWeather)
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -54,7 +55,7 @@ class ViewController: UIViewController {
         WeatherForecastAPI.shared.getData(coordinate: seoulCoord) { result in
             switch result {
             case .success(let weatherForecast):
-                print("\(weatherForecast.city.name): \(weatherForecast.list[0].temperature.currentCelsius)도 - \(weatherForecast.list[0].utc)UTC")
+                print("\(weatherForecast.city.name): \(weatherForecast.items[0].temperature.currentCelsius)도 - \(weatherForecast.items[0].utc)UTC")
             case .failure(let error):
                 print(error.localizedDescription)
             }

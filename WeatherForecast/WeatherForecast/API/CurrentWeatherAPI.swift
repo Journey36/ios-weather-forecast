@@ -23,7 +23,7 @@ class CurrentWeatherAPI {
     
     private init() {}
     
-    func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeather, APIError>) -> Void) {
+    func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
         guard let url = URL(string: "\(baseURL)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=metric&appid=\(apiKey)") else {
             completionHandler(.failure(.invalidURL))
             return
@@ -40,7 +40,7 @@ class CurrentWeatherAPI {
                 return
             }
             
-            if let decodedData: CurrentWeather = try? JSONDecoder().decode(CurrentWeather.self, from: data) {
+            if let decodedData: CurrentWeatherData = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
                 completionHandler(.success(decodedData))
             } else {
                 completionHandler(.failure(.invalidData))
