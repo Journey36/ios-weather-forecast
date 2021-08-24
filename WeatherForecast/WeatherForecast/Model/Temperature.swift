@@ -12,15 +12,15 @@ struct Temperature: Decodable {
     private let maximum: Double
     private let minimum: Double
 
-    var celiusAverage: Double {
+    var celsiusAverage: Double {
         let convertedValue =  UnitTemperature.celsius.converter.value(fromBaseUnitValue: average)
         return (round(convertedValue * 10)) / 10
     }
-    var celiusMaximum: Double {
+    var celsiusMaximum: Double {
         let convertedValue = UnitTemperature.celsius.converter.value(fromBaseUnitValue: maximum)
         return (round(convertedValue * 10)) / 10
     }
-    var celiusMinimum: Double {
+    var celsiusMinimum: Double {
         let convertedValue = UnitTemperature.celsius.converter.value(fromBaseUnitValue: minimum)
         return (round(convertedValue * 10)) / 10
     }
