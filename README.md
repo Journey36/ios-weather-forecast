@@ -7,9 +7,11 @@
     - [그라운드 룰](#Jacob의-그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. [학습 내용](#학습-내용)
-3. [프로젝트 리팩토링](#프로젝트-리팩토링)
+3. [리팩토링](#리팩토링)
     - [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
-4. [프로젝트 추가 진행](#-프로젝트-추가-진행)
+    - [API 데이터 요청](#-API-데이터-요청)
+4. 요구사항 완료
+5. 추가 진행
 
 ## 프로젝트
 
@@ -77,13 +79,13 @@
 
 
 
-## 프로젝트 리팩토링
+## 리팩토링
 
-프로젝트 기간이 지난 후 리뷰하면서 고치고 싶었던 부분을 리팩토링 한 내용을 정리했다.
+프로젝트 기간이 지난 후 리뷰하면서 리팩토링 한 내용을 정리했다.
 
 ### API Response 데이터 모델 리팩토링
 
-#### 서브모델 통합
+#### 1. 하위 모델 통합
 
 모델마다 구조체로 분리했더니 날씨 데이터 모델 파일만 7개다.
 
@@ -123,7 +125,7 @@ SubModel
 - temperature.swift
 ~~~
 
-#### JSON 데이터의 `Weather` 항목
+#### 2. JSON 데이터의 `Weather` 항목
 
 이유는 모르지만 API Response JSON 데이터의 `Weather` 항목이 원소가 1개만 있는 배열로 구성된다.
 
@@ -150,6 +152,51 @@ struct CurrentWeatherData: Decodable {
     }
 }
 ~~~
+
+<br><br><br>
+
+
+
+### API 데이터 요청
+
+- API 에러 타입을 따로 분리하여 두 API에서 동일하게 사용
+- get 메서드 내부의 기능을 별도 함수로 분리, 제네리사용
+
+#### 리팩토링 전
+
+~~~swift
+func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
+    guard let url = URL(string: "\(baseURL)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=metric&appid=\(apiKey)") else {
+        completionHandler(.failure(.invalidURL))
+        return
+    }
+    
+    let dataTask = urlSession.dataTask(with: url) { data, _, error in
+        if let error = error {
+            print(error.localizedDescription)
+            completionHandler(.failure(.requestFailed))
+            return
+        }
+        guard let data = data else {
+            completionHandler(.failure(.noData))
+            return
+        }
+        
+        if let decodedData: CurrentWeatherData = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
+            completionHandler(.success(decodedData))
+        } else {
+            completionHandler(.failure(.invalidData))
+        }
+    }
+    dataTask.resume()
+}
+~~~
+
+
+
+
+
+
 
 [👆목차로 가기](#목차)
 <br><br><br>

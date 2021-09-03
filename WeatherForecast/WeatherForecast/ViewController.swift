@@ -42,22 +42,23 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // for test
-        let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
-        CurrentWeatherAPI.shared.getData(coordinate: seoulCoord) { result in
+        //let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
+        let coord = Coordinate(latitude: 37.572849, longitude: 126.976829)
+        OpenWeatherAPIList.currentWeather.request(coordinate: coord) { result in
             switch result {
-            case .success(let currentWeather):
-                print("\(currentWeather.cityName): \(currentWeather.temperature.currentCelsius)도")
-                print(currentWeather)
+            case .success(let data):
+                print(data)
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
-        WeatherForecastAPI.shared.getData(coordinate: seoulCoord) { result in
+        
+        OpenWeatherAPIList.fiveDayForecast.request(coordinate: coord) { result in
             switch result {
-            case .success(let weatherForecast):
-                print("\(weatherForecast.city.name): \(weatherForecast.items[0].temperature.currentCelsius)도 - \(weatherForecast.items[0].utc)UTC")
+            case .success(let data):
+                print(data)
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
     }
@@ -87,6 +88,16 @@ extension ViewController: CLLocationManagerDelegate {
         if let currentCoordinate = locations.last?.coordinate {
             locationManager.stopUpdatingLocation()
             self.currentCoordinate = currentCoordinate
+            
+            OpenWeatherAPIList.currentWeather.request(coordinate: Coordinate(latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude)) { result in
+                switch result {
+                case .success(let data):
+                    print("\(self.currentAddress.administrativeArea) \(self.currentAddress.locality)의 날씨")
+                    print(data)
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }
     }
 }
