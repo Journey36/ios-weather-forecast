@@ -12,9 +12,7 @@ class ViewController: UIViewController {
     // MARK: - Properties
     private lazy var locationManager: CLLocationManager = {
         let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
         locationManager.delegate = self
         
         return locationManager
@@ -65,7 +63,7 @@ class ViewController: UIViewController {
     
     // MARK: - Methods
     private func requestCurrentCoordinate() {
-        locationManager.startUpdatingLocation()
+        locationManager.requestLocation()
     }
     
     private func findCurrentAddress() {
@@ -82,22 +80,14 @@ class ViewController: UIViewController {
     }
 }
 
-// MARK: - CLLocationManagerDelegate Methods
+// MARK: - CLLocationManagerDelegate
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let currentCoordinate = locations.last?.coordinate {
-            locationManager.stopUpdatingLocation()
             self.currentCoordinate = currentCoordinate
-            
-            OpenWeatherAPIList.currentWeather.request(coordinate: Coordinate(latitude: currentCoordinate.latitude, longitude: currentCoordinate.longitude)) { result in
-                switch result {
-                case .success(let data):
-                    print("\(self.currentAddress.administrativeArea) \(self.currentAddress.locality)의 날씨")
-                    print(data)
-                case .failure(let error):
-                    print(error)
-                }
-            }
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     }
 }
