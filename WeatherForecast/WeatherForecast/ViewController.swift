@@ -42,7 +42,7 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // for test
-        //let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
+//        let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
         let coord = Coordinate(latitude: 37.572849, longitude: 126.976829)
         OpenWeatherAPIList.currentWeather.request(coordinate: coord) { result in
             switch result {

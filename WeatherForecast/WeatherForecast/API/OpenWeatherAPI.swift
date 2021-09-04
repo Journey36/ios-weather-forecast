@@ -14,27 +14,6 @@ struct OpenWeatherAPI<ResponseData: Decodable> {
     var language: Language?
     var count: Int?
     
-    enum Units {
-        case standard
-        case metric
-        case imperial
-        
-        func queryItem() -> URLQueryItem {
-            return URLQueryItem(name: "units", value: "\(self)")
-        }
-    }
-    
-    enum Language: String {
-        case english = "en"
-        case german = "de"
-        case korean = "kr"
-        case japanese = "ja"
-        
-        func queryItem() -> URLQueryItem {
-            return URLQueryItem(name: "lang", value: "\(self.rawValue)")
-        }
-    }
-    
     private func queryItems(coordinate: Coordinate) -> [URLQueryItem] {
         var queryItems = [URLQueryItem]()
         queryItems += [URLQueryItem(name: "lat", value: "\(coordinate.latitude)"),
@@ -66,4 +45,26 @@ struct OpenWeatherAPI<ResponseData: Decodable> {
     }
 }
 
-
+// MARK: - Nested Types
+extension OpenWeatherAPI {
+    enum Units {
+        case standard
+        case metric
+        case imperial
+        
+        func queryItem() -> URLQueryItem {
+            return URLQueryItem(name: "units", value: "\(self)")
+        }
+    }
+    
+    enum Language: String {
+        case english = "en"
+        case german = "de"
+        case korean = "kr"
+        case japanese = "ja"
+        
+        func queryItem() -> URLQueryItem {
+            return URLQueryItem(name: "lang", value: "\(self.rawValue)")
+        }
+    }
+}

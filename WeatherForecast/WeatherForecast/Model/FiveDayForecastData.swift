@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct WeatherForecastData: Decodable {
+struct FiveDayForecastData: Decodable {
     let count: Int
     let items: [Item]
     let city: City

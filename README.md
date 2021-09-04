@@ -10,8 +10,8 @@
 3. [리팩토링](#리팩토링)
     - [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
     - [API 데이터 요청](#-API-데이터-요청)
-4. 요구사항 완료
-5. 추가 진행
+4. 프로젝트 완성하기
+5. 프로젝트 추가 진행하기
 
 ## 프로젝트
 
@@ -192,6 +192,20 @@ func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (R
 }
 ~~~
 
+#### API Request 객체
+
+APIClient
+- 직접 request하는 객체
+- 다른 API에서도 두루 쓸수 있도록 고민
+- 에러 처리
+
+OpenWeatherAPI
+- OpenWeatehrAPI 전용으로 고민
+
+OpenWeatehrAPIList
+- API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민
+
+#### 
 
 
 

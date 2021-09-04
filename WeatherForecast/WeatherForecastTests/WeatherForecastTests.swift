@@ -64,11 +64,11 @@ class WeatherForecastTests: XCTestCase {
             return
         }
         let jsonDecoder = JSONDecoder()
-        let decodedData: WeatherForecastData
+        let decodedData: FiveDayForecastData
             
         do {
             // When
-            decodedData = try jsonDecoder.decode(WeatherForecastData.self, from: dataAsset.data)
+            decodedData = try jsonDecoder.decode(FiveDayForecastData.self, from: dataAsset.data)
             
             // Then
             XCTAssertEqual(decodedData.count, 3)

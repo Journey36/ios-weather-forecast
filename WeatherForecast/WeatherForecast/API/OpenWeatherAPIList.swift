@@ -10,7 +10,7 @@ enum OpenWeatherAPIList {
                                                                    apiKey: "d581ffc8458e8085899bfe16c04fe7da",
                                                                    units: .metric,
                                                                    language: .korean)
-    static let fiveDayForecast = OpenWeatherAPI<WeatherForecastData>(baseURL: "https://api.openweathermap.org/data/2.5/forecast",
+    static let fiveDayForecast = OpenWeatherAPI<FiveDayForecastData>(baseURL: "https://api.openweathermap.org/data/2.5/forecast",
                                                                      apiKey: "d581ffc8458e8085899bfe16c04fe7da",
                                                                      units: .metric,
                                                                      language: .korean,

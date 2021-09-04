@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct Coordinate: Decodable {
     let latitude: Double
