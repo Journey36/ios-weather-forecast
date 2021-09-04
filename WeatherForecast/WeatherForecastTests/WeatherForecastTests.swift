@@ -26,20 +26,20 @@ class WeatherForecastTests: XCTestCase {
             return
         }
         let jsonDecoder = JSONDecoder()
-        let decodedData: CurrentWeather
+        let decodedData: CurrentWeatherData
             
         do {
             // When
-            decodedData = try jsonDecoder.decode(CurrentWeather.self, from: dataAsset.data)
+            decodedData = try jsonDecoder.decode(CurrentWeatherData.self, from: dataAsset.data)
             
             // Then
             XCTAssertEqual(decodedData.coordinate.longitude, -122.08)
             XCTAssertEqual(decodedData.coordinate.latitude, 37.39)
             
-            XCTAssertEqual(decodedData.weather.conditionID, 800)
-            XCTAssertEqual(decodedData.weather.group, "Clear")
-            XCTAssertEqual(decodedData.weather.description, "clear sky")
-            XCTAssertEqual(decodedData.weather.iconID, "01d")
+            XCTAssertEqual(decodedData.weather?.conditionID, 800)
+            XCTAssertEqual(decodedData.weather?.group, "Clear")
+            XCTAssertEqual(decodedData.weather?.description, "clear sky")
+            XCTAssertEqual(decodedData.weather?.iconID, "01d")
             
             XCTAssertEqual(decodedData.temperature.currentCelsius, 282.55)
             XCTAssertEqual(decodedData.temperature.humanFeelsCelsius, 281.86)
@@ -64,28 +64,27 @@ class WeatherForecastTests: XCTestCase {
             return
         }
         let jsonDecoder = JSONDecoder()
-        let decodedData: WeatherForecast
+        let decodedData: FiveDayForecastData
             
         do {
             // When
-            decodedData = try jsonDecoder.decode(WeatherForecast.self, from: dataAsset.data)
+            decodedData = try jsonDecoder.decode(FiveDayForecastData.self, from: dataAsset.data)
             
             // Then
             XCTAssertEqual(decodedData.count, 3)
             for i in 0..<3 {
-                XCTAssertEqual(decodedData.list[i].utc, 1596564000)
-                XCTAssertEqual(decodedData.list[i].temperature.currentCelsius, 293.55)
-                XCTAssertEqual(decodedData.list[i].temperature.humanFeelsCelsius, 293.13)
-                XCTAssertEqual(decodedData.list[i].temperature.minimumCelsius, 293.55)
-                XCTAssertEqual(decodedData.list[i].temperature.maximumCelsius, 294.05)
-                XCTAssertEqual(decodedData.list[i].temperature.atmosphericPressure, 1013)
-                XCTAssertEqual(decodedData.list[i].temperature.humidity, 84)
-                XCTAssertEqual(decodedData.list[i].weather.conditionID, 500)
-                
-                XCTAssertEqual(decodedData.list[i].weather.group, "Rain")
-                XCTAssertEqual(decodedData.list[i].weather.description, "light rain")
-                XCTAssertEqual(decodedData.list[i].weather.iconID, "10d")
-                XCTAssertEqual(decodedData.list[i].dateTimeString, "2020-08-04 18:00:00")
+                XCTAssertEqual(decodedData.items[i].utc, 1596564000)
+                XCTAssertEqual(decodedData.items[i].temperature.currentCelsius, 293.55)
+                XCTAssertEqual(decodedData.items[i].temperature.humanFeelsCelsius, 293.13)
+                XCTAssertEqual(decodedData.items[i].temperature.minimumCelsius, 293.55)
+                XCTAssertEqual(decodedData.items[i].temperature.maximumCelsius, 294.05)
+                XCTAssertEqual(decodedData.items[i].temperature.atmosphericPressure, 1013)
+                XCTAssertEqual(decodedData.items[i].temperature.humidity, 84)
+                XCTAssertEqual(decodedData.items[i].weather?.conditionID, 500)
+                XCTAssertEqual(decodedData.items[i].weather?.group, "Rain")
+                XCTAssertEqual(decodedData.items[i].weather?.description, "light rain")
+                XCTAssertEqual(decodedData.items[i].weather?.iconID, "10d")
+                XCTAssertEqual(decodedData.items[i].dateTimeString, "2020-08-04 18:00:00")
             }
             XCTAssertEqual(decodedData.city.id, 2643743)
             XCTAssertEqual(decodedData.city.name, "London")

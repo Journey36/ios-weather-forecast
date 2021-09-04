@@ -7,17 +7,16 @@
 
 import Foundation
 
-struct CurrentWeather: Decodable {
+struct CurrentWeatherData: Decodable {
     let coordinate: Coordinate
     private let weathers: [Weather]
+    var weather: Weather? {
+        return weathers.first
+    }
     let temperature: Temperature
     let utc: Int
     let cityID: Int
     let cityName: String
-    
-    var weather: Weather {
-        return weathers[0]
-    }
     
     enum CodingKeys: String, CodingKey {
         case coordinate = "coord"

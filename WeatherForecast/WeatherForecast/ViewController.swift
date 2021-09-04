@@ -12,9 +12,7 @@ class ViewController: UIViewController {
     // MARK: - Properties
     private lazy var locationManager: CLLocationManager = {
         let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
         locationManager.delegate = self
         
         return locationManager
@@ -29,7 +27,7 @@ class ViewController: UIViewController {
             print("\(currentAddress.administrativeArea) \(currentAddress.locality)")
         }
     }
-    private var currentWeather: CurrentWeather!
+    private var currentWeather: CurrentWeatherData!
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -42,28 +40,30 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // for test
-        let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
-        CurrentWeatherAPI.shared.getData(coordinate: seoulCoord) { result in
+//        let seoulCoord = CLLocationCoordinate2D(latitude: 37.572849, longitude: 126.976829)
+        let coord = Coordinate(latitude: 37.572849, longitude: 126.976829)
+        OpenWeatherAPIList.currentWeather.request(coordinate: coord) { result in
             switch result {
-            case .success(let currentWeather):
-                print("\(currentWeather.cityName): \(currentWeather.temperature.currentCelsius)도")
+            case .success(let data):
+                print(data)
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
-        WeatherForecastAPI.shared.getData(coordinate: seoulCoord) { result in
+        
+        OpenWeatherAPIList.fiveDayForecast.request(coordinate: coord) { result in
             switch result {
-            case .success(let weatherForecast):
-                print("\(weatherForecast.city.name): \(weatherForecast.list[0].temperature.currentCelsius)도 - \(weatherForecast.list[0].utc)UTC")
+            case .success(let data):
+                print(data)
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
             }
         }
     }
     
     // MARK: - Methods
     private func requestCurrentCoordinate() {
-        locationManager.startUpdatingLocation()
+        locationManager.requestLocation()
     }
     
     private func findCurrentAddress() {
@@ -80,12 +80,14 @@ class ViewController: UIViewController {
     }
 }
 
-// MARK: - CLLocationManagerDelegate Methods
+// MARK: - CLLocationManagerDelegate
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let currentCoordinate = locations.last?.coordinate {
-            locationManager.stopUpdatingLocation()
             self.currentCoordinate = currentCoordinate
         }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     }
 }
