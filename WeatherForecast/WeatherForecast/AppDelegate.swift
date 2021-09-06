@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         guard #available(iOS 13.0, *) else {
             window = UIWindow()
-            window?.rootViewController = ViewController()
+            window?.rootViewController = WeatherForecastViewController()
             window?.makeKeyAndVisible()
             return true
         }
