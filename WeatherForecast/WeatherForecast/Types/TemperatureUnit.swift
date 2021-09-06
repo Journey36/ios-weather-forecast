@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+enum TemperatureUnit: String {
+    case standard = "units=standard&"
+    case metric = "units=metric&"
+    case imperial = "units=imperial&"
+}

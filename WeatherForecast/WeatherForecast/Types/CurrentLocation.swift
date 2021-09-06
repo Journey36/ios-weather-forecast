@@ -6,6 +6,5 @@
 //
 
 import Foundation
-import CoreLocation
 
 typealias CurrentLocation = (latitude: String, longitude: String)
