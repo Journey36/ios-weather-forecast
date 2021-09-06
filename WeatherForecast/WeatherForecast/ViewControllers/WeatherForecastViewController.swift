@@ -8,12 +8,10 @@
 import UIKit
 import CoreLocation
 
-class ViewController: UIViewController {
+class WeatherForecastViewController: UITableViewController {
     // MARK: - Properties
     private lazy var locationManager: LocationManager = {
         let locationManager = LocationManager(locationUpdatedAction: { location in
-            print("<<<<<< current location: \(location.coordinate)")
-            
             self.findCurrentAddress(by: location)
             
             OpenWeatherAPIList.currentWeather.request(coordinate: location.coordinate) { result in

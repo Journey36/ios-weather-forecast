@@ -9,11 +9,19 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        guard #available(iOS 13.0, *) else {
+            window = UIWindow()
+            window?.rootViewController = WeatherForecastViewController()
+            window?.makeKeyAndVisible()
+            return true
+        }
+        
         return true
     }
 
