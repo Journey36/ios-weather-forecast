@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct CurrentWeatherData: Decodable {
-    let coordinate: Coordinate
+    let coordinate: CLLocationCoordinate2D
     private let weathers: [Weather]
     var weather: Weather? {
         return weathers.first

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct OpenWeatherAPI<ResponseData: Decodable> {
     var baseURL: String
@@ -14,7 +15,7 @@ struct OpenWeatherAPI<ResponseData: Decodable> {
     var language: Language?
     var count: Int?
     
-    private func queryItems(coordinate: Coordinate) -> [URLQueryItem] {
+    private func queryItems(coordinate: CLLocationCoordinate2D) -> [URLQueryItem] {
         var queryItems = [URLQueryItem]()
         queryItems += [URLQueryItem(name: "lat", value: "\(coordinate.latitude)"),
                        URLQueryItem(name: "lon", value: "\(coordinate.longitude)"),
@@ -31,7 +32,7 @@ struct OpenWeatherAPI<ResponseData: Decodable> {
         return queryItems
     }
   
-    func request(coordinate: Coordinate, completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
+    func request(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
         let queryItems = queryItems(coordinate: coordinate)
         let apiClient = APIClient<ResponseData>(baseURL: baseURL, queryItems: queryItems)
         apiClient.request() { result in

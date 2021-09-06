@@ -14,5 +14,5 @@ enum OpenWeatherAPIList {
                                                                      apiKey: "d581ffc8458e8085899bfe16c04fe7da",
                                                                      units: .metric,
                                                                      language: .korean,
-                                                                     count: 2)
+                                                                     count: nil)
 }

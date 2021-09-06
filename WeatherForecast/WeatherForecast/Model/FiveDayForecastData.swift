@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct FiveDayForecastData: Decodable {
     let count: Int
@@ -38,7 +39,7 @@ struct FiveDayForecastData: Decodable {
     struct City: Decodable {
         let id: Int
         let name: String
-        let coordinate: Coordinate
+        let coordinate: CLLocationCoordinate2D
         
         enum CodingKeys: String, CodingKey {
             case id

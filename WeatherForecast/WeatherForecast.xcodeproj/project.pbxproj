@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		56038AB525B73EDF00EECEA4 /* Coordinate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56038AB425B73EDF00EECEA4 /* Coordinate.swift */; };
+		5608C29826E5FE2900DC2C2E /* LoacationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5608C29726E5FE2900DC2C2E /* LoacationManager.swift */; };
 		56A9972025B5E243001D3DE8 /* CurrentWeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A9971F25B5E243001D3DE8 /* CurrentWeatherData.swift */; };
 		56A9972B25B5E75F001D3DE8 /* Temperature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A9972A25B5E75F001D3DE8 /* Temperature.swift */; };
 		56A9973025B5EC93001D3DE8 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A9972F25B5EC93001D3DE8 /* Weather.swift */; };
@@ -45,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		56038AB425B73EDF00EECEA4 /* Coordinate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinate.swift; sourceTree = "<group>"; };
+		5608C29726E5FE2900DC2C2E /* LoacationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoacationManager.swift; sourceTree = "<group>"; };
 		56A9971F25B5E243001D3DE8 /* CurrentWeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherData.swift; sourceTree = "<group>"; };
 		56A9972A25B5E75F001D3DE8 /* Temperature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Temperature.swift; sourceTree = "<group>"; };
 		56A9972F25B5EC93001D3DE8 /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
@@ -94,6 +96,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5608C29626E5FE0D00DC2C2E /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				5608C29726E5FE2900DC2C2E /* LoacationManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
 		56A9971E25B5E160001D3DE8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +158,7 @@
 		C79C8CF225ADDDF200EEE3F1 /* WeatherForecast */ = {
 			isa = PBXGroup;
 			children = (
+				5608C29626E5FE0D00DC2C2E /* Manager */,
 				56BC489125BC8C6000EE4E99 /* API */,
 				56A9971E25B5E160001D3DE8 /* Model */,
 				C79C8CF325ADDDF200EEE3F1 /* AppDelegate.swift */,
@@ -314,6 +325,7 @@
 				C79C8CF425ADDDF200EEE3F1 /* AppDelegate.swift in Sources */,
 				56A9972025B5E243001D3DE8 /* CurrentWeatherData.swift in Sources */,
 				56038AB525B73EDF00EECEA4 /* Coordinate.swift in Sources */,
+				5608C29826E5FE2900DC2C2E /* LoacationManager.swift in Sources */,
 				56BC489325BC8CAF00EE4E99 /* OpenWeatherAPI.swift in Sources */,
 				56A9972B25B5E75F001D3DE8 /* Temperature.swift in Sources */,
 				56DA106626E255F600EF8909 /* OpenWeatherAPIList.swift in Sources */,
