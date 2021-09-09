@@ -23,8 +23,8 @@ struct FiveDayForecastData: Decodable {
         let utcUnix: Int
         let temperature: Temperature
         private let weathers: [Weather]
-        var weather: Weather? {
-            return weathers.first
+        var weather: Weather {
+            return weathers[0]
         }
         let utcText: String
         

@@ -13,10 +13,6 @@ struct Weather: Decodable {
     let iconID: String
     let description: String
     
-    var iconURL: String {
-        return "https://openweathermap.org/img/w/\(iconID).png"
-    }
-    
     enum CodingKeys: String, CodingKey {
         case conditionID = "id"
         case group = "main"

@@ -33,7 +33,7 @@ class WeatherForecastDataSource: NSObject {
         let locationManager = LocationManager(locationUpdatedAction: { location in
             self.findCurrentAddress(by: location)
             
-            OpenWeatherAPIList.currentWeather.request(by: location.coordinate) { result in
+            OpenWeatherAPIConstatns.currentWeatherAPI.request(by: location.coordinate) { result in
                 switch result {
                 case .success(let data):
                     print(data)
@@ -85,7 +85,7 @@ class WeatherForecastDataSource: NSObject {
 
 extension WeatherForecastDataSource {
     private func requestFiveDayForecastData(by coordinate: CLLocationCoordinate2D) {
-        OpenWeatherAPIList.fiveDayForecast.request(by: coordinate) { result in
+        OpenWeatherAPIConstatns.fiveDayForecastAPI.request(by: coordinate) { result in
             switch result {
             case .success(let data):
                 //print(data)
@@ -113,6 +113,17 @@ extension WeatherForecastDataSource: UITableViewDataSource {
         let item = fiveDayforecastItems[indexPath.row]
         cell.configure(dateAndTimeText: item.dateAndTimeText, temperatureText: item.temperature.currentCelsiusText)
         
+        ImageLoader(url: item.weather.iconURL).load() { result in
+            switch result {
+            case .success(let image):
+                if tableView.indexPath(for: cell)?.row == indexPath.row {
+                    cell.configure(iconImage: image)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+        
         return cell
     }
 }
@@ -137,5 +148,11 @@ extension FiveDayForecastData.Item {
 extension Temperature {
     var currentCelsiusText: String {
         return String(format: "%.1fº", currentCelsius)
+    }
+}
+
+extension Weather {
+    var iconURL: String {
+        return OpenWeatherAPIConstatns.weatherIconBaseURL + "\(iconID).png"
     }
 }

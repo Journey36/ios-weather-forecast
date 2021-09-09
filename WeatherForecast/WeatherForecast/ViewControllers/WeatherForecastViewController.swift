@@ -18,7 +18,6 @@ class WeatherForecastViewController: UITableViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         dataSource = WeatherForecastDataSource(fiveDayForecastUpdatedAction: {
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -34,6 +33,4 @@ class WeatherForecastViewController: UITableViewController {
     }
     
     // MARK: - Methods
-    
-    
 }

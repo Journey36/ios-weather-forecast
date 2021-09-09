@@ -16,6 +16,7 @@ class FiveDayForecastCell: UITableViewCell {
     
     let dateLabel = makeLabel()
     let temperatureLabel = makeLabel()
+    let iconImageView = UIImageView()
   
     private static func makeLabel() -> UILabel {
         let label = UILabel()
@@ -54,16 +55,24 @@ class FiveDayForecastCell: UITableViewCell {
         temperatureLabel.adjustsFontForContentSizeCategory = true
         temperatureLabel.numberOfLines = 1
         
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
+        
         contentView.addSubview(dateLabel)
         contentView.addSubview(temperatureLabel)
+        contentView.addSubview(iconImageView)
         
         // constraint 설정 (뷰에 추가한 후에 설정해야 함)
         
         // 수평
         dateLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor).isActive = true
-        dateLabel.layoutMarginsGuide.trailingAnchor.constraint(lessThanOrEqualTo: temperatureLabel.leadingAnchor).isActive = true
+        dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: temperatureLabel.leadingAnchor).isActive = true
+        
         temperatureLabel.textAlignment = .right
-        temperatureLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor).isActive = true
+        temperatureLabel.trailingAnchor.constraint(equalTo: iconImageView.leadingAnchor).isActive = true
+        
+        iconImageView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor).isActive = true
+        iconImageView.heightAnchor.constraint(equalTo: iconImageView.widthAnchor).isActive = true
+        iconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor, multiplier: 2.0).isActive = true
         
         // 수직
         dateLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
@@ -71,10 +80,18 @@ class FiveDayForecastCell: UITableViewCell {
     
         temperatureLabel.firstBaselineAnchor.constraint(equalTo: dateLabel.firstBaselineAnchor).isActive = true
         temperatureLabel.lastBaselineAnchor.constraint(equalTo: dateLabel.lastBaselineAnchor).isActive = true
+        
+        iconImageView.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor).isActive = true
+        iconImageView.contentMode = .scaleAspectFit
+        
     }
     
     func configure(dateAndTimeText: String, temperatureText: String) {
         dateLabel.text = dateAndTimeText
         temperatureLabel.text = temperatureText
+    }
+    
+    func configure(iconImage: UIImage) {
+        iconImageView.image = iconImage
     }
 }
