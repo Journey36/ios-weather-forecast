@@ -32,7 +32,7 @@ struct OpenWeatherAPI<ResponseData: Decodable> {
         return queryItems
     }
   
-    func request(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
+    func request(by coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
         let queryItems = queryItems(coordinate: coordinate)
         let apiClient = APIClient<ResponseData>(baseURL: baseURL, queryItems: queryItems)
         apiClient.request() { result in

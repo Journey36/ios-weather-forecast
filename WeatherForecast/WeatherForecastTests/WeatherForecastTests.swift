@@ -73,7 +73,7 @@ class WeatherForecastTests: XCTestCase {
             // Then
             XCTAssertEqual(decodedData.count, 3)
             for i in 0..<3 {
-                XCTAssertEqual(decodedData.items[i].utc, 1596564000)
+                XCTAssertEqual(decodedData.items[i].utcUnix, 1596564000)
                 XCTAssertEqual(decodedData.items[i].temperature.currentCelsius, 293.55)
                 XCTAssertEqual(decodedData.items[i].temperature.humanFeelsCelsius, 293.13)
                 XCTAssertEqual(decodedData.items[i].temperature.minimumCelsius, 293.55)
@@ -84,7 +84,7 @@ class WeatherForecastTests: XCTestCase {
                 XCTAssertEqual(decodedData.items[i].weather?.group, "Rain")
                 XCTAssertEqual(decodedData.items[i].weather?.description, "light rain")
                 XCTAssertEqual(decodedData.items[i].weather?.iconID, "10d")
-                XCTAssertEqual(decodedData.items[i].dateTimeString, "2020-08-04 18:00:00")
+                XCTAssertEqual(decodedData.items[i].dateTimeText, "2020-08-04 18:00:00")
             }
             XCTAssertEqual(decodedData.city.id, 2643743)
             XCTAssertEqual(decodedData.city.name, "London")
