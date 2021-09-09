@@ -12,7 +12,7 @@ struct DataTaskManager {
     let session: URLSession = .shared
 
     func fetchWeatherData<T: Decodable>(on coordinates: CurrentLocation, type: ForecastType, completion: @escaping (Result<T, ErrorHandler>) -> Void) {
-        guard let apiURL: URL = URLManager.setURL(coordinates, with: type) else {
+        guard let apiURL: URL = try? URLManager.setURL(coordinates, with: type) else {
             return completion(.failure(.SystemError(type: .invalidURL)))
         }
 
