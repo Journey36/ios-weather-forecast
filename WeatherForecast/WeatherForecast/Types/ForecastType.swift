@@ -8,6 +8,6 @@
 import Foundation
 
 enum ForecastType: String {
-    case current = "weather?"
-    case forecast = "forecast?"
+    case current = "weather"
+    case forecast = "forecast"
 }
