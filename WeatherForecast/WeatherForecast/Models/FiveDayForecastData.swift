@@ -20,19 +20,19 @@ struct FiveDayForecastData: Decodable {
     }
     
     struct Item: Decodable {
-        let utc: Int
+        let utcUnix: Int
         let temperature: Temperature
         private let weathers: [Weather]
-        var weather: Weather? {
-            return weathers.first
+        var weather: Weather {
+            return weathers[0]
         }
-        let dateTimeString: String
+        let utcText: String
         
         enum CodingKeys: String, CodingKey {
-            case utc = "dt"
+            case utcUnix = "dt"
             case temperature = "main"
             case weathers = "weather"
-            case dateTimeString = "dt_txt"
+            case utcText = "dt_txt"
         }
     }
     
@@ -48,3 +48,5 @@ struct FiveDayForecastData: Decodable {
         }
     }
 }
+
+

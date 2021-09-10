@@ -12,6 +12,7 @@ class LocationManager: CLLocationManager {
     
     
     private var locationUpdatedAction: LocationUpdatedAction?
+    private var isLocationRequested = false
     
     init(locationUpdatedAction: @escaping LocationUpdatedAction) {
         self.locationUpdatedAction = locationUpdatedAction
@@ -23,6 +24,11 @@ class LocationManager: CLLocationManager {
     func requestAuthorization() {
         requestWhenInUseAuthorization()
     }
+    
+    override func requestLocation() {
+        super.requestLocation()
+        isLocationRequested = true
+    }
 }
 
 extension LocationManager: CLLocationManagerDelegate {
@@ -30,7 +36,11 @@ extension LocationManager: CLLocationManagerDelegate {
         guard let currentLocation = locations.last else {
             return
         }
-        locationUpdatedAction?(currentLocation)
+        if isLocationRequested {
+            isLocationRequested.toggle()
+            locationUpdatedAction?(currentLocation)
+        }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
