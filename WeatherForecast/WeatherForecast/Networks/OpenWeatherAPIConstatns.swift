@@ -15,5 +15,6 @@ enum OpenWeatherAPIConstatns {
                                                                      units: .metric,
                                                                      language: .korean,
                                                                      count: nil)
-    static let weatherIconBaseURL = "https://openweathermap.org/img/w/"
+    static let weatherIconBaseURL = "https://openweathermap.org/img/wn/"
+    
 }

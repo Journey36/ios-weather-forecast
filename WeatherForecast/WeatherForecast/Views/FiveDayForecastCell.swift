@@ -47,11 +47,11 @@ class FiveDayForecastCell: UITableViewCell {
     // MARK: -
 
     private func setUpLabelsAndConstraints() {
-        dateLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        dateLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
         dateLabel.adjustsFontForContentSizeCategory = true
         dateLabel.numberOfLines = 0
         
-        temperatureLabel.font = UIFont.preferredFont(forTextStyle: .body)
+        temperatureLabel.font = UIFont.preferredFont(forTextStyle: .headline)
         temperatureLabel.adjustsFontForContentSizeCategory = true
         temperatureLabel.numberOfLines = 1
         

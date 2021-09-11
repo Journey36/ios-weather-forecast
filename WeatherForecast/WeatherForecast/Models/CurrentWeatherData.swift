@@ -11,8 +11,8 @@ import CoreLocation
 struct CurrentWeatherData: Decodable {
     let coordinate: CLLocationCoordinate2D
     private let weathers: [Weather]
-    var weather: Weather? {
-        return weathers.first
+    var weather: Weather {
+        return weathers[0]
     }
     let temperature: Temperature
     let utc: Int
