@@ -8,12 +8,10 @@
 enum OpenWeatherAPIConstatns {
     static let currentWeatherAPI = OpenWeatherAPI<CurrentWeatherData>(baseURL: "https://api.openweathermap.org/data/2.5/weather",
                                                                    apiKey: "d581ffc8458e8085899bfe16c04fe7da",
-                                                                   units: .metric,
-                                                                   language: .korean)
+                                                                   units: .metric)
     static let fiveDayForecastAPI = OpenWeatherAPI<FiveDayForecastData>(baseURL: "https://api.openweathermap.org/data/2.5/forecast",
                                                                      apiKey: "d581ffc8458e8085899bfe16c04fe7da",
                                                                      units: .metric,
-                                                                     language: .korean,
                                                                      count: nil)
     static let weatherIconBaseURL = "https://openweathermap.org/img/wn/"
     

@@ -19,6 +19,7 @@ class LocationManager: CLLocationManager {
         super.init()
         
         delegate = self
+        desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
     
     func requestAuthorization() {
@@ -44,6 +45,16 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        guard let error = error as? CLError else {
+            return
+        }
         
+        stopUpdatingLocation()
+        switch error.code {
+        case .denied:
+            print("Location updates are not authorized.")
+        default:
+            print("\(error.code): \(error.localizedDescription)")
+        }
     }
 }

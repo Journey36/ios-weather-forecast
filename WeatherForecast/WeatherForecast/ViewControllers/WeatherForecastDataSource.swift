@@ -26,21 +26,16 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-    
-    
     private lazy var locationManager: LocationManager = {
         let locationManager = LocationManager(locationUpdatedAction: { location in
-            self.findCurrentAddress(by: location)
-            self.requestCurrentWeatehrData(by: location.coordinate)
-            self.requestFiveDayForecastData(by: location.coordinate)
+            self.requestAllData(by: location)
         })
-        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestAuthorization()
         
         return locationManager
     }()
     
     private var currentAddress: Address?
-    
     private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
     private var fiveDayForecastUpdatedAction: FiveDayForecastUpdatedAction?
     private var currentWeatherData: CurrentWeatherData?
@@ -60,17 +55,7 @@ class WeatherForecastDataSource: NSObject {
         locationManager.requestLocation()
     }
     
-    private func findCurrentAddress(by location: CLLocation) {
-        CLGeocoder().reverseGeocodeLocation(location, preferredLocale: nil) { (placemarks, error) in
-            if let errorCode = error {
-                print(errorCode)
-                return
-            }
-            if let administrativeArea = placemarks?.first?.administrativeArea, let locality = placemarks?.first?.locality {
-                self.currentAddress = Address(administrativeArea: administrativeArea, locality: locality)
-            }
-        }
-    }
+    
     
     private func dequeueAndConfigureCell(for indexPath: IndexPath, from tableView: UITableView) -> UITableViewCell {
         guard let section = WeathrForecastSection(rawValue: indexPath.section) else {
@@ -87,8 +72,11 @@ class WeatherForecastDataSource: NSObject {
             guard let data = currentWeatherData else {
                 fatalError("Fail currentWeatherData")
             }
+            guard let addressText = currentAddress?.text else {
+                fatalError("Fail addressText")
+            }
             
-            cell.configure(addressText: currentAddress!.text,
+            cell.configure(addressText: addressText,
                            minAndMaxTemperatureText: data.temperature.minAndMaxCelsiusText,
                            currentTemperatureText: data.temperature.currentCelsiusText)
             ImageLoader(url: data.weather.icon2xURL).load() { result in
@@ -124,7 +112,8 @@ class WeatherForecastDataSource: NSObject {
     }
     
     private func numberOfRows(in section: Int) -> Int {
-        guard let section = WeathrForecastSection(rawValue: section) else {
+        guard let section = WeathrForecastSection(rawValue: section),
+              let _ = currentAddress else {
             return 0
         }
         
@@ -136,9 +125,37 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
+    func removeAllData() {
+        currentAddress = nil
+        currentWeatherData = nil
+        fiveDayforecastItems.removeAll()
+    }
+    
+    func refresh() {
+        locationManager.requestLocation()
+    }
 }
 
 extension WeatherForecastDataSource {
+    private func requestAllData(by location: CLLocation) {
+        self.requestCurrentAddress(by: location)
+        self.requestCurrentWeatehrData(by: location.coordinate)
+        self.requestFiveDayForecastData(by: location.coordinate)
+    }
+    
+    private func requestCurrentAddress(by location: CLLocation) {
+        CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
+            if let errorCode = error {
+                print(errorCode)
+                return
+            }
+            if let administrativeArea = placemarks?.first?.administrativeArea,
+               let locality = placemarks?.first?.locality {
+                self.currentAddress = Address(administrativeArea: administrativeArea, locality: locality)
+            }
+        }
+    }
+    
     private func requestCurrentWeatehrData(by coordinate: CLLocationCoordinate2D) {
         OpenWeatherAPIConstatns.currentWeatherAPI.request(by: coordinate) { result in
             switch result {
@@ -179,6 +196,8 @@ extension WeatherForecastDataSource: UITableViewDataSource {
         return dequeueAndConfigureCell(for: indexPath, from: tableView)
     }
 }
+
+// MARK: - Model Extensions
 
 extension FiveDayForecastData.Item {
     static private let DateAndTimeFormatter: DateFormatter = {
