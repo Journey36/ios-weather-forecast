@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ForecastType: String {
+enum ForecastType: String, CaseIterable {
     case current = "weather"
     case forecast = "forecast"
 }
