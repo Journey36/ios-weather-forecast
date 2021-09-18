@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 struct DataTaskManager {
     let session: URLSession = .shared
@@ -32,10 +31,11 @@ struct DataTaskManager {
             do {
                 let decoder: JSONDecoder = .init()
                 let currentWeatherData: T = try decoder.decode(T.self, from: data)
-                completion(.success(currentWeatherData))
+                return completion(.success(currentWeatherData))
             } catch {
                 completion(.failure(.SystemError(type: .invalidData)))
             }
+            
         }.resume()
     }
 }
