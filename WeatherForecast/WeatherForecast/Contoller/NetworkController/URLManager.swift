@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 enum URLManager {
     private static let baseURL: String = "http://api.openweathermap.org/data/2.5/"
