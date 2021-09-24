@@ -34,8 +34,10 @@ final class ForecastListCell: UITableViewCell {
         guard let data: ForecastList = data else {
             return
         }
+        // FIXME: - Delete dump
+        dump(data)
 
-        dateTimeLabel.text = data.list[indexPath.row].timestamp
+        dateTimeLabel.text = format(date: data.list[indexPath.row].timestamp)
         averageTemperatureLabel.text = "\(data.list[indexPath.row].temperature.current)"
     }
 
@@ -59,6 +61,29 @@ final class ForecastListCell: UITableViewCell {
         ])
 
         dateTimeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+    
+    private func format(date: String) -> String? {
+        let isoFormatter: ISO8601DateFormatter = .init()
+        isoFormatter.formatOptions = [.withFullDate, .withSpaceBetweenDateAndTime, .withTime, .withColonSeparatorInTime]
+        let dateFormatter: DateFormatter = .init()
+        dateFormatter.locale = .init(identifier: "ko_KR")
+        let calendar: Calendar = Calendar.current
+        guard let formattedDate: Date = isoFormatter.date(from: date) else {
+            return nil
+        }
+
+        guard let weekday: Int = calendar.dateComponents([.weekday], from: formattedDate).weekday else {
+            return nil
+        }
+
+        let dayOfWeek: Character = dateFormatter.weekdaySymbols[weekday - 1].removeFirst()
+        dateFormatter.dateFormat = "MM/dd(\(dayOfWeek)) HH시"
+        guard let newDate: String = dateFormatter.string(for: formattedDate) else {
+            return nil
+        }
+
+        return newDate
     }
 
     // MARK: Override
