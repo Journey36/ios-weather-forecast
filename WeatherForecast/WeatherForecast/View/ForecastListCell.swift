@@ -8,8 +8,8 @@
 import UIKit
 
 final class ForecastListCell: UITableViewCell {
-    // MARK:- Properties
-    //MARK: Type Properties
+    // MARK: - Properties
+    // MARK: Type Properties
     static let identifier: String = .init(describing: ForecastListCell.self)
 
     // MARK: UI Components
@@ -28,7 +28,7 @@ final class ForecastListCell: UITableViewCell {
         return weatherIconImageView
     }()
 
-    // MARK:- Methods
+    // MARK: - Methods
     // MARK: Custom
     func configureCell(with data: ForecastList?, indexPath: IndexPath) {
         guard let data: ForecastList = data else {
@@ -93,7 +93,7 @@ final class ForecastListCell: UITableViewCell {
         averageTemperatureLabel.text = nil
     }
 
-    // MARK:- Initializers
+    // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureConstraints()

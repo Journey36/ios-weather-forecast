@@ -8,7 +8,7 @@
 import UIKit
 
 class CurrentWeatherCell: UITableViewCell {
-    // MARK:- Properties
+    // MARK: - Properties
     // MARK: Type Properties
     static let identifier: String = .init(describing: CurrentWeatherCell.self)
 
@@ -49,7 +49,7 @@ class CurrentWeatherCell: UITableViewCell {
         return currentTemperatureLabel
     }()
 
-    // MARK:- Methods
+    // MARK: - Methods
     // MARK: Custom
     func configureCell(with data: CurrentWeather?) {
         guard let data: CurrentWeather = data else {
@@ -75,8 +75,8 @@ class CurrentWeatherCell: UITableViewCell {
         currentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            //TODO: Img View
-            //TODO: Fix StackView Constraints
+            // TODO: Img View
+            // TODO: Fix StackView Constraints
             labelStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             labelStackView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
             labelStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 80)
@@ -85,7 +85,7 @@ class CurrentWeatherCell: UITableViewCell {
         labelStackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
-    // MARK:- Initializers
+    // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureConstraints()

@@ -8,7 +8,7 @@
 import UIKit
 
 final class ForecastListView: UITableView {
-    // MARK:- Methods
+    // MARK: - Methods
     // MARK: Custom
     private func registerCells() {
         register(ForecastListCell.self, forCellReuseIdentifier: ForecastListCell.identifier)
@@ -20,7 +20,7 @@ final class ForecastListView: UITableView {
         allowsSelection = false
     }
     
-    // MARK:- Initializers
+    // MARK: - Initializers
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         configureAttributes()

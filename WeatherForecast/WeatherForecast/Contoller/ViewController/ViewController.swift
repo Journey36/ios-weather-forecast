@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 
 final class ViewController: UIViewController {
-    // MARK:- Properties
+    // MARK: - Properties
     // MARK: Stored Properties
     private var manager: CLLocationManager = .init()
     private var dataTaskManager: DataTaskManager = .init()
@@ -17,7 +17,7 @@ final class ViewController: UIViewController {
     private var forecastListData: ForecastList?
     private lazy var forecastListView: ForecastListView = .init()
 
-    // MARK:- Methods
+    // MARK: - Methods
     // MARK: Custom
     private func configureConstraints() {
         view.addSubview(forecastListView)
@@ -43,7 +43,7 @@ final class ViewController: UIViewController {
     }
 }
 
-// MARK:- Extensions
+// MARK: - Extensions
 // MARK: Core Location
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

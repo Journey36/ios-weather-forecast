@@ -10,7 +10,6 @@ import Foundation
 enum ErrorHandler: Error {
     case SystemError(type: SystemError)
     case UserError(type: UserError)
-
 }
 
 enum SystemError: Error {
