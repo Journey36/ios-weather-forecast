@@ -17,5 +17,5 @@ enum TableView {
 }
 
 enum Units {
-    static let temperatureUnit: String = "\u{2103}"
+    static let temperatureUnit: String = "\u{00B0}"
 }
