@@ -12,6 +12,7 @@
 		3D2F012926E5F84E00F84191 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012826E5F84E00F84191 /* ViewController.swift */; };
 		3D2F012D26E6751600F84191 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012C26E6751600F84191 /* ErrorHandler.swift */; };
 		3D2F013326E7228600F84191 /* DataTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F013226E7228600F84191 /* DataTaskManager.swift */; };
+		3D3AB3D626FBF4C700E75164 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3D20D3E426EA87E10079A30E /* Configuration.xcconfig */; };
 		3D5654C326E9A6E5006A054E /* CurrentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5654C226E9A6E5006A054E /* CurrentLocation.swift */; };
 		3D6F02F526D86C5000434EA6 /* URLManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6F02F426D86C5000434EA6 /* URLManager.swift */; };
 		3D6F02F726D86C6500434EA6 /* ForecastType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6F02F626D86C6500434EA6 /* ForecastType.swift */; };
@@ -148,8 +149,8 @@
 			children = (
 				C79C8CF325ADDDF200EEE3F1 /* AppDelegate.swift */,
 				3D1A5D0D26F5C58100901469 /* Namespace.swift */,
-				3D21D70826F2EE9B00C693B1 /* View */,
 				3D20D3E426EA87E10079A30E /* Configuration.xcconfig */,
+				3D21D70826F2EE9B00C693B1 /* View */,
 				3D5654BA26E99F2A006A054E /* Error */,
 				3D5654C126E9A465006A054E /* Contoller */,
 				3DCC8B8226D8C642002AB97C /* Types */,
@@ -220,6 +221,7 @@
 			files = (
 				C79C8D0025ADDDF300EEE3F1 /* LaunchScreen.storyboard in Resources */,
 				C79C8CFD25ADDDF300EEE3F1 /* Assets.xcassets in Resources */,
+				3D3AB3D626FBF4C700E75164 /* Configuration.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +389,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = WeatherForecast/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -406,6 +409,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = WeatherForecast/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
