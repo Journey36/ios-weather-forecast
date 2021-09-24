@@ -38,7 +38,7 @@ final class ForecastListCell: UITableViewCell {
         dump(data)
 
         dateTimeLabel.text = format(date: data.list[indexPath.row].timestamp)
-        averageTemperatureLabel.text = "\(data.list[indexPath.row].temperature.current)"
+        averageTemperatureLabel.text = "\(data.list[indexPath.row].temperature.current.tenthsRounded)\(Units.temperatureUnit) "
     }
 
     private func configureConstraints() {
