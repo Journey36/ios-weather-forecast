@@ -51,14 +51,14 @@ class CurrentWeatherCell: UITableViewCell {
 
     // MARK: - Methods
     // MARK: Custom
-    func configureCell(with data: CurrentWeather?) {
+    func configureCell(with data: CurrentWeather?, at address: String?) {
         guard let data: CurrentWeather = data else {
             return
         }
 
-        currentLocationLabel.text = data.city
-        temperatureMinAndMaxLabel.text = "최저 \(data.temperature.minimum) 최고 \(data.temperature.maximum)"
-        currentTemperatureLabel.text = "\(data.temperature.current)\(Units.temperatureUnit)"
+        currentLocationLabel.text = address
+        temperatureMinAndMaxLabel.text = "최저 \(data.temperature.minimum.tenthsRounded)\(Units.temperatureUnit) 최고 \(data.temperature.maximum.tenthsRounded)\(Units.temperatureUnit)"
+        currentTemperatureLabel.text = "\(data.temperature.current.tenthsRounded)\(Units.temperatureUnit)"
     }
 
     private func configureConstraints() {

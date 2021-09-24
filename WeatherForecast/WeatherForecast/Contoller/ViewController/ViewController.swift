@@ -15,6 +15,7 @@ final class ViewController: UIViewController {
     private var dataTaskManager: DataTaskManager = .init()
     private var currentWeatherData: CurrentWeather?
     private var forecastListData: ForecastList?
+    private var currentAddress: String?
     private lazy var forecastListView: ForecastListView = .init()
 
     // MARK: - Methods
@@ -27,6 +28,21 @@ final class ViewController: UIViewController {
         forecastListView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
         forecastListView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
         forecastListView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
+    }
+
+    private func convertAddress(from location: CLLocation) {
+        let geocoder: CLGeocoder = .init()
+        geocoder.reverseGeocodeLocation(location) { placemark, error in
+            if error != nil {
+                return
+            }
+
+            guard let placemark: CLPlacemark = placemark?.first, let administrativeArea: String = placemark.administrativeArea, let locality: String = placemark.locality else {
+                return
+            }
+
+            self.currentAddress = "\(administrativeArea) \(locality)"
+        }
     }
 
     // MARK: View Life Cycle
@@ -52,6 +68,7 @@ extension ViewController: CLLocationManagerDelegate {
         let latitude: String = .init(currentLocation.coordinate.latitude)
         let longitude: String = .init(currentLocation.coordinate.longitude)
         let currentCoordinate: CurrentLocation = (latitude, longitude)
+        convertAddress(from: currentLocation)
 
         dataTaskManager.fetchWeatherData(on: currentCoordinate, type: .current) { [weak self] (result: Result<CurrentWeather, ErrorHandler>) in
             switch result {
@@ -113,7 +130,7 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
         if indexPath.section == 0 {
             let currentWeatherCell: CurrentWeatherCell = .init()
 
-            currentWeatherCell.configureCell(with: currentWeatherData)
+            currentWeatherCell.configureCell(with: currentWeatherData, at: currentAddress)
             return currentWeatherCell
         }
 
