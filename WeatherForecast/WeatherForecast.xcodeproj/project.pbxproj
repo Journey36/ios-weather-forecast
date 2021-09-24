@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D05C3C326FE604300E9CD9A /* Double+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D05C3C226FE604300E9CD9A /* Double+.swift */; };
 		3D1A5D0E26F5C58100901469 /* Namespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A5D0D26F5C58100901469 /* Namespace.swift */; };
 		3D21D70A26F424A200C693B1 /* CurrentWeatherCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D21D70926F424A200C693B1 /* CurrentWeatherCell.swift */; };
 		3D2F012926E5F84E00F84191 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012826E5F84E00F84191 /* ViewController.swift */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3D05C3C226FE604300E9CD9A /* Double+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+.swift"; sourceTree = "<group>"; };
 		3D1A5D0D26F5C58100901469 /* Namespace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Namespace.swift; sourceTree = "<group>"; };
 		3D20D3E426EA87E10079A30E /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
 		3D21D70926F424A200C693B1 /* CurrentWeatherCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherCell.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 			children = (
 				3D6F02F626D86C6500434EA6 /* ForecastType.swift */,
 				3D5654C226E9A6E5006A054E /* CurrentLocation.swift */,
+				3D05C3C226FE604300E9CD9A /* Double+.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 				3DB2E86226D4CD2300013463 /* ForecastList.swift in Sources */,
 				3D2F013326E7228600F84191 /* DataTaskManager.swift in Sources */,
 				3D6F02F726D86C6500434EA6 /* ForecastType.swift in Sources */,
+				3D05C3C326FE604300E9CD9A /* Double+.swift in Sources */,
 				3D1A5D0E26F5C58100901469 /* Namespace.swift in Sources */,
 				3DB2E85A26D4C54500013463 /* CurrentWeather.swift in Sources */,
 				3DB2E86026D4CB4F00013463 /* ForecastWeather.swift in Sources */,
