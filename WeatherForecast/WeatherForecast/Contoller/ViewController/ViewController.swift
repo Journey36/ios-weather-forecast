@@ -37,11 +37,15 @@ final class ViewController: UIViewController {
                 return
             }
 
-            guard let placemark: CLPlacemark = placemark?.first, let administrativeArea: String = placemark.administrativeArea, let locality: String = placemark.locality else {
+            guard let placemark: CLPlacemark = placemark?.first, let administrativeArea: String = placemark.administrativeArea else {
                 return
             }
 
-            self.currentAddress = "\(administrativeArea) \(locality)"
+            if let locality: String = placemark.locality {
+                self.currentAddress = "\(administrativeArea) \(locality)"
+            } else {
+                self.currentAddress = "\(administrativeArea)"
+            }
         }
     }
 
@@ -51,7 +55,6 @@ final class ViewController: UIViewController {
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
         manager.requestWhenInUseAuthorization()
-        manager.requestLocation()
 
         forecastListView.delegate = self
         forecastListView.dataSource = self
@@ -78,7 +81,7 @@ extension ViewController: CLLocationManagerDelegate {
                         self?.forecastListView.reloadSections(IndexSet.init(integer: 0), with: .none)
                     }
                 case .failure:
-                    ErrorHandler.SystemError(type: .invalidData)
+                    print(ErrorHandler.SystemError(type: .invalidData))
             }
         }
 
@@ -90,13 +93,45 @@ extension ViewController: CLLocationManagerDelegate {
                         self?.forecastListView.reloadSections(IndexSet.init(integer: 1), with: .none)
                     }
                 case .failure:
-                    ErrorHandler.SystemError(type: .invalidData)
+                   print (ErrorHandler.SystemError(type: .invalidData))
             }
         }
     }
 
+    @available(iOS 14, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+            case .authorizedAlways, .authorizedWhenInUse:
+                manager.requestLocation()
+            case .denied, .notDetermined, .restricted:
+                // TODO: 설정창 열어줌
+                break
+            @unknown default:
+                break
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+            case .authorizedAlways, .authorizedWhenInUse:
+                manager.requestLocation()
+            case .denied, .notDetermined, .restricted:
+                // TODO: 설정창 열어줌
+                break
+            @unknown default:
+                break
+        }
+    }
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(#function)
+        switch error {
+            case CLError.denied:
+                // TODO: 설정 열어서 변경하도록 권유
+                print(ErrorHandler.UserError(type: .locationServiceRefusal))
+            default:
+                // TODO: 재시도 하거나 다른 기타 처리 필요
+                manager.stopUpdatingLocation()
+        }
     }
 }
 
@@ -119,11 +154,7 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
             return 1
         }
 
-        guard let forecastListData: ForecastList = forecastListData else {
-            return 0
-        }
-
-        return forecastListData.list.count
+        return forecastListData?.list.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
