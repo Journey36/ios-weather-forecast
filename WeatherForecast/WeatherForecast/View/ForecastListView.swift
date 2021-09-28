@@ -14,7 +14,7 @@ final class ForecastListView: UITableView {
         register(ForecastListCell.self, forCellReuseIdentifier: ForecastListCell.identifier)
         register(CurrentWeatherCell.self, forCellReuseIdentifier: CurrentWeatherCell.identifier)
     }
-
+    
     private func configureAttributes() {
         separatorInset = TableView.separateInset
         allowsSelection = false
@@ -26,7 +26,7 @@ final class ForecastListView: UITableView {
         configureAttributes()
         registerCells()
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         configureAttributes()

@@ -11,20 +11,20 @@ class CurrentWeatherCell: UITableViewCell {
     // MARK: - Properties
     // MARK: Type Properties
     static let identifier: String = .init(describing: CurrentWeatherCell.self)
-
+    
     // MARK: UI Components
     let weatherIconImageView: UIImageView = {
         let weatherIconImageView: UIImageView = .init()
         return weatherIconImageView
     }()
-
+    
     private let labelStackView: UIStackView = {
         let labelStackView: UIStackView = .init()
         labelStackView.axis = .vertical
         labelStackView.distribution = .equalSpacing
         return labelStackView
     }()
-
+    
     let currentLocationLabel: UILabel = {
         let currentLocationLabel: UILabel = .init()
         currentLocationLabel.text = "-"
@@ -32,7 +32,7 @@ class CurrentWeatherCell: UITableViewCell {
         currentLocationLabel.numberOfLines = 0
         return currentLocationLabel
     }()
-
+    
     let temperatureMinAndMaxLabel: UILabel = {
         let temperatureMinAndMaxLabel: UILabel = .init()
         temperatureMinAndMaxLabel.text = "-"
@@ -40,7 +40,7 @@ class CurrentWeatherCell: UITableViewCell {
         temperatureMinAndMaxLabel.numberOfLines = 0
         return temperatureMinAndMaxLabel
     }()
-
+    
     let currentTemperatureLabel: UILabel = {
         let currentTemperatureLabel: UILabel = .init()
         currentTemperatureLabel.text = "-"
@@ -48,32 +48,32 @@ class CurrentWeatherCell: UITableViewCell {
         currentTemperatureLabel.numberOfLines = 0
         return currentTemperatureLabel
     }()
-
+    
     // MARK: - Methods
     // MARK: Custom
     func configureCell(with data: CurrentWeather?, at address: String?) {
         guard let data: CurrentWeather = data else {
             return
         }
-
+        
         currentLocationLabel.text = address
         temperatureMinAndMaxLabel.text = "최저 \(data.temperature.minimum.tenthsRounded)\(Units.temperatureUnit) 최고 \(data.temperature.maximum.tenthsRounded)\(Units.temperatureUnit)"
         currentTemperatureLabel.text = "\(data.temperature.current.tenthsRounded)\(Units.temperatureUnit)"
     }
-
+    
     private func configureConstraints() {
         contentView.addSubview(weatherIconImageView)
         contentView.addSubview(labelStackView)
         labelStackView.addArrangedSubview(currentLocationLabel)
         labelStackView.addArrangedSubview(temperatureMinAndMaxLabel)
         labelStackView.addArrangedSubview(currentTemperatureLabel)
-
+        
         weatherIconImageView.translatesAutoresizingMaskIntoConstraints = false
         labelStackView.translatesAutoresizingMaskIntoConstraints = false
         currentLocationLabel.translatesAutoresizingMaskIntoConstraints = false
         temperatureMinAndMaxLabel.translatesAutoresizingMaskIntoConstraints = false
         currentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             // TODO: Img View
             // TODO: Fix StackView Constraints
@@ -81,16 +81,16 @@ class CurrentWeatherCell: UITableViewCell {
             labelStackView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
             labelStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 80)
         ])
-
+        
         labelStackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
-
+    
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configureConstraints()
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         configureConstraints()
