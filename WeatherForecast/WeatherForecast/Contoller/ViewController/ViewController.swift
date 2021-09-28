@@ -32,7 +32,8 @@ final class ViewController: UIViewController {
 
     private func convertAddress(from location: CLLocation) {
         let geocoder: CLGeocoder = .init()
-        geocoder.reverseGeocodeLocation(location) { placemark, error in
+        let locale: Locale = .init(identifier: "ko_KR")
+        geocoder.reverseGeocodeLocation(location, preferredLocale: locale) { placemark, error in
             if error != nil {
                 return
             }
@@ -49,6 +50,21 @@ final class ViewController: UIViewController {
         }
     }
 
+    func configureRefreshControl() {
+        let refresh: UIRefreshControl = .init()
+        refresh.addTarget(self, action: #selector(updateUI(_:)), for: .valueChanged)
+        forecastListView.refreshControl = refresh
+    }
+
+    @objc func updateUI(_ refreshCotnrol: UIRefreshControl) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.manager.startUpdatingLocation()
+            self.forecastListView.reloadData()
+            self.manager.stopUpdatingLocation()
+            refreshCotnrol.endRefreshing()
+        }
+    }
+
     // MARK: View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,6 +75,7 @@ final class ViewController: UIViewController {
         forecastListView.delegate = self
         forecastListView.dataSource = self
         configureConstraints()
+        configureRefreshControl()
     }
 }
 
