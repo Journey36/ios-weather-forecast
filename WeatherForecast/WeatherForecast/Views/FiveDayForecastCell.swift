@@ -51,17 +51,17 @@ class FiveDayForecastCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        registerViews()
+        addSubviews()
         setUpAutoLayout()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        registerViews()
+        addSubviews()
         setUpAutoLayout()
     }
             
-    // MARK: - Public Functions
+    // MARK: - Public Methods
     
     func configure(dateAndTimeText: String? = nil, temperatureText: String? = nil, iconImage: UIImage? = nil) {
         if let _ = dateAndTimeText {
@@ -75,9 +75,9 @@ class FiveDayForecastCell: UITableViewCell {
         }
     }
     
-    // MARK: - Private Functions
+    // MARK: - Private Methods
     
-    private func registerViews() {
+    private func addSubviews() {
         contentView.addSubview(dateLabel)
         contentView.addSubview(temperatureLabel)
         contentView.addSubview(iconImageView)
@@ -97,7 +97,7 @@ class FiveDayForecastCell: UITableViewCell {
 
                 
         // 수직 레이아웃
-        dateLabel.firstBaselineAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
+        dateLabel.firstBaselineAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: contentView.readableContentGuide.topAnchor, multiplier: 1).isActive = true
         
         temperatureLabel.firstBaselineAnchor.constraint(equalTo: dateLabel.firstBaselineAnchor).isActive = true
         temperatureLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -107,7 +107,7 @@ class FiveDayForecastCell: UITableViewCell {
         iconImageView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor).isActive = true
         iconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor, multiplier: 1.4).isActive = true
     
-        contentView.layoutMarginsGuide.bottomAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: dateLabel.lastBaselineAnchor, multiplier: 1).isActive = true
+        contentView.readableContentGuide.bottomAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: dateLabel.lastBaselineAnchor, multiplier: 1).isActive = true
         contentView.bottomAnchor.constraint(greaterThanOrEqualTo: iconImageView.bottomAnchor).isActive = true
     }
 }
