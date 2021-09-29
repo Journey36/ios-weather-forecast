@@ -254,7 +254,7 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 
 
-## 스스로 크기 조절하는 테이블 뷰
+## 오토 레이아웃
 
 ### equalToSystemSpacingBelow는 무엇을 기준으로 값 변경을 주는가?
 
@@ -267,13 +267,16 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 - 결론: 폰트 사이즈에 따라 결정됨
     - constraint(equalToSystemSpacingBelow:multiplier:) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
 
-### Readable Content Guides
+### Readable Content Guides로 아이패드까지 지원해 보기
 
-아이폰은 layout margin guide와 같지만 아이패드에선 차이남
-
-[Auto Layout Guide](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
-
-> NOTE  
->  
+> [Auto Layout Guide - Working with Constraints in Interface Builder - Readable Content Guides](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
+>
 > For most devices there is little or no difference between the readable content guides and the layout margins. The difference becomes obvious only when working on an iPad in landscape orientation.
 
+- 사용자가 텍스트를 읽을 때 머리를 움직일 필요없도록 충분히 좁게하기 위함
+- most devicews 표현이 애매해서 테스트 해본 결과, 아이폰에서는 layoutMarginGuide와 같고, 아이패드에선 다름
+- 시스템의 다이나믹 타입에따라 크기가 달라짐. 사용자가 더 큰 폰트를 선택하면 시스템은 더 넓은 가이드를 생성한다. 폰트 크기가 커지면 사용자는 기기를 더 멀리서 볼테니 이 가이드도 커진다고 되어있음
+
+> [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
+>
+> Apply readability margins when displaying text on larger devices. These margins keep text lines short enough to ensure a comfortable reading experience.
