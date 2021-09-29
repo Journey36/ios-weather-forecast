@@ -30,7 +30,7 @@ class FiveDayForecastCell: UITableViewCell {
     
     private let dateLabel: UILabel = {
         let label = makeLabel()
-        label.font = UIFont.preferredFont(forTextStyle: .title3)
+        label.font = UIFont.preferredFont(forTextStyle: .body)
         label.numberOfLines = 0
         label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
@@ -94,7 +94,7 @@ class FiveDayForecastCell: UITableViewCell {
         iconImageView.leadingAnchor.constraint(equalToSystemSpacingAfter: temperatureLabel.trailingAnchor, multiplier: 1).isActive = true
         iconImageView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor).isActive = true
         iconImageView.widthAnchor.constraint(equalTo: iconImageView.heightAnchor).isActive = true
-
+        iconImageView.widthAnchor.constraint(equalTo: contentView.readableContentGuide.widthAnchor, multiplier: 0.12).isActive = true
                 
         // 수직 레이아웃
         dateLabel.firstBaselineAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: contentView.readableContentGuide.topAnchor, multiplier: 1).isActive = true
@@ -105,7 +105,6 @@ class FiveDayForecastCell: UITableViewCell {
         
         iconImageView.centerYAnchor.constraint(equalTo: temperatureLabel.centerYAnchor).isActive = true
         iconImageView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor).isActive = true
-        iconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor, multiplier: 1.4).isActive = true
     
         contentView.readableContentGuide.bottomAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: dateLabel.lastBaselineAnchor, multiplier: 1).isActive = true
         contentView.bottomAnchor.constraint(greaterThanOrEqualTo: iconImageView.bottomAnchor).isActive = true
