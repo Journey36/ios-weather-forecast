@@ -203,7 +203,7 @@ extension FiveDayForecastData.Item {
     static private let DateAndTimeFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "MM/dd(E) HH시"
+        dateFormatter.dateFormat = "MM/dd (E) HH시"
         return dateFormatter
     }()
     

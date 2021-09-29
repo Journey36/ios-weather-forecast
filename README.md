@@ -228,6 +228,14 @@ OpenWeatehrAPIList
     - 로딩 애니메이션 보이는 방법?
 
 
+
+
+
+### View 디버깅시 뷰 객체 찾기
+
+http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
+
+
 [👆목차로 가기](#목차)
 <br><br><br>
 
@@ -243,3 +251,29 @@ OpenWeatehrAPIList
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
+
+
+
+## 스스로 크기 조절하는 테이블 뷰
+
+### equalToSystemSpacingBelow는 무엇을 기준으로 값 변경을 주는가?
+
+- iPhone 11 / Font Size 4
+    - dateLabel.firstBaseline = Layout Margin.top + 28
+    - Layout Margins.bottom = label.lastBaseline + 14
+- iPhone 11 / Font Size 10
+    - dateLabel.firstBaseline = Layout Margin.top + 59.5
+    - Layout Margins.bottom = label.lastBaseline + 29.5
+- 결론: 폰트 사이즈에 따라 결정됨
+    - constraint(equalToSystemSpacingBelow:multiplier:) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
+
+### Readable Content Guides
+
+아이폰은 layout margin guide와 같지만 아이패드에선 차이남
+
+[Auto Layout Guide](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
+
+> NOTE  
+>  
+> For most devices there is little or no difference between the readable content guides and the layout margins. The difference becomes obvious only when working on an iPad in landscape orientation.
+

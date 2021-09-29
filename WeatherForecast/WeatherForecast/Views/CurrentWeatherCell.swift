@@ -12,39 +12,42 @@ class CurrentWeatherCell: UITableViewCell {
         return "\(self)"
     }
     
-    // MARK: - Properties
+    private static func makeLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
+        return label
+    }
     
-    private let weatehrIconImageView: UIImageView = {
+    private static func makeImageView() -> UIImageView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         return imageView
-    }()
+    }
+    
+    // MARK: - Properties
+    
+    private let weatehrIconImageView = makeImageView()
     
     private let addressLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
+        let label = makeLabel()
         label.font = UIFont.preferredFont(forTextStyle: .headline)
+        label.numberOfLines = 0
         return label
     }()
     
     private let minAndMaxTemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 0
+        let label = makeLabel()
         label.font = UIFont.preferredFont(forTextStyle: .headline)
+        label.numberOfLines = 0
         return label
     }()
     
     private let currentTemperatureLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.numberOfLines = 1
+        let label = makeLabel()
         label.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        label.numberOfLines = 1
         return label
     }()
     
@@ -53,17 +56,33 @@ class CurrentWeatherCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addSubviews()
-        setUpConstraints()
+        setUpAutoLayout()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         addSubviews()
-        setUpConstraints()
+        setUpAutoLayout()
     }
     
+    // MARK: - Public Methods
     
-    // MARK: - Methods
+    func configure(addressText: String? = nil, minAndMaxTemperatureText: String? = nil, currentTemperatureText: String? = nil, iconImage: UIImage? = nil) {
+        if let _ = addressText {
+            addressLabel.text = addressText
+        }
+        if let _ = minAndMaxTemperatureText {
+            minAndMaxTemperatureLabel.text = minAndMaxTemperatureText
+        }
+        if let _ = currentTemperatureText {
+            currentTemperatureLabel.text = currentTemperatureText
+        }
+        if let _ = iconImage {
+            weatehrIconImageView.image = iconImage
+        }
+    }
+    
+    // MARK: - Private Methods
     
     private func addSubviews() {
         contentView.addSubview(weatehrIconImageView)
@@ -72,43 +91,34 @@ class CurrentWeatherCell: UITableViewCell {
         contentView.addSubview(currentTemperatureLabel)
     }
     
-    private func setUpConstraints() {
-        NSLayoutConstraint.activate([
-            // 수평 레이아웃
-            weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            weatehrIconImageView.widthAnchor.constraint(equalToConstant: 100),
-            weatehrIconImageView.widthAnchor.constraint(equalTo: weatehrIconImageView.heightAnchor),
-            
-            addressLabel.leadingAnchor.constraint(equalTo: weatehrIconImageView.trailingAnchor),
-            addressLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
-            
-            minAndMaxTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor),
-            minAndMaxTemperatureLabel.trailingAnchor.constraint(equalTo: addressLabel.trailingAnchor),
-            
-            currentTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor),
-            currentTemperatureLabel.trailingAnchor.constraint(equalTo: addressLabel.trailingAnchor),
-            
-            // 수직 레이아웃
-            weatehrIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            weatehrIconImageView.heightAnchor.constraint(equalTo: currentTemperatureLabel.heightAnchor, multiplier: 1.0),
-            
-            addressLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1),
-            
-            minAndMaxTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: addressLabel.lastBaselineAnchor, multiplier: 1.5),
-            
-            currentTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: minAndMaxTemperatureLabel.lastBaselineAnchor, multiplier: 1.5),
-            
-            contentView.layoutMarginsGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: currentTemperatureLabel.lastBaselineAnchor, multiplier: 1)
-        ])
+    private func setUpAutoLayout() {
+        // 수평 레이아웃
+        weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor).isActive = true
+        weatehrIconImageView.widthAnchor.constraint(equalTo: weatehrIconImageView.heightAnchor).isActive = true
+        weatehrIconImageView.widthAnchor.constraint(equalTo: contentView.readableContentGuide.widthAnchor, multiplier: 0.3).isActive = true
+        
+        addressLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: weatehrIconImageView.trailingAnchor, multiplier: 1).isActive = true
+        addressLabel.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor).isActive = true
+        
+        minAndMaxTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor).isActive = true
+        minAndMaxTemperatureLabel.trailingAnchor.constraint(equalTo: addressLabel.trailingAnchor).isActive = true
+        
+        currentTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor).isActive = true
+        currentTemperatureLabel.trailingAnchor.constraint(equalTo: addressLabel.trailingAnchor).isActive = true
+        
+        
+        
+        // 수직 레이아웃
+        weatehrIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        
+        addressLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
+        
+        minAndMaxTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: addressLabel.lastBaselineAnchor, multiplier: 1.2).isActive = true
+        
+        currentTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: minAndMaxTemperatureLabel.lastBaselineAnchor, multiplier: 1.4).isActive = true
+        
+        contentView.layoutMarginsGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: currentTemperatureLabel.lastBaselineAnchor, multiplier: 1).isActive = true
     }
     
-    func configure(addressText: String, minAndMaxTemperatureText: String, currentTemperatureText: String) {
-        addressLabel.text = addressText
-        minAndMaxTemperatureLabel.text = minAndMaxTemperatureText
-        currentTemperatureLabel.text = currentTemperatureText
-    }
     
-    func configure(iconImage: UIImage) {
-        weatehrIconImageView.image = iconImage
-    }
 }
