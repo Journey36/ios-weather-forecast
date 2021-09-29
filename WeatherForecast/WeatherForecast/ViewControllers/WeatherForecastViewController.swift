@@ -17,6 +17,7 @@ class WeatherForecastViewController: UITableViewController {
         super.viewDidLoad()
         configureTableViewAndDataSource()
         configureRefreshControl()
+        tableView.separatorInsetReference = .fromAutomaticInsets
     }
     
     // MARK: - Methods

@@ -12,86 +12,102 @@ class FiveDayForecastCell: UITableViewCell {
         return "\(self)"
     }
     
-    // MARK: - Properties
-    
-    let dateLabel = makeLabel()
-    let temperatureLabel = makeLabel()
-    let iconImageView = UIImageView()
-  
     private static func makeLabel() -> UILabel {
         let label = UILabel()
-        
-        /*
-         setUpLabelsAndConstraints()의 auto adjusting constraints와 충돌할 수 있으므로 false로 해준다.
-         이것은 레이블이 프로그래밍으로 생성됐을 때만 필요하다.
-        */
         label.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 라인의 최대 리미트를 해제
-        //label.numberOfLines = 0
+        label.adjustsFontForContentSizeCategory = true
         return label
     }
     
+    private static func makeImageView() -> UIImageView {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }
+    
+    // MARK: - Properties
+    
+    private let dateLabel: UILabel = {
+        let label = makeLabel()
+        label.font = UIFont.preferredFont(forTextStyle: .title3)
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+    
+    private let temperatureLabel: UILabel = {
+        let label = makeLabel()
+        label.font = UIFont.preferredFont(forTextStyle: .headline)
+        label.numberOfLines = 1
+        label.textAlignment = .right
+        return label
+    }()
+    
+    private let iconImageView = makeImageView()
+  
     // MARK: - Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setUpLabelsAndConstraints()
+        registerViews()
+        setUpAutoLayout()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setUpLabelsAndConstraints()
+        registerViews()
+        setUpAutoLayout()
+    }
+            
+    // MARK: - Public Functions
+    
+    func configure(dateAndTimeText: String? = nil, temperatureText: String? = nil, iconImage: UIImage? = nil) {
+        if let _ = dateAndTimeText {
+            dateLabel.text = dateAndTimeText
+        }
+        if let _ = temperatureText {
+            temperatureLabel.text = temperatureText
+        }
+        if let _ = iconImage {
+            iconImageView.image = iconImage
+        }
     }
     
-    // MARK: -
-
-    private func setUpLabelsAndConstraints() {
-        dateLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
-        dateLabel.adjustsFontForContentSizeCategory = true
-        dateLabel.numberOfLines = 0
-        
-        temperatureLabel.font = UIFont.preferredFont(forTextStyle: .headline)
-        temperatureLabel.adjustsFontForContentSizeCategory = true
-        temperatureLabel.numberOfLines = 1
-        
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        
+    // MARK: - Private Functions
+    
+    private func registerViews() {
         contentView.addSubview(dateLabel)
         contentView.addSubview(temperatureLabel)
         contentView.addSubview(iconImageView)
+    }
+
+    private func setUpAutoLayout() {
+        // 수평 레이아웃
+        dateLabel.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor).isActive = true
         
-        // constraint 설정 (뷰에 추가한 후에 설정해야 함)
+        temperatureLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: dateLabel.trailingAnchor, multiplier: 1).isActive = true
+        temperatureLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        temperatureLabel.setContentHuggingPriority(.required, for: .horizontal)
         
-        // 수평
-        dateLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor).isActive = true
-        dateLabel.trailingAnchor.constraint(lessThanOrEqualTo: temperatureLabel.leadingAnchor).isActive = true
+        iconImageView.leadingAnchor.constraint(equalToSystemSpacingAfter: temperatureLabel.trailingAnchor, multiplier: 1).isActive = true
+        iconImageView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor).isActive = true
+        iconImageView.widthAnchor.constraint(equalTo: iconImageView.heightAnchor).isActive = true
+
+                
+        // 수직 레이아웃
+        dateLabel.firstBaselineAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
         
-        temperatureLabel.textAlignment = .right
-        temperatureLabel.trailingAnchor.constraint(equalTo: iconImageView.leadingAnchor).isActive = true
-        
-        iconImageView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor).isActive = true
-        iconImageView.heightAnchor.constraint(equalTo: iconImageView.widthAnchor).isActive = true
-        iconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor, multiplier: 2.0).isActive = true
-        
-        // 수직
-        dateLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
-        contentView.layoutMarginsGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: dateLabel.lastBaselineAnchor, multiplier: 1).isActive = true
-    
         temperatureLabel.firstBaselineAnchor.constraint(equalTo: dateLabel.firstBaselineAnchor).isActive = true
-        temperatureLabel.lastBaselineAnchor.constraint(equalTo: dateLabel.lastBaselineAnchor).isActive = true
+        temperatureLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        temperatureLabel.setContentHuggingPriority(.required, for: .vertical)
         
-        iconImageView.centerYAnchor.constraint(equalTo: dateLabel.centerYAnchor).isActive = true
-        iconImageView.contentMode = .scaleAspectFit
-        
-    }
+        iconImageView.centerYAnchor.constraint(equalTo: temperatureLabel.centerYAnchor).isActive = true
+        iconImageView.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor).isActive = true
+        iconImageView.heightAnchor.constraint(equalTo: temperatureLabel.heightAnchor, multiplier: 1.4).isActive = true
     
-    func configure(dateAndTimeText: String, temperatureText: String) {
-        dateLabel.text = dateAndTimeText
-        temperatureLabel.text = temperatureText
-    }
-    
-    func configure(iconImage: UIImage) {
-        iconImageView.image = iconImage
+        contentView.layoutMarginsGuide.bottomAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: dateLabel.lastBaselineAnchor, multiplier: 1).isActive = true
+        contentView.bottomAnchor.constraint(greaterThanOrEqualTo: iconImageView.bottomAnchor).isActive = true
     }
 }

@@ -75,12 +75,14 @@ class CurrentWeatherCell: UITableViewCell {
     private func setUpConstraints() {
         NSLayoutConstraint.activate([
             // 수평 레이아웃
-            weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+//            weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
             weatehrIconImageView.widthAnchor.constraint(equalToConstant: 100),
             weatehrIconImageView.widthAnchor.constraint(equalTo: weatehrIconImageView.heightAnchor),
             
-            addressLabel.leadingAnchor.constraint(equalTo: weatehrIconImageView.trailingAnchor),
-            addressLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            addressLabel.leadingAnchor.constraint(equalTo: weatehrIconImageView.trailingAnchor, constant: 8),
+//            addressLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            addressLabel.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             
             minAndMaxTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor),
             minAndMaxTemperatureLabel.trailingAnchor.constraint(equalTo: addressLabel.trailingAnchor),
@@ -94,9 +96,9 @@ class CurrentWeatherCell: UITableViewCell {
             
             addressLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1),
             
-            minAndMaxTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: addressLabel.lastBaselineAnchor, multiplier: 1.5),
+            minAndMaxTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: addressLabel.lastBaselineAnchor, multiplier: 1.2),
             
-            currentTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: minAndMaxTemperatureLabel.lastBaselineAnchor, multiplier: 1.5),
+            currentTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: minAndMaxTemperatureLabel.lastBaselineAnchor, multiplier: 1.4),
             
             contentView.layoutMarginsGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: currentTemperatureLabel.lastBaselineAnchor, multiplier: 1)
         ])

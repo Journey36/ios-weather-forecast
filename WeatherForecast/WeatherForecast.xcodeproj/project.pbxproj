@@ -193,11 +193,11 @@
 			isa = PBXGroup;
 			children = (
 				5608C2A226EB528700DC2C2E /* Views */,
-				5608C29A26E6266400DC2C2E /* Resources */,
 				5608C29926E6264E00DC2C2E /* ViewControllers */,
 				5608C29626E5FE0D00DC2C2E /* Managers */,
 				56BC489125BC8C6000EE4E99 /* Networks */,
 				56A9971E25B5E160001D3DE8 /* Models */,
+				5608C29A26E6266400DC2C2E /* Resources */,
 				C79C8CF325ADDDF200EEE3F1 /* AppDelegate.swift */,
 				C79C8CF525ADDDF200EEE3F1 /* SceneDelegate.swift */,
 				C79C8D0125ADDDF300EEE3F1 /* Info.plist */,
@@ -546,7 +546,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.yagom.WeatherForecast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -565,7 +565,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.yagom.WeatherForecast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
