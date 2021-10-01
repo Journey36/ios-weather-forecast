@@ -34,6 +34,7 @@ class FiveDayForecastCell: UITableViewCell {
         label.numberOfLines = 0
         label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
+//        label.textColor = .systemBlue
         return label
     }()
     
@@ -51,14 +52,13 @@ class FiveDayForecastCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubviews()
-        setUpAutoLayout()
+        setUp()
+        
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        addSubviews()
-        setUpAutoLayout()
+        setUp()
     }
             
     // MARK: - Public Methods
@@ -76,6 +76,12 @@ class FiveDayForecastCell: UITableViewCell {
     }
     
     // MARK: - Private Methods
+    private func setUp() {
+        backgroundColor = .clear
+        
+        addSubviews()
+        setUpAutoLayout()
+    }
     
     private func addSubviews() {
         contentView.addSubview(dateLabel)

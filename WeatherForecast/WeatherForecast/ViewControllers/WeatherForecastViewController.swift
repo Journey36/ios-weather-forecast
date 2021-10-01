@@ -11,17 +11,25 @@ class WeatherForecastViewController: UITableViewController {
     // MARK: - Properties
     private var dataSource: WeatherForecastDataSource?
     private var currentWeather: CurrentWeatherData!
+    private let backgroundImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "Desert_Tree")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableViewAndDataSource()
         configureRefreshControl()
-        tableView.separatorInsetReference = .fromAutomaticInsets
     }
     
     // MARK: - Methods
     private func configureTableViewAndDataSource() {
+        tableView.backgroundView = backgroundImageView
+        tableView.allowsSelection = false
+        
         dataSource = WeatherForecastDataSource(currentWeatherUpdatedAction: {
             DispatchQueue.main.async {
                 self.tableView.reloadSections(IndexSet(0...0), with: .none)
@@ -34,9 +42,7 @@ class WeatherForecastViewController: UITableViewController {
             }
         })
         dataSource?.registerCells(with: tableView)
-        
         tableView.dataSource = dataSource
-        tableView.allowsSelection = false
     }
     
     private func configureRefreshControl() {
