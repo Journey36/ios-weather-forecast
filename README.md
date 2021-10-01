@@ -280,3 +280,32 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 > [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
 >
 > Apply readability margins when displaying text on larger devices. These margins keep text lines short enough to ensure a comfortable reading experience.
+
+
+
+## 다크모드 지원
+
+- [Supporting Dark Mode in Your Interface](https://developer.apple.com/documentation/uikit/appearance_customization/supporting_dark_mode_in_your_interface)
+
+### H.I.G - Visual Design
+
+[Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
+- 다크모드는 iOS 13부터 지원
+- 설정의 다크모드를 선택하는 것으로 지원하기
+- 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의경우 앱이 깨질 수 있음
+- 라이트모드 다크모드 둘 다 테스트 해볼 것
+
+[Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
+- 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음
+- UIColor 시스템 컬러 사용
+
+### [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances)
+
+- different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
+- 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
+
+### 배경 이미지
+
+- 뷰 컨트롤러의 view에 imageView로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+    - bringSubviewToFront/sendSubviewToBack 메서드도 동일
+    - backgroundImageView를 tableView.backgroundView로 set해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토레이아웃도 필요 없다)

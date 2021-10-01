@@ -55,14 +55,12 @@ class CurrentWeatherCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubviews()
-        setUpAutoLayout()
+        setUp()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        addSubviews()
-        setUpAutoLayout()
+        setUp()
     }
     
     // MARK: - Public Methods
@@ -83,6 +81,12 @@ class CurrentWeatherCell: UITableViewCell {
     }
     
     // MARK: - Private Methods
+    private func setUp() {
+        backgroundColor = .clear
+        
+        addSubviews()
+        setUpAutoLayout()
+    }
     
     private func addSubviews() {
         contentView.addSubview(weatehrIconImageView)
