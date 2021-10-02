@@ -25,6 +25,7 @@ final class ForecastListCell: UITableViewCell {
     
     let weatherIconImageView: UIImageView = {
         let weatherIconImageView: UIImageView = .init()
+        weatherIconImageView.contentMode = .scaleAspectFit
         return weatherIconImageView
     }()
     
@@ -36,7 +37,7 @@ final class ForecastListCell: UITableViewCell {
         }
         
         dateTimeLabel.text = format(date: data.list[indexPath.row].timestamp)
-        averageTemperatureLabel.text = "\(data.list[indexPath.row].temperature.current.tenthsRounded)\(Units.temperatureUnit) "
+        averageTemperatureLabel.text = "\(data.list[indexPath.row].temperature.current.tenthsRounded)\(Units.temperatureUnit)"
     }
     
     private func configureConstraints() {
@@ -51,11 +52,15 @@ final class ForecastListCell: UITableViewCell {
         NSLayoutConstraint.activate([
             dateTimeLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             dateTimeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            dateTimeLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
+            dateTimeLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.5),
             
             averageTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            averageTemperatureLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            averageTemperatureLabel.heightAnchor.constraint(equalTo: dateTimeLabel.heightAnchor, multiplier: 0.7)
+            averageTemperatureLabel.trailingAnchor.constraint(equalTo: weatherIconImageView.leadingAnchor, constant: -10),
+            averageTemperatureLabel.heightAnchor.constraint(equalTo: dateTimeLabel.heightAnchor),
+
+            weatherIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            weatherIconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            weatherIconImageView.heightAnchor.constraint(equalTo: averageTemperatureLabel.heightAnchor)
         ])
         
         dateTimeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
