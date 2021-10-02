@@ -158,27 +158,31 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
         return TableView.estimateRowHeight(of: indexPath.section)
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return ForecastType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        }
-        
-        return forecastListData?.list.count ?? 0
+        return section == 0 ? 1 : forecastListData?.list.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let currentWeatherCell: CurrentWeatherCell = .init()
-            
             currentWeatherCell.configureCell(with: currentWeatherData, at: currentAddress)
+            if let weatherIcon: [Weather] = currentWeatherData?.weather, let imageID: String = weatherIcon.first?.icon {
+                dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorHandler>) in
+                    switch result {
+                    case .success(let data):
+                        DispatchQueue.main.async {
+                            currentWeatherCell.weatherIconImageView.image = data
+                        }
+                    case .failure:
+                        print(ErrorHandler.SystemError(type: .invalidData))
+                    }
+                }
+            }
+
             return currentWeatherCell
         }
         
@@ -187,6 +191,18 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
         }
         
         forecastListCell.configureCell(with: forecastListData, indexPath: indexPath)
+        if let weatherIcons: [Weather] = forecastListData?.list[indexPath.row].weather, let imageID: String = weatherIcons.first?.icon {
+            dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorHandler>) in
+                switch result {
+                case .success(let data):
+                    DispatchQueue.main.async {
+                        forecastListCell.weatherIconImageView.image = data
+                    }
+                case .failure:
+                    print(ErrorHandler.SystemError(type: .invalidData))
+                }
+            }
+        }
         return forecastListCell
     }
 }
