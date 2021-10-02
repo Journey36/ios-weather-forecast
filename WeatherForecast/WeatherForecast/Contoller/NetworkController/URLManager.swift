@@ -8,7 +8,8 @@
 import Foundation
 
 enum URLManager {
-    private static let baseURL: String = "http://api.openweathermap.org/data/2.5/"
+    private static let baseAPIURL: String = "http://api.openweathermap.org/data/2.5/"
+    private static let baseIconURL: String = "https://openweathermap.org/img/w/"
     private static let appID = Bundle.main.infoDictionary?["API_KEY"] as? String
     private static let units: String = "metric"
     
@@ -17,7 +18,7 @@ enum URLManager {
             throw ErrorHandler.SystemError(type: .invalidURL)
         }
         
-        var components: URLComponents? = .init(string: baseURL)
+        var components: URLComponents? = .init(string: baseAPIURL)
         components?.path += type.rawValue
         
         let latitude: URLQueryItem = .init(name: "lat", value: coordinates.latitude)
@@ -25,6 +26,13 @@ enum URLManager {
         let units: URLQueryItem = .init(name: "units", value: units)
         let appID: URLQueryItem = .init(name: "appid", value: unwrappedAppID)
         components?.queryItems = [latitude, longitude, units, appID]
+        return components?.url
+    }
+
+    static func setImageURL(of imageID: String) throws -> URL? {
+        var components: URLComponents? = .init(string: baseIconURL)
+        components?.path += "\(imageID).png"
+
         return components?.url
     }
 }
