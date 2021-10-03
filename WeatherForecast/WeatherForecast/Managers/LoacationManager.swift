@@ -9,13 +9,20 @@ import CoreLocation
 
 class LocationManager: CLLocationManager {
     typealias LocationUpdatedAction = (CLLocation) -> Void
-    
+    typealias LocationDeniedAction = () -> Void
+    typealias LocationFailedAction = (String) -> Void
     
     private var locationUpdatedAction: LocationUpdatedAction?
+    private var locationDeniedAction: LocationDeniedAction?
+    private var locationFailedAction: LocationFailedAction?
     private var isLocationRequested = false
     
-    init(locationUpdatedAction: @escaping LocationUpdatedAction) {
+    init(locationUpdatedAction: @escaping LocationUpdatedAction,
+         locationDeniedAction: @escaping LocationDeniedAction,
+         locationFailedAction: @escaping LocationFailedAction) {
         self.locationUpdatedAction = locationUpdatedAction
+        self.locationDeniedAction = locationDeniedAction
+        self.locationFailedAction = locationFailedAction
         super.init()
         
         delegate = self
@@ -50,11 +57,32 @@ extension LocationManager: CLLocationManagerDelegate {
         }
         
         stopUpdatingLocation()
+        
         switch error.code {
         case .denied:
-            print("Location updates are not authorized.")
+            print("didFailWithError - denied")
+            locationDeniedAction?()
+        case .locationUnknown:
+            print("didFailWithError - locationUnknown")
+            locationFailedAction?("현재 위치를 찾을 수 없습니다. 잠시 후 다시 시도해주세요.")
         default:
-            print("\(error.code): \(error.localizedDescription)")
+            print("didFailWithError - \(error.localizedDescription))")
+            locationFailedAction?(error.localizedDescription)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .authorizedWhenInUse:
+            print("didChangeAuthorization - authorizedWhenInUse")
+            requestLocation()
+        case .denied:
+            print("didChangeAuthorization - denied")
+            locationDeniedAction?()
+        case .notDetermined:
+            print("didChangeAuthorization - notDetermined")
+        default:
+            print("didChangeAuthorization - \(status.rawValue)")
         }
     }
 }
