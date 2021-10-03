@@ -26,14 +26,14 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-    private lazy var locationManager: LocationManager = {
-        let locationManager = LocationManager(locationUpdatedAction: { location in
-            self.requestAllData(by: location)
-        })
-        locationManager.requestAuthorization()
-        
-        return locationManager
-    }()
+//    private lazy var locationManager: LocationManager = {
+//        let locationManager = LocationManager(locationUpdatedAction: { location in
+//            self.requestAllData(by: location)
+//        })
+//        locationManager.requestAuthorization()
+//
+//        return locationManager
+//    }()
     
     private var currentAddress: Address?
     private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
@@ -51,8 +51,6 @@ class WeatherForecastDataSource: NSObject {
         self.currentWeatherUpdatedAction = currentWeatherUpdatedAction
         self.fiveDayForecastUpdatedAction = fiveDayForecastUpdatedAction
         super.init()
-        
-        locationManager.requestLocation()
     }
     
     
@@ -131,13 +129,13 @@ class WeatherForecastDataSource: NSObject {
         fiveDayforecastItems.removeAll()
     }
     
-    func refresh() {
-        locationManager.requestLocation()
-    }
+//    func refresh() {
+//        locationManager.requestLocation()
+//    }
 }
 
 extension WeatherForecastDataSource {
-    private func requestAllData(by location: CLLocation) {
+    func requestAllData(by location: CLLocation) {
         self.requestCurrentAddress(by: location)
         self.requestCurrentWeatehrData(by: location.coordinate)
         self.requestFiveDayForecastData(by: location.coordinate)
