@@ -1,23 +1,55 @@
-# iOS 커리어 스타터 캠프 - 날씨정보 프로젝트 저장소
+# 날씨 정보 앱
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
+| 📺 데모 | 💡 개요 |
+| ------- | ------- |
+| <img src = ./Images/Demo-L.gif width="300px"> | 🚀 현재 위치의 날씨와 3시간 단위의 5일 예보 <br> 🧑🏻‍💻 개인 프로젝트 <br> 🗓 진행 기간 <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 기간: 2021.01.18 ~ 24 (1주) <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 수료 후: 2021.09 ~ 리팩토링 진행 <br> ⚙️ 기능 <br> &nbsp;&nbsp;&nbsp;&nbsp; `현재 위치의 날씨 정보 표시` <br> &nbsp;&nbsp;&nbsp;&nbsp; `당겨서 새로고침` <br> &nbsp;&nbsp;&nbsp;&nbsp; `다크모드 지원` <br>  📝 학습 키워드 <br> &nbsp;&nbsp;&nbsp;&nbsp; `CoreLocation`, `URLSession`, `RefreshControl` |
+
+<br><br><br>
+
+
 
 ## 목차
 
-1. [프로젝트](#프로젝트)
+1. 프로젝트
     - [기능](#기능)
     - [그라운드 룰](#Jacob의-그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-2. [학습 내용](#학습-내용)
-3. [리팩토링](#리팩토링)
-    - [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
-    - [API 데이터 요청](#-API-데이터-요청)
-4. 고민한 내용
-5. 트러블 슈팅
+2. [다크 모드 지원](#다크-모드-지원)
+3. [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
 
-## 프로젝트
+### 정리 예정
 
-### 기능
+- [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
+- [API 데이터 요청](#API-데이터-요청)
+- [트러블 슈팅](#트러블-슈팅)
+- [오토 레이아웃](#오토-레이아웃)
+- 정리 목록
+    - MVC 패턴 준수
+    - 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
+    - API 리퀘스트 객체의 재사용성
+    - 다이나믹 폰트
+    - 앱 실행시 데이터 받기 전까지 테이블 뷰 비어보임
+        - 이전의 마지막 데이터 보이는 방법?
+        - 로딩 애니메이션 보이는 방법?
 
-### Jacob의 그라운드 룰
+<br><br><br>
+
+
+
+## 기능
+
+| 현재 위치의 날씨 정보 | 당겨서 새로고침 | 다크모드 지원 |
+| :-: | :-: | :-: |
+| ![](./Images/Demo.gif) | ![](./Images/Demo-Refresh.gif) | ![](./Images/DarkMode-Demo.gif) |
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 그라운드 룰
 
 혼자 진행하는 프로젝트지만 그라운드 룰을 지키려고 노력했다.
 
@@ -28,7 +60,7 @@
     - 기능요구서 내용을 충실하게 먼저 완료하기
     - 이후 시간이 남으면 추가 구현
 
-#### 프로젝트 규칙
+### 프로젝트 규칙
 
 - 코딩 컨벤션
     - Swift API 디자인 가이드라인을 따르려고 노력하기
@@ -39,7 +71,7 @@
     - 각 스텝의 기능단위로 하위 브랜치 만들고 완료되면 스텝 브랜치로 머지
     - 스텝완료되면 브랜치를 원본 저장소로 PR 보내고 코드 리뷰 받기
 
-#### 커밋 메시지 규칙
+### 커밋 메시지 규칙
 
 - 한글로 작성하기 (단, 제목의 Type은 영문으로 작성)
 - Title
@@ -72,20 +104,141 @@
 
 
 
-## 학습 내용
+## 다크 모드 지원
+
+다크 모드는 눈 피로도 감소, 사용 전력 감소 등의 장점이 있고 사용자가 원하는 기능이라 생각하여 지원했다.
+  
+| 모드 설정 변경 | 라이트 모드 | 다크 모드 |
+| :-: | :-: | :-: |
+| ![](./Images/DarkMode-Demo.gif) | ![](./Images/DarkMode-Light.png) | ![](./Images/DarkMode-Dark.png) |
+
+### 공식 문서 참고
+
+실무에서는 디자이너나 기획자가 구체적인 가이드를 주겠지만, 여의치 않은 경우 구체적인 가이드 없이 개발자가 작업할 수도 있을 것이다.  
+다행히 애플은 손쉽게 다크 모드를 지원할 수 있는 방법들을 마련해 두었다.  
+  
+애플 공식 문서를 참고하여 다크 모드 관련 내용을 정리했다.
+
+- [H.I.G - Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
+    - 다크 모드는 iOS 13부터 지원
+    - 설정에서 다크 모드를 선택하는 방법을 준수하기 (앱 자체 설정을 만들지 말고 설정 앱의 설정을 따르라는 것)
+    - 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의 경우 앱이 깨질 수 있음.
+    - 라이트 모드, 다크 모드 둘 다 테스트 해봐야 한다.
+- [H.I.G - Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
+    - 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음 (같은 색이라도 모드별로 색상 값이 살짝 다르다)
+    - semantic color로 Label, Placeholder text, link 등의 색상이 정의되어 자동으로 다크 모드를 지원한다.
+- [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances) (이미지에 다크 모드 지원하기)
+    - different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
+    - 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
+
+### 구현 방법
+
+화면에 배경 이미지와 텍스트만 있으므로 이 두가지만 다크 모드를 지원하면 되겠다.
+
+#### 1. 배경 이미지 다크 모드 지원
+
+배경 이미지를 라이트/다크 모드로 나누어 에셋 카탈로그에 Imges Set으로 등록한다.
+
+![](./Images/DarkMode-BG.png)
+
+이제 배경 이미지 에셋의 이름 `Desert_Tree`를 사용하면 시스템이 자동으로 라이트/다크 모드에 맞는 이미지를 그린다.
+
+~~~swift
+private let backgroundImageView: UIImageView = {
+    let imageView = UIImageView()
+    imageView.image = UIImage(named: "Desert_Tree")
+    imageView.contentMode = .scaleAspectFill
+    return imageView
+}()
+~~~
+
+#### 2. 텍스트에 다크 모드 지원
+
+이 앱에 사용된 텍스트는 모두 Label로 구현했다.  
+Label은 `semantic color - Label`를 사용하면 자동으로 다크 모드를 지원하므로 이 것을 사용하며, Label 텔스트의 기본값이므로 추가 작업 없이 그대로 사용하면 된다.
+
+### 트러블 슈팅
+
+#### 1. 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+
+- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없었다.
+- 해결 방법: backgroundImageView를 tableView.backgroundView로 set 해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토 레이아웃을 따로 추가할 필요가 없다), 이때 테이블 뷰 셀의 backgroundColor을 clear로 해주어야 테이블 뷰의 배경 이미지가 보인다.
 
 [👆목차로 가기](#목차)
 <br><br><br>
 
 
 
-## 리팩토링
+## 위치 서비스 접근 권한 허용하지 않은 경우 예외 처리
 
-프로젝트 기간이 지난 후 리뷰하면서 리팩토링 한 내용을 정리했다.
+앱을 처음 실행하면 사용자에게 위치 서비스 접근 권한을 요청하며, 허용하면 현재 위치를 기반으로 날씨 정보를 출력하고, 거절하면 위치 정보를 얻을 수 없으므로 앱은 아무런 동작을 하지 않는다.  
+  
+이때 사용자는 입장에서는 아무런 동작이 없으니 문제 있는 앱이라고 생각할 수 있고, 위치 서비스 접근 권한이 꼭 필요한지 모르는 상태일 것이다.  
+  
+이것을 개선하기 위해 위치 권한 설정을 강하게 요청하는 방법으로 예외 처리를 추가했다.
 
-### API Response 데이터 모델 리팩토링
+- Alert을 통해 앱 사용을 위해서는 위치 권한 허용이 필수라는 내용을  고지하고, 설정으로 이동하는 버튼을 제공한다. 
+- 위치 권한을 거절하면 날씨 정보를 보여주지 않고, 앱을 재시작하거나 날씨 정보를 요청할 때마다 Alert을 표시한다.
 
-#### 1. 하위 모델 통합
+| 예외 처리 전 | Alert, 설정으로 이동 | 계속 거절하는 경우 |
+| :-: | :-: | :-: |
+| ![](./Images/Location-Denied-Before.gif) | ![](./Images/Location-Denied-Demo.gif) | ![](./Images/Location-Denied-Demo2.gif)|
+
+### 다른 앱의 처리 방법
+
+처리 방법을 생각하기에 앞서서 다른 앱은 어떻게 처리하는지 살펴봤다.
+
+- 애플 지도 앱
+    - 위치 권한 거절 후 현재 위치 버튼을 누르면 Alert이 표시되며 앱의 기능을 제대로 사용하기 위해서는 위치 권한이 필요하다는 내용과 `설정에서 켜기` 버튼이 주어진다
+    - `설정에서 켜기` 버튼을 누르면 설정 앱 내부의 지도 앱 설정으로 이동한다.
+- 애플 날씨 앱
+    - 위치 권한 거절하면 현재 위치의 날씨를 표시하는 화면이 사라지고, 주소 검색으로 특정 지역의 날씨를 볼 수 있는 화면만 남아있다.
+    - 지도 앱과 다르게 Alert으로 표시하지 않는 데, 내 생각으로는 위치를 직접 검색하는 방법이 있으므로 위치 권한을 강제하지 않는 것 같다
+- 날씨날씨 앱
+    - 기본적으로 날씨 앱과 유사
+    - 주소 검색 화면에서 `GPS 현재 위치` 설정을 누르면 설정 앱 내부의 날씨날시 앱 설정으로 이동한다.
+
+위치 정보를 사용하는 기능이 앱의 주요 기능 이라면 Alert을 통해 사용자에게 위치 권한의 필요성을 알리고, 설정 앱으로 이동하는 버튼을 제공한다.  
+
+### 공식 문서 참고
+
+H.I.G 에서 관련 내용을 찾을 수 있었다.  
+위치 서비스 권한 설정으로 가는 방법을 사용자에게 텍스트로 알려주기보다는 바로 이동시키는 버튼을 제공하라는 내용이다.
+
+> [H.I.G - Settings](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/settings/)  
+> Provide shortcuts to Settings when appropriate. If your app includes text that directs users to Settings, such as “Go to Settings > MyApp > Privacy > Location Services,” provide a button that opens that location automatically. For developer guidance, see openSettingsURLString in UIApplication.
+
+### 예외 처리 방법 고민
+
+더 나은 UX를 위한 여러 방법이 생각났지만 시간이 부족하므로 기능 추가는 최소로 하지만 적절한 처리가 이루어지는 방향으로 고민했다.
+
+- 현재 위치의 날씨를 보여주는 앱 컨셉을 유지하는 처리방법 생각해보기.
+- 주소를 직접 검색하는 기능을 지금 추가하기엔 큰 작업이며 현재 위치의 날씨 정보를 보여주는 앱의 컨셉 범위를 벗어나는 기능이다.
+- 위치 서비스 접근은 사용자의 허가가 꼭 필요하다. 앱이 강제로 켜는 방법은 없으므로, 사용자에게 강하게 요청하는 방법을 찾아야 한다.
+
+### 위치 권한 설정을 강하게 요청하기
+
+- 앱 사용을 위해서는 위치 권한 허용이 필수라는 내용을 Alert을 통해 고지하고, 설정으로 이동하는 버튼을 제공한다. 
+- 위치 권한을 거절하면 날씨 정보를 보여주지 않고, 앱을 재시작하거나 날씨 정보를 요청할 때마다 Alert을 표시한다.
+
+위치 접근 허용을 거절한 경우의 흐름은 아래와 같다.
+
+1. 앱 실행 시 Alert을 통해 위치 권한을 요청하고, 설정으로 이동하는 버튼을 제공
+2. "설정으로 이동" 버튼 선택한 경우
+    - 설정 앱 내부의 앱 설정으로 이동
+    - 위치 권한 허용하고 다시 앱으로 돌아오면 정상적으로 동작
+3. "위치 사용 안 함" 버튼 선택한 경우
+    - 앱 기능이 동작하지 않으므로 빈 화면만 표시
+    - 아래로 당기면(리프레시 하면) `1`의 Alert 표시 반복
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## API Response 데이터 모델 리팩토링
+
+### 1. 하위 모델 통합
 
 모델마다 구조체로 분리했더니 날씨 데이터 모델 파일만 7개다.
 
@@ -125,7 +278,7 @@ SubModel
 - temperature.swift
 ~~~
 
-#### 2. JSON 데이터의 `Weather` 항목
+### 2. JSON 데이터의 `Weather` 항목
 
 이유는 모르지만 API Response JSON 데이터의 `Weather` 항목이 원소가 1개만 있는 배열로 구성된다.
 
@@ -153,16 +306,17 @@ struct CurrentWeatherData: Decodable {
 }
 ~~~
 
+[👆목차로 가기](#목차)
 <br><br><br>
 
 
 
-### API 데이터 요청
+## API 데이터 요청
 
 - API 에러 타입을 따로 분리하여 두 API에서 동일하게 사용
 - get 메서드 내부의 기능을 별도 함수로 분리, 제네리사용
 
-#### 리팩토링 전
+### 리팩토링 전
 
 ~~~swift
 func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
@@ -205,36 +359,9 @@ OpenWeatherAPI
 OpenWeatehrAPIList
 - API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민
 
-#### 
-
-
-
-
-
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
-
-
-## 고민한 내용
-
-- MVC 패턴 준수
-- 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
-- API 리퀘스트 객체의 재사용성
-- 다이나믹 폰트
-- 앱 실행시 데이터 받기 전까지 테이블 뷰 비어보임
-    - 이전의 마지막 데이터 보이는 방법?
-    - 로딩 애니메이션 보이는 방법?
-
-
-
-
-
 ### View 디버깅시 뷰 객체 찾기
 
 http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
-
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -251,6 +378,9 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
+
+[👆목차로 가기](#목차)
+<br><br><br>
 
 
 
@@ -281,80 +411,5 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 >
 > Apply readability margins when displaying text on larger devices. These margins keep text lines short enough to ensure a comfortable reading experience.
 
-
-
-## 다크모드 지원
-
-- [Supporting Dark Mode in Your Interface](https://developer.apple.com/documentation/uikit/appearance_customization/supporting_dark_mode_in_your_interface)
-
-### H.I.G - Visual Design
-
-[Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
-- 다크모드는 iOS 13부터 지원
-- 설정의 다크모드를 선택하는 것으로 지원하기
-- 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의경우 앱이 깨질 수 있음
-- 라이트모드 다크모드 둘 다 테스트 해볼 것
-
-[Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
-- 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음
-- UIColor 시스템 컬러 사용
-
-### [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances)
-
-- different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
-- 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
-
-### 배경 이미지
-
-- 뷰 컨트롤러의 view에 imageView로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
-    - bringSubviewToFront/sendSubviewToBack 메서드도 동일
-    - backgroundImageView를 tableView.backgroundView로 set해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토레이아웃도 필요 없다)
-
 [👆목차로 가기](#목차)
 <br><br><br>
-
-
-
-## 위치 접근 허용하지 않은 경우 예외 처리
-
-### 현재 상태
-
-- 화면에 빈 테이블 뷰만 보임
-- 끌어 내리면 리프레쉬 애니메이션만 돌아가는 상태 계속됨
-
-### 다른 앱의 처리 방법 참고
-
-지도 앱
-- 현재위치 버튼 누르면
-    - 위치서비스 자체가 꺼져있으면 "설정으로 이동"버튼 누르면 위치 서비스 설정으로 이동
-    - 위치서비스는 켜져있고 이 앱만 꺼져있으면 "설정에서 켜기" 버튼 누르면 설정-지도로 이동
-
-날씨 앱
-- 저장된 지역이 있다면 그 지역 날씨 표시 (현재 위치 화면은 없음)
-- 저장된 지역을 모두 지워서 없다면, 앱 실행시 빈 화면에 주소 검색하는 화면이 push됨
-
-날씨날씨 앱
-- 기본적으로 날씨 앱과 동일하며 위치추가 화면에서 GPS 현재위치 설정을 토글로 보여주는데 이걸 누르면 설정 앱으로 화면 전환됨
-
-### 처리 방법 고민
-
-- 지역을 직접 설정하는 기능을 지금 추가하기엔 큰 작업임
-- 현재 위치의 날씨를 보여준다는 앱 기능만을 유지하는 처리방법 생각해보기 (앱 사용에 위치 허용이 강제 되야 함)
-- 위치 허용을 강제 하는 방법
-    - 시스템으로 무조건 키는 방법은 없음 (사용자 허가 필요)
-    - 사용자에게 위치 허용 설정이 필수라는 설명을 하고 동의를 받는 방법밖에 없음
-
-### 결정한 처리 방법
-
-위치 접근 허용 안한 경우 흐름
-1. 앱 실행시 Alert으로 위치 허용에 관한 설명과 함께 설정 앱으로 이동하는 선택지 주기
-2. "설정으로 이동" 선택
-    - 설정 앱에서 이 앱의 설정 화면으로 이동
-    - 위치 접근 허용하고 다시 앱으로 돌아오면 현재 위치 요청
-3. "위치 사용 안함"선택하여 그냥 끈 경우
-    - 빈 화면
-    - 아래로 당기면 리프레쉬 시작되지만 바로 종료되고 `1`의 Alert 다시 표시
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
