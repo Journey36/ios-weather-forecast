@@ -1,26 +1,55 @@
-# iOS 커리어 스타터 캠프 - 날씨정보 프로젝트 저장소
+# 날씨 정보 앱
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
+| 📺 데모 | 💡 개요 |
+| ------- | ------- |
+| <img src = ./Images/Demo-L.gif width="300px"> | 🚀 현재 위치의 날씨와 3시간 단위의 5일 예보 <br> 🧑🏻‍💻 개인 프로젝트 <br> 🗓 진행 기간 <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 기간: 2021.01.18 ~ 24 (1주) <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 수료 후: 2021.09 ~ 리팩토링 진행 <br> ⚙️ 기능 <br> &nbsp;&nbsp;&nbsp;&nbsp; `현재 위치의 날씨 정보 표시` <br> &nbsp;&nbsp;&nbsp;&nbsp; `당겨서 새로고침` <br> &nbsp;&nbsp;&nbsp;&nbsp; `다크모드 지원` <br>  📝 학습 키워드 <br> &nbsp;&nbsp;&nbsp;&nbsp; `CoreLocation`, `URLSession`, `RefreshControl` |
+
+<br><br><br>
+
+
 
 ## 목차
 
-1. [프로젝트](#프로젝트)
+1. 프로젝트
     - [기능](#기능)
     - [그라운드 룰](#Jacob의-그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-- [다크 모드 지원](#다크-모드-지원)
-- [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
+2. [다크 모드 지원](#다크-모드-지원)
+3. [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
 
-## 정리 예정
+### 정리 예정
 
-- [학습 내용](#학습-내용)
-- [리팩토링](#리팩토링)
-    - [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
-    - [API 데이터 요청](#-API-데이터-요청)
+- [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
+- [API 데이터 요청](#API-데이터-요청)
+- [트러블 슈팅](#트러블-슈팅)
+- [오토 레이아웃](#오토-레이아웃)
+- 정리 목록
+    - MVC 패턴 준수
+    - 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
+    - API 리퀘스트 객체의 재사용성
+    - 다이나믹 폰트
+    - 앱 실행시 데이터 받기 전까지 테이블 뷰 비어보임
+        - 이전의 마지막 데이터 보이는 방법?
+        - 로딩 애니메이션 보이는 방법?
 
-## 프로젝트
+<br><br><br>
 
-### 기능
 
-### Jacob의 그라운드 룰
+
+## 기능
+
+| 현재 위치의 날씨 정보 | 당겨서 새로고침 | 다크모드 지원 |
+| :-: | :-: | :-: |
+| ![](./Images/Demo.gif) | ![](./Images/Demo-Refresh.gif) | ![](./Images/DarkMode-Demo.gif) |
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 그라운드 룰
 
 혼자 진행하는 프로젝트지만 그라운드 룰을 지키려고 노력했다.
 
@@ -31,7 +60,7 @@
     - 기능요구서 내용을 충실하게 먼저 완료하기
     - 이후 시간이 남으면 추가 구현
 
-#### 프로젝트 규칙
+### 프로젝트 규칙
 
 - 코딩 컨벤션
     - Swift API 디자인 가이드라인을 따르려고 노력하기
@@ -42,7 +71,7 @@
     - 각 스텝의 기능단위로 하위 브랜치 만들고 완료되면 스텝 브랜치로 머지
     - 스텝완료되면 브랜치를 원본 저장소로 PR 보내고 코드 리뷰 받기
 
-#### 커밋 메시지 규칙
+### 커밋 메시지 규칙
 
 - 한글로 작성하기 (단, 제목의 Type은 영문으로 작성)
 - Title
@@ -207,21 +236,9 @@ H.I.G 에서 관련 내용을 찾을 수 있었다.
 
 
 
+## API Response 데이터 모델 리팩토링
 
-## 학습 내용
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
-
-
-## 리팩토링
-
-프로젝트 기간이 지난 후 리뷰하면서 리팩토링 한 내용을 정리했다.
-
-### API Response 데이터 모델 리팩토링
-
-#### 1. 하위 모델 통합
+### 1. 하위 모델 통합
 
 모델마다 구조체로 분리했더니 날씨 데이터 모델 파일만 7개다.
 
@@ -261,7 +278,7 @@ SubModel
 - temperature.swift
 ~~~
 
-#### 2. JSON 데이터의 `Weather` 항목
+### 2. JSON 데이터의 `Weather` 항목
 
 이유는 모르지만 API Response JSON 데이터의 `Weather` 항목이 원소가 1개만 있는 배열로 구성된다.
 
@@ -289,16 +306,17 @@ struct CurrentWeatherData: Decodable {
 }
 ~~~
 
+[👆목차로 가기](#목차)
 <br><br><br>
 
 
 
-### API 데이터 요청
+## API 데이터 요청
 
 - API 에러 타입을 따로 분리하여 두 API에서 동일하게 사용
 - get 메서드 내부의 기능을 별도 함수로 분리, 제네리사용
 
-#### 리팩토링 전
+### 리팩토링 전
 
 ~~~swift
 func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
@@ -341,36 +359,9 @@ OpenWeatherAPI
 OpenWeatehrAPIList
 - API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민
 
-#### 
-
-
-
-
-
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
-
-
-## 고민한 내용
-
-- MVC 패턴 준수
-- 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
-- API 리퀘스트 객체의 재사용성
-- 다이나믹 폰트
-- 앱 실행시 데이터 받기 전까지 테이블 뷰 비어보임
-    - 이전의 마지막 데이터 보이는 방법?
-    - 로딩 애니메이션 보이는 방법?
-
-
-
-
-
 ### View 디버깅시 뷰 객체 찾기
 
 http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
-
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -387,6 +378,9 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
+
+[👆목차로 가기](#목차)
+<br><br><br>
 
 
 
@@ -417,10 +411,5 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 >
 > Apply readability margins when displaying text on larger devices. These margins keep text lines short enough to ensure a comfortable reading experience.
 
-
-
-
-
-
-
-
+[👆목차로 가기](#목차)
+<br><br><br>
