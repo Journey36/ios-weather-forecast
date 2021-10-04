@@ -79,7 +79,7 @@
 
 다크 모드는 눈 피로도 감소, 사용 전력 감소 등의 장점이 있고 사용자가 원하는 기능이라 생각하여 지원했다.
   
-| 데모 | 라이트 모드 | 다크 |
+| 모드 설정 변경 | 라이트 모드 | 다크 모드 |
 | :-: | :-: | :-: |
 | ![](./Images/DarkMode-Demo.gif) | ![](./Images/DarkMode-Light.png) | ![](./Images/DarkMode-Dark.png) |
 
@@ -151,9 +151,9 @@ Label은 `semantic color - Label`를 사용하면 자동으로 다크 모드를 
 - Alert을 통해 앱 사용을 위해서는 위치 권한 허용이 필수라는 내용을  고지하고, 설정으로 이동하는 버튼을 제공한다. 
 - 위치 권한을 거절하면 날씨 정보를 보여주지 않고, 앱을 재시작하거나 날씨 정보를 요청할 때마다 Alert을 표시한다.
 
-| 예외 처리 전 | 예외 처리 후 |
-| :-: | :-: |
-| ![](./Images/Location-Denied-Before.gif) | ![](./Images/Location-Denied-Demo.gif) |
+| 예외 처리 전 | Alert, 설정으로 이동 | 계속 거절하는 경우 |
+| :-: | :-: | :-: |
+| ![](./Images/Location-Denied-Before.gif) | ![](./Images/Location-Denied-Demo.gif) | ![](./Images/Location-Denied-Demo2.gif)|
 
 ### 다른 앱의 처리 방법
 
