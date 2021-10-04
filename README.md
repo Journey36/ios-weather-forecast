@@ -6,6 +6,7 @@
     - [기능](#기능)
     - [그라운드 룰](#Jacob의-그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
+- [다크 모드 지원](#다크-모드-지원)
 - [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
 
 ## 정리 예정
@@ -74,6 +75,71 @@
 
 
 
+## 다크 모드 지원
+
+다크 모드는 눈 피로도 감소, 사용 전력 감소 등의 장점이 있고 사용자가 원하는 기능이라 생각하여 지원했다.
+  
+| 데모 | 라이트 모드 | 다크 |
+| :-: | :-: | :-: |
+| ![](./Images/DarkMode-Demo.gif) | ![](./Images/DarkMode-Light.png) | ![](./Images/DarkMode-Dark.png) |
+
+### 공식 문서 참고
+
+실무에서는 디자이너나 기획자가 구체적인 가이드를 주겠지만, 여의치 않은 경우 구체적인 가이드 없이 개발자가 작업할 수도 있을 것이다.  
+다행히 애플은 손쉽게 다크 모드를 지원할 수 있는 방법들을 마련해 두었다.  
+  
+애플 공식 문서를 참고하여 다크 모드 관련 내용을 정리했다.
+
+- [H.I.G - Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
+    - 다크 모드는 iOS 13부터 지원
+    - 설정에서 다크 모드를 선택하는 방법을 준수하기 (앱 자체 설정을 만들지 말고 설정 앱의 설정을 따르라는 것)
+    - 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의 경우 앱이 깨질 수 있음.
+    - 라이트 모드, 다크 모드 둘 다 테스트 해봐야 한다.
+- [H.I.G - Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
+    - 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음 (같은 색이라도 모드별로 색상 값이 살짝 다르다)
+    - semantic color로 Label, Placeholder text, link 등의 색상이 정의되어 자동으로 다크 모드를 지원한다.
+- [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances) (이미지에 다크 모드 지원하기)
+    - different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
+    - 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
+
+### 구현 방법
+
+화면에 배경 이미지와 텍스트만 있으므로 이 두가지만 다크 모드를 지원하면 되겠다.
+
+#### 1. 배경 이미지 다크 모드 지원
+
+배경 이미지를 라이트/다크 모드로 나누어 에셋 카탈로그에 Imges Set으로 등록한다.
+
+![](./Images/DarkMode-BG.png)
+
+이제 배경 이미지 에셋의 이름 `Desert_Tree`를 사용하면 시스템이 자동으로 라이트/다크 모드에 맞는 이미지를 그린다.
+
+~~~swift
+private let backgroundImageView: UIImageView = {
+    let imageView = UIImageView()
+    imageView.image = UIImage(named: "Desert_Tree")
+    imageView.contentMode = .scaleAspectFill
+    return imageView
+}()
+~~~
+
+#### 2. 텍스트에 다크 모드 지원
+
+이 앱에 사용된 텍스트는 모두 Label로 구현했다.  
+Label은 `semantic color - Label`를 사용하면 자동으로 다크 모드를 지원하므로 이 것을 사용하며, Label 텔스트의 기본값이므로 추가 작업 없이 그대로 사용하면 된다.
+
+### 트러블 슈팅
+
+#### 1. 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+
+- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없었다.
+- 해결 방법: backgroundImageView를 tableView.backgroundView로 set 해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토 레이아웃을 따로 추가할 필요가 없다), 이때 테이블 뷰 셀의 backgroundColor을 clear로 해주어야 테이블 뷰의 배경 이미지가 보인다.
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
 ## 위치 서비스 접근 권한 허용하지 않은 경우 예외 처리
 
 앱을 처음 실행하면 사용자에게 위치 서비스 접근 권한을 요청하며, 허용하면 현재 위치를 기반으로 날씨 정보를 출력하고, 거절하면 위치 정보를 얻을 수 없으므로 앱은 아무런 동작을 하지 않는다.  
@@ -105,7 +171,7 @@
 
 위치 정보를 사용하는 기능이 앱의 주요 기능 이라면 Alert을 통해 사용자에게 위치 권한의 필요성을 알리고, 설정 앱으로 이동하는 버튼을 제공한다.  
 
-### 공식 문서 확인
+### 공식 문서 참고
 
 H.I.G 에서 관련 내용을 찾을 수 있었다.  
 위치 서비스 권한 설정으로 가는 방법을 사용자에게 텍스트로 알려주기보다는 바로 이동시키는 버튼을 제공하라는 내용이다.
@@ -353,35 +419,7 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 
 
-## 다크모드 지원
 
-- [Supporting Dark Mode in Your Interface](https://developer.apple.com/documentation/uikit/appearance_customization/supporting_dark_mode_in_your_interface)
-
-### H.I.G - Visual Design
-
-[Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
-- 다크모드는 iOS 13부터 지원
-- 설정의 다크모드를 선택하는 것으로 지원하기
-- 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의경우 앱이 깨질 수 있음
-- 라이트모드 다크모드 둘 다 테스트 해볼 것
-
-[Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
-- 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음
-- UIColor 시스템 컬러 사용
-
-### [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances)
-
-- different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
-- 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
-
-### 배경 이미지
-
-- 뷰 컨트롤러의 view에 imageView로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
-    - bringSubviewToFront/sendSubviewToBack 메서드도 동일
-    - backgroundImageView를 tableView.backgroundView로 set해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토레이아웃도 필요 없다)
-
-[👆목차로 가기](#목차)
-<br><br><br>
 
 
 
