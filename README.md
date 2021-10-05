@@ -14,7 +14,7 @@
 
 1. 프로젝트
     - [기능](#기능)
-    - [그라운드 룰](#Jacob의-그라운드-룰)
+    - [그라운드 룰](#그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. [다크 모드 지원](#다크-모드-지원)
 3. [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
@@ -202,11 +202,8 @@ Label은 `semantic color - Label`를 사용하면 자동으로 다크 모드를 
 
 ### 공식 문서 참고
 
-H.I.G 에서 관련 내용을 찾을 수 있었다.  
-위치 서비스 권한 설정으로 가는 방법을 사용자에게 텍스트로 알려주기보다는 바로 이동시키는 버튼을 제공하라는 내용이다.
-
-> [H.I.G - Settings](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/settings/)  
-> Provide shortcuts to Settings when appropriate. If your app includes text that directs users to Settings, such as “Go to Settings > MyApp > Privacy > Location Services,” provide a button that opens that location automatically. For developer guidance, see openSettingsURLString in UIApplication.
+- [H.I.G - Settings](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/settings/) 
+    - 위치 서비스 권한 설정으로 가는 방법을 사용자에게 텍스트로 알려주기보다는 바로 이동시키는 버튼을 제공하라.
 
 ### 예외 처리 방법 고민
 
