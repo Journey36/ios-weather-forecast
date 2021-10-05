@@ -375,6 +375,7 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
+- 
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -410,3 +411,68 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 [👆목차로 가기](#목차)
 <br><br><br>
+
+## 새로고침 요청 방법
+
+새로고침을 요청하는 방법은 어떻게 해야할까?  
+생각나는 방법
+- 새로 고침 버튼을 눌러서 새로고침 요청
+- 테이블 뷰를 아래로 당겨서 새로고침 요청
+
+### H.I.G 문서를 확인해보자
+
+[H.I.G - Refresh Content Controls](https://developer.apple.com/design/human-interface-guidelines/ios/controls/refresh-content-controls/)
+- Refresh control은 다음에 자동 컨텐츠 업데이트가 발생할 때까지 기다리지 않고, 일반적으로 테이블 뷰에서 컨텐츠를 즉시 다시 로드하기 위해 수동으로 시작됩니다.
+- Refresh control은 activity indicator의 특화된 타입입니다.
+- hidden이 기본값이며 뷰를 리로드하기위해 당길 때 보입니다. (Mail앱 참고)
+- **컨텐츠 업데이트를 자동으로 수행합니다.** 사용자가 refresh하는 방법을 알더라도, 주기적으로 업데이트 될 것을 기대합니다. 사용자가 모든 업데이트의 시작을 책임지게 하지마세요. 데이터를 주기적으로 업데이트하여 데이터를 최신화하세요.
+- **값이 추가되는 경우에만 짧은 제목을 제공하세요.** refresh cotrol은 선택적으로 제목을 포함할 수 있습니다. 대부분의 경우 애니메이션이 컨텐츠가 로딩중임을 나타내기 때문에 제목을 포함할 필요가 없습니다. 제목을 포함한다면 새로고침 방법을 설명하지는 마세요. 대신에 새로고침되는 컨텐츠에 대한 값의 정보를 제공하세요. 예를들어 팟캐스트 앱에서는 마지막으로 업데이트된 팟캐스트를 알려주는 제목을 사용합니다.
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 로딩이 길어지는 동안 빈 화면만 보여짐
+
+위치를 파악하는 속도나 API에서 데이터를 받는 시간이 느려지는 경우에는 어떤 문제가 있으며 어떻게 처리해야 할까?
+
+- 정보가 표시 될 때 까지 테이블 뷰가 비어있다.
+- 실패하면 표시할 정보가 없으므로 비어있다.
+
+### H.I.G 문서를 확인해보자
+
+- 처음엔 refreshControl 사용할려 햇음
+- HIG 읽어보니 말그대로 컨텐츠를 다시 로드할 때 사용하는 용도임
+
+[H.I.G - Loading](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/loading/)
+- 컨텐츠를 로딩할 때 빈 화면이나 정지된 화면은 앱이 멈춘 것 처럼 보이게 하여 혼란과 좌절감을 줄 수 있고 잠재적으로 사용자가 앱을 떠날 수 있습니다.
+- **로딩중임을 확실히 인지 시키세요.** 최소한 어떤 일이 일어난다는것을 알려주는 activity spinner를 보여주세요. 더 나은 방법은, 진행률을 보여주어 사용자가 얼마나 기다려야하는지 가늠하게 하세요.
+- 가능한 빨리 컨텐츠를 보여주세요. 
+    - 컨텐츠가 다 로드된 후에 화면을 보이지말고, 일단 화면부터 보여주고 아직 로드되지않는 부분은 플레이스홀더로 텍스트나, 그래픽, 애니메이션으로 어느 컨텐츠가 아직 준비되지 않았는지 보여주라는 내용. 컨텐츠가 로드되면 플레이스홀더를 컨텐츠로 교체.
+    - 가능하면 다음 컨텐츠를 백그라운드에서 미리 로드하세요. (애니메이션이 재생 중이거나 사용자가 네비게이팅 중일 때)
+
+[H.I.G - Progress Indicators](https://developer.apple.com/design/human-interface-guidelines/ios/controls/progress-indicators/)
+- 컨텐츠 로딩이나 데이터 처리를 수행할 때 긴 시간동안 고정된 스크린에서 사용자를 기다리게 하지마라. 
+- Activity Indicator 또는 progress bar를 사용해서 앱이 멈추지 않았다는 것을 인지시키켜라.
+- Activity Indicator는 복잡한 데이터를 로딩이나 동기화하는 것 처럼 계량할 수 없는 작업을 하는 동안에 spin합니다. 작업이 완료되면 사라집니다. 액티비티 인디케이터는 상호작용하지 않습니다. 
+    - 소프트웨어 업데이트 화면 참고
+- Activity indicator다 progress bar를 선호하세요.
+    - 계량할 수 있는 액티비티는 progress bar를 사용
+- Activity indicator를 계속 움직이세요.
+    - 사람은 정지된 Activity indicator를 프로세스가 멈췄다고 연상하므로, 계속 회전시켜서 프로세스가 게속되고 있다고 알려줄 것
+- 도움이 된다면 작업이 완료될 때까지 유용한 정보를 제공한다. 추가 컨텍스트를 제공하려면 Activity indicator위에 레이블을 포함한다. Loading 또는 authentication같은 애매한 용어는 어느 값도 추가하지 않으므로 피하라.
+
+결론
+- 앱 실행시 컨텐츠 로딩될 때 까지 Activity indicator 표시
+    - Activity indicator의 title로 위치를 찾는 중인지, 데이터를 로딩중인디 알려준다.
+
+### 적용
+
+
+
+### 참고
+
+- [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
+    - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
+    - 아이폰에서는 설정 - 개발자에서 사용가능

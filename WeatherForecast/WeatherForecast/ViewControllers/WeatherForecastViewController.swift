@@ -14,11 +14,14 @@ class WeatherForecastViewController: UITableViewController {
             DispatchQueue.main.async {
                 self.tableView.reloadSections(IndexSet(0...0), with: .automatic)
                 self.endRefreshing()
+                self.stopAndHideLoadingContentsAnimation()
             }
         }, fiveDayForecastUpdatedAction: {
             DispatchQueue.main.async {
                 self.tableView.reloadSections(IndexSet(1...1), with: .automatic)
                 self.endRefreshing()
+                self.tableView.setSeparatorVisible(true)
+                self.stopAndHideLoadingContentsAnimation()
             }
         })
         dataSource.registerCells(with: tableView)
@@ -28,6 +31,9 @@ class WeatherForecastViewController: UITableViewController {
     private lazy var locationManager: LocationManager = {
         let locationManager = LocationManager(locationUpdatedAction: { location in
             self.dataSource.requestAllData(by: location)
+            DispatchQueue.main.async {
+                self.loadingContentslabel.text = "날씨 데이터 로딩 중..."
+            }
         }, locationDeniedAction: {
             DispatchQueue.main.async {
                 self.alertLocationService()
@@ -49,22 +55,47 @@ class WeatherForecastViewController: UITableViewController {
         return imageView
     }()
     
+    private let loadingContentsActivityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView()
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 13.0, *) {
+            activityIndicatorView.style = .large
+        } else {
+            activityIndicatorView.style = .whiteLarge
+        }
+        return activityIndicatorView
+    }()
+    
+    private let loadingContentslabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.preferredFont(forTextStyle: .callout)
+        label.text = "현재 위치 찾는 중..."
+        return label
+    }()
+    
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpTableViewAndDataSource()
-        setUpRefreshControl()
+        configureTableViewAndDataSource()
+        configureLoadingContentsActivityIndicatorViewAndLabel()
+        
+        startLoadingContentsAnimation()
         locationManager.requestAuthorization()
     }
     
     // MARK: - Methods
-    private func setUpTableViewAndDataSource() {
+    private func configureTableViewAndDataSource() {
         tableView.backgroundView = backgroundImageView
         tableView.dataSource = dataSource
         tableView.allowsSelection = false
+        tableView.separatorStyle = .none
     }
     
-    private func setUpRefreshControl() {
+    private func configureRefreshControl() {
+        guard tableView.refreshControl == nil else {
+            return
+        }
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
     }
@@ -78,6 +109,28 @@ class WeatherForecastViewController: UITableViewController {
     
     @objc private func handleRefreshControl() {
         locationManager.requestLocation()
+    }
+    
+    private func configureLoadingContentsActivityIndicatorViewAndLabel() {
+        tableView.addSubview(loadingContentsActivityIndicatorView)
+        loadingContentsActivityIndicatorView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        loadingContentsActivityIndicatorView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+        
+        loadingContentsActivityIndicatorView.addSubview(loadingContentslabel)
+        loadingContentslabel.textColor = loadingContentsActivityIndicatorView.color
+        loadingContentslabel.centerXAnchor.constraint(equalTo: loadingContentsActivityIndicatorView.centerXAnchor).isActive = true
+        loadingContentslabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: loadingContentsActivityIndicatorView.bottomAnchor, multiplier: 1).isActive = true
+    }
+    
+    private func startLoadingContentsAnimation() {
+        tableView.setSeparatorVisible(false)
+        loadingContentsActivityIndicatorView.startAnimating()
+    }
+    
+    private func stopAndHideLoadingContentsAnimation() {
+        loadingContentsActivityIndicatorView.stopAnimating()
+        tableView.setSeparatorVisible(true)
+        configureRefreshControl()
     }
         
     private func openSettings() {
@@ -112,5 +165,15 @@ class WeatherForecastViewController: UITableViewController {
                                       preferredStyle: .alert)
         alert.addAction(okAction)
         present(alert, animated: true)
+    }
+}
+
+private extension UITableView {
+    func setSeparatorVisible(_ isVisible: Bool) {
+        if isVisible {
+            separatorStyle = .singleLine
+        } else {
+            separatorStyle = .none
+        }
     }
 }
