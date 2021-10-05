@@ -128,10 +128,6 @@ class WeatherForecastDataSource: NSObject {
         currentWeatherData = nil
         fiveDayforecastItems.removeAll()
     }
-    
-//    func refresh() {
-//        locationManager.requestLocation()
-//    }
 }
 
 extension WeatherForecastDataSource {
@@ -197,7 +193,7 @@ extension WeatherForecastDataSource: UITableViewDataSource {
 
 // MARK: - Model Extensions
 
-extension FiveDayForecastData.Item {
+private extension FiveDayForecastData.Item {
     static private let DateAndTimeFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
@@ -214,7 +210,7 @@ extension FiveDayForecastData.Item {
     }
 }
 
-extension Temperature {
+private extension Temperature {
     var currentCelsiusText: String {
         return celsiusText(from: currentCelsius)
     }
@@ -230,7 +226,7 @@ extension Temperature {
     }
 }
 
-extension Weather {
+private extension Weather {
     var iconURL: String {
         return OpenWeatherAPIConstatns.weatherIconBaseURL + "\(iconID).png"
     }
@@ -240,7 +236,7 @@ extension Weather {
     }
 }
 
-extension Address {
+private extension Address {
     var text: String {
         return administrativeArea + " " + locality
     }
