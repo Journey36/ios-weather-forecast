@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 
 final class ViewController: UIViewController {
-    // MARK: - Properties
+    // MARK: - Properties -
     // MARK: Stored Properties
     private var manager: CLLocationManager = .init()
     private var dataTaskManager: DataTaskManager = .init()
@@ -18,16 +18,15 @@ final class ViewController: UIViewController {
     private var currentAddress: String?
     private lazy var forecastListView: ForecastListView = .init()
     
-    // MARK: - Methods
+    // MARK: - Methods -
     // MARK: Custom
     private func configureConstraints() {
         view.addSubview(forecastListView)
         forecastListView.translatesAutoresizingMaskIntoConstraints = false
-        let safeArea: UILayoutGuide = view.safeAreaLayoutGuide
-        forecastListView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
-        forecastListView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor).isActive = true
-        forecastListView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor).isActive = true
-        forecastListView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor).isActive = true
+        forecastListView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        forecastListView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        forecastListView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        forecastListView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
     private func convertAddress(from location: CLLocation) {
@@ -79,7 +78,7 @@ final class ViewController: UIViewController {
     }
 }
 
-// MARK: - Extensions
+// MARK: - Extensions -
 // MARK: Core Location
 extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -204,5 +203,9 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
             }
         }
         return forecastListCell
+    }
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.backgroundColor = .clear
     }
 }
