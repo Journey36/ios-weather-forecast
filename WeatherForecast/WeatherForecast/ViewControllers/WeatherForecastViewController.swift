@@ -10,18 +10,12 @@ import UIKit
 class WeatherForecastViewController: UITableViewController {
     // MARK: - Properties
     private lazy var dataSource: WeatherForecastDataSource = {
-        let dataSource = WeatherForecastDataSource(currentWeatherUpdatedAction: {
+        let dataSource = WeatherForecastDataSource(allDataLoadedAction: {
             DispatchQueue.main.async {
-                self.tableView.reloadSections(IndexSet(0...0), with: .automatic)
-                self.endRefreshing()
                 self.stopAndHideLoadingContentsAnimation()
-            }
-        }, fiveDayForecastUpdatedAction: {
-            DispatchQueue.main.async {
-                self.tableView.reloadSections(IndexSet(1...1), with: .automatic)
                 self.endRefreshing()
                 self.tableView.setSeparatorVisible(true)
-                self.stopAndHideLoadingContentsAnimation()
+                self.tableView.reloadData()
             }
         })
         dataSource.registerCells(with: tableView)

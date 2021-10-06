@@ -9,8 +9,7 @@ import UIKit
 import CoreLocation
 
 class WeatherForecastDataSource: NSObject {
-    typealias CurrentWeahterUpdatedAction = () -> Void
-    typealias FiveDayForecastUpdatedAction = () -> Void
+    typealias AllDataLoadedAction = () -> Void
     
     enum WeathrForecastSection: Int, CaseIterable {
         case currentWeather
@@ -26,34 +25,32 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-//    private lazy var locationManager: LocationManager = {
-//        let locationManager = LocationManager(locationUpdatedAction: { location in
-//            self.requestAllData(by: location)
-//        })
-//        locationManager.requestAuthorization()
-//
-//        return locationManager
-//    }()
-    
+    private var allDataLoadedAction: AllDataLoadedAction?
     private var currentAddress: Address?
-    private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
-    private var fiveDayForecastUpdatedAction: FiveDayForecastUpdatedAction?
+    private var isCurrentAdressDataLoaded: Bool {
+        return currentAddress != nil
+    }
     private var currentWeatherData: CurrentWeatherData?
-    private var currentWeatherUpdatedAction: CurrentWeahterUpdatedAction?
+    private var isCurrentWeatherDataLoaded: Bool {
+        return currentWeatherData != nil
+    }
+    private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
+    private var isFiveDayForecastDataLoaded: Bool {
+        return !fiveDayforecastItems.isEmpty
+    }
+    private var isAlldataLoaded: Bool {
+        return isCurrentAdressDataLoaded && isCurrentWeatherDataLoaded && isFiveDayForecastDataLoaded
+    }
     
     func registerCells(with tableView: UITableView) {
         tableView.register(CurrentWeatherCell.self, forCellReuseIdentifier: CurrentWeatherCell.identifier)
         tableView.register(FiveDayForecastCell.self, forCellReuseIdentifier: FiveDayForecastCell.identifier)
     }
     
-    init(currentWeatherUpdatedAction: @escaping CurrentWeahterUpdatedAction,
-         fiveDayForecastUpdatedAction: @escaping FiveDayForecastUpdatedAction) {
-        self.currentWeatherUpdatedAction = currentWeatherUpdatedAction
-        self.fiveDayForecastUpdatedAction = fiveDayForecastUpdatedAction
+    init(allDataLoadedAction: @escaping AllDataLoadedAction) {
+        self.allDataLoadedAction = allDataLoadedAction
         super.init()
     }
-    
-    
     
     private func dequeueAndConfigureCell(for indexPath: IndexPath, from tableView: UITableView) -> UITableViewCell {
         guard let section = WeathrForecastSection(rawValue: indexPath.section) else {
@@ -111,13 +108,13 @@ class WeatherForecastDataSource: NSObject {
     
     private func numberOfRows(in section: Int) -> Int {
         guard let section = WeathrForecastSection(rawValue: section),
-              let _ = currentAddress else {
+              isAlldataLoaded else {
             return 0
         }
-        
+
         switch section {
         case .currentWeather:
-            return currentWeatherData == nil ? 0 : 1
+            return 1
         case .fiveDayForecast:
             return fiveDayforecastItems.count
         }
@@ -132,9 +129,11 @@ class WeatherForecastDataSource: NSObject {
 
 extension WeatherForecastDataSource {
     func requestAllData(by location: CLLocation) {
-        self.requestCurrentAddress(by: location)
-        self.requestCurrentWeatehrData(by: location.coordinate)
-        self.requestFiveDayForecastData(by: location.coordinate)
+        removeAllData()
+        
+        requestCurrentAddress(by: location)
+        requestCurrentWeatehrData(by: location.coordinate)
+        requestFiveDayForecastData(by: location.coordinate)
     }
     
     private func requestCurrentAddress(by location: CLLocation) {
@@ -155,7 +154,9 @@ extension WeatherForecastDataSource {
             switch result {
             case .success(let data):
                 self.currentWeatherData = data
-                self.currentWeatherUpdatedAction?()
+                if self.isAlldataLoaded {
+                    self.allDataLoadedAction?()
+                }
             case .failure(let error):
                 print(error)
             }
@@ -167,7 +168,9 @@ extension WeatherForecastDataSource {
             switch result {
             case .success(let data):
                 self.fiveDayforecastItems = data.items
-                self.fiveDayForecastUpdatedAction?()
+                if self.isAlldataLoaded {
+                    self.allDataLoadedAction?()
+                }
             case .failure(let error):
                 print(error)
             }
