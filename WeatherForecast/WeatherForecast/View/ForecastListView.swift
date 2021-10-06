@@ -18,6 +18,8 @@ final class ForecastListView: UITableView {
     private func configureAttributes() {
         separatorInset = TableView.separateInset
         allowsSelection = false
+        let backgroundImageLiteral: UIImage = .init(imageLiteralResourceName: "Background")
+        backgroundView = UIImageView(image: backgroundImageLiteral)
     }
     
     // MARK: - Initializers
