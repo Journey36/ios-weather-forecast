@@ -16,6 +16,7 @@ class WeatherForecastViewController: UITableViewController {
                 self.endRefreshing()
                 self.tableView.setSeparatorVisible(true)
                 self.tableView.reloadData()
+                self.configureRefreshControl()
             }
         })
         dataSource.registerCells(with: tableView)
@@ -128,7 +129,6 @@ class WeatherForecastViewController: UITableViewController {
     private func stopAndHideLoadingContentsAnimation() {
         loadingContentsActivityIndicatorView.stopAnimating()
         tableView.setSeparatorVisible(true)
-        configureRefreshControl()
     }
     
     private func showRetryView(with message: String? = nil) {
