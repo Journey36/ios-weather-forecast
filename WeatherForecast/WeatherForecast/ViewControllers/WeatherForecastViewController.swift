@@ -35,7 +35,8 @@ class WeatherForecastViewController: UITableViewController {
             }
         }, locationFailedAction: { error in
             DispatchQueue.main.async {
-                self.alertError(title: "위치 서비스 에러", message: error)
+                self.stopAndHideLoadingContentsAnimation()
+                self.showRetryView(with: "현재 위치를 찾을 수 없습니다.")
                 self.endRefreshing()
             }
         })
@@ -63,17 +64,20 @@ class WeatherForecastViewController: UITableViewController {
     private let loadingContentslabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
         label.font = UIFont.preferredFont(forTextStyle: .callout)
         label.text = "현재 위치 찾는 중..."
         return label
     }()
     
+    private var retryView: RetryView? = nil
+        
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableViewAndDataSource()
         configureLoadingContentsActivityIndicatorViewAndLabel()
-        
+
         startLoadingContentsAnimation()
         locationManager.requestAuthorization()
     }
@@ -126,6 +130,32 @@ class WeatherForecastViewController: UITableViewController {
         tableView.setSeparatorVisible(true)
         configureRefreshControl()
     }
+    
+    private func showRetryView(with message: String? = nil) {
+        retryView = RetryView(message: message)
+        guard let retryView = retryView else {
+            return
+        }
+        retryView.translatesAutoresizingMaskIntoConstraints = false
+        
+        tableView.addSubview(retryView)
+        retryView.leadingAnchor.constraint(equalTo: tableView.leadingAnchor).isActive = true
+        retryView.trailingAnchor.constraint(equalTo: tableView.trailingAnchor).isActive = true
+        retryView.topAnchor.constraint(equalTo: tableView.topAnchor).isActive = true
+        retryView.bottomAnchor.constraint(equalTo: tableView.bottomAnchor).isActive = true
+        retryView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        retryView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+
+        retryView.retryButton.addTarget(self, action: #selector(touchUpRetryButton), for: .touchUpInside)
+    }
+    
+    @objc private func touchUpRetryButton() {
+        retryView?.removeFromSuperview()
+        retryView = nil
+        
+        startLoadingContentsAnimation()
+        locationManager.requestLocation()
+    }
         
     private func openSettings() {
         if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -152,7 +182,9 @@ class WeatherForecastViewController: UITableViewController {
     }
     
     private func alertError(title: String?, message: String?) {
-        let okAction = UIAlertAction(title: "확인", style: .default)
+        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.stopAndHideLoadingContentsAnimation()
+        }
         
         let alert = UIAlertController(title: title,
                                       message: message,
