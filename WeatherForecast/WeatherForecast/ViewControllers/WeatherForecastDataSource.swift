@@ -9,7 +9,8 @@ import UIKit
 import CoreLocation
 
 class WeatherForecastDataSource: NSObject {
-    typealias AllDataLoadedAction = () -> Void
+    typealias DataLoadedAction = () -> Void
+    typealias DataRequestFailedAction = () -> Void
     
     enum WeathrForecastSection: Int, CaseIterable {
         case currentWeather
@@ -25,7 +26,10 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-    private var allDataLoadedAction: AllDataLoadedAction?
+    private var dataLoadedAction: DataLoadedAction?
+    private var dataRequestFailedAction: DataRequestFailedAction?
+
+    
     private var currentAddress: Address?
     private var isCurrentAdressDataLoaded: Bool {
         return currentAddress != nil
@@ -34,21 +38,25 @@ class WeatherForecastDataSource: NSObject {
     private var isCurrentWeatherDataLoaded: Bool {
         return currentWeatherData != nil
     }
+
     private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
     private var isFiveDayForecastDataLoaded: Bool {
         return !fiveDayforecastItems.isEmpty
     }
+    
     private var isAlldataLoaded: Bool {
         return isCurrentAdressDataLoaded && isCurrentWeatherDataLoaded && isFiveDayForecastDataLoaded
     }
+    private var isDataRequestFailed: Bool = false
     
     func registerCells(with tableView: UITableView) {
         tableView.register(CurrentWeatherCell.self, forCellReuseIdentifier: CurrentWeatherCell.identifier)
         tableView.register(FiveDayForecastCell.self, forCellReuseIdentifier: FiveDayForecastCell.identifier)
     }
     
-    init(allDataLoadedAction: @escaping AllDataLoadedAction) {
-        self.allDataLoadedAction = allDataLoadedAction
+    init(dataLoadedAction: @escaping DataLoadedAction, dataRequestFailedAction: @escaping DataRequestFailedAction) {
+        self.dataLoadedAction = dataLoadedAction
+        self.dataRequestFailedAction = dataRequestFailedAction
         super.init()
     }
     
@@ -120,16 +128,17 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-    func removeAllData() {
-        currentAddress = nil
-        currentWeatherData = nil
-        fiveDayforecastItems.removeAll()
-    }
+//    func removeAllData() {
+//        currentAddress = nil
+//        currentWeatherData = nil
+//        fiveDayforecastItems.removeAll()
+//    }
 }
 
 extension WeatherForecastDataSource {
     func requestAllData(by location: CLLocation) {
-        removeAllData()
+//        removeAllData()
+        isDataRequestFailed = false
         
         requestCurrentAddress(by: location)
         requestCurrentWeatehrData(by: location.coordinate)
@@ -155,10 +164,14 @@ extension WeatherForecastDataSource {
             case .success(let data):
                 self.currentWeatherData = data
                 if self.isAlldataLoaded {
-                    self.allDataLoadedAction?()
+                    self.dataLoadedAction?()
                 }
             case .failure(let error):
-                print(error)
+                print(#function, error)
+                if !self.isDataRequestFailed {
+                    self.dataRequestFailedAction?()
+                    self.isDataRequestFailed = true
+                }
             }
         }
     }
@@ -169,10 +182,14 @@ extension WeatherForecastDataSource {
             case .success(let data):
                 self.fiveDayforecastItems = data.items
                 if self.isAlldataLoaded {
-                    self.allDataLoadedAction?()
+                    self.dataLoadedAction?()
                 }
             case .failure(let error):
-                print(error)
+                print(#function, error)
+                if !self.isDataRequestFailed {
+                    self.dataRequestFailedAction?()
+                    self.isDataRequestFailed = true
+                }
             }
         }
     }

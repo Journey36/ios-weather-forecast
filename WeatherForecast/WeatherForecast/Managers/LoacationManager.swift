@@ -10,12 +10,12 @@ import CoreLocation
 class LocationManager: CLLocationManager {
     typealias LocationUpdatedAction = (CLLocation) -> Void
     typealias LocationDeniedAction = () -> Void
-    typealias LocationFailedAction = (String) -> Void
+    typealias LocationFailedAction = () -> Void
     
     private var locationUpdatedAction: LocationUpdatedAction?
     private var locationDeniedAction: LocationDeniedAction?
     private var locationFailedAction: LocationFailedAction?
-    private var isLocationRequested = false
+    private var currentLocation: CLLocation?
     
     init(locationUpdatedAction: @escaping LocationUpdatedAction,
          locationDeniedAction: @escaping LocationDeniedAction,
@@ -35,20 +35,24 @@ class LocationManager: CLLocationManager {
     
     override func requestLocation() {
         super.requestLocation()
-        isLocationRequested = true
     }
 }
 
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let currentLocation = locations.last else {
+        guard let lastUpdatedLocation = locations.last else {
             return
         }
-        if isLocationRequested {
-            isLocationRequested.toggle()
-            locationUpdatedAction?(currentLocation)
+        guard let currentLocation = currentLocation else {
+            self.currentLocation = lastUpdatedLocation
+            locationUpdatedAction?(lastUpdatedLocation)
+            return
         }
-        
+        guard lastUpdatedLocation.timestamp > currentLocation.timestamp else {
+            return
+        }
+        self.currentLocation = lastUpdatedLocation
+        locationUpdatedAction?(lastUpdatedLocation)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -64,10 +68,10 @@ extension LocationManager: CLLocationManagerDelegate {
             locationDeniedAction?()
         case .locationUnknown:
             print("didFailWithError - locationUnknown")
-            locationFailedAction?("현재 위치를 찾을 수 없습니다. 잠시 후 다시 시도해주세요.")
+            locationFailedAction?()
         default:
             print("didFailWithError - \(error.localizedDescription))")
-            locationFailedAction?(error.localizedDescription)
+            locationFailedAction?()
         }
     }
     

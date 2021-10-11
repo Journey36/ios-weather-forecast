@@ -533,10 +533,12 @@ H.I.G 문서를 봐도 어떻게 처리해야 할지 애매하다.
 2. 현재 위치 요청
     - 요청 중 Activity indicator와 내용 표시
     - 위치 정보 허용 안한 경우 Alert으로 허용 요청 (설정 이동 버튼 제공)
-    - 위치 정보 로드 실패하면 Alert으로 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+    - 현재 위치 찾기 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
 3. 현재 위치의 날씨 데이터 요청
     - 요청 중 Activity indicator와 내용 표시
-    - 데이터 로드 실패하면 Alert으로 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+    - 데이터 로드 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
 
 ### 참고
 

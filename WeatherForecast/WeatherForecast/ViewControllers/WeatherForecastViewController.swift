@@ -10,13 +10,22 @@ import UIKit
 class WeatherForecastViewController: UITableViewController {
     // MARK: - Properties
     private lazy var dataSource: WeatherForecastDataSource = {
-        let dataSource = WeatherForecastDataSource(allDataLoadedAction: {
+        let dataSource = WeatherForecastDataSource(dataLoadedAction: {
             DispatchQueue.main.async {
-                self.stopAndHideLoadingContentsAnimation()
+                self.removeLoadingView()
                 self.endRefreshing()
                 self.tableView.setSeparatorVisible(true)
                 self.tableView.reloadData()
                 self.configureRefreshControl()
+            }
+        }, dataRequestFailedAction: {
+            DispatchQueue.main.async {
+                if let _ = self.loadingView {
+                    self.removeLoadingView()
+                    self.createAndConfigureRetryView(with: "날씨 데이터를 로드할 수 없습니다.")
+                } else {
+                    self.alertError(title: "날씨 데이터를 로드할 수 없습니다.", message: "잠시 후 다시 시도하세요.")
+                }
             }
         })
         dataSource.registerCells(with: tableView)
@@ -27,18 +36,21 @@ class WeatherForecastViewController: UITableViewController {
         let locationManager = LocationManager(locationUpdatedAction: { location in
             self.dataSource.requestAllData(by: location)
             DispatchQueue.main.async {
-                self.loadingContentslabel.text = "날씨 데이터 로딩 중..."
+                self.loadingView?.set(status: .weatherData)
             }
         }, locationDeniedAction: {
             DispatchQueue.main.async {
                 self.alertLocationService()
                 self.endRefreshing()
             }
-        }, locationFailedAction: { error in
+        }, locationFailedAction: {
             DispatchQueue.main.async {
-                self.stopAndHideLoadingContentsAnimation()
-                self.showRetryView(with: "현재 위치를 찾을 수 없습니다.")
-                self.endRefreshing()
+                if let _ = self.loadingView {
+                    self.removeLoadingView()
+                    self.createAndConfigureRetryView(with: "현재 위치를 찾을 수 없습니다.")
+                } else {
+                    self.alertError(title: "현재 위치를 찾을 수 없습니다.", message: nil)
+                }
             }
         })
         return locationManager
@@ -50,36 +62,15 @@ class WeatherForecastViewController: UITableViewController {
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
-    
-    private let loadingContentsActivityIndicatorView: UIActivityIndicatorView = {
-        let activityIndicatorView = UIActivityIndicatorView()
-        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 13.0, *) {
-            activityIndicatorView.style = .large
-        } else {
-            activityIndicatorView.style = .whiteLarge
-        }
-        return activityIndicatorView
-    }()
-    
-    private let loadingContentslabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.font = UIFont.preferredFont(forTextStyle: .callout)
-        label.text = "현재 위치 찾는 중..."
-        return label
-    }()
-    
+        
+    private var loadingView: LoadingView? = nil
     private var retryView: RetryView? = nil
         
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableViewAndDataSource()
-        configureLoadingContentsActivityIndicatorViewAndLabel()
-
-        startLoadingContentsAnimation()
+        createAndConfigureLoadingView()
         locationManager.requestAuthorization()
     }
     
@@ -109,33 +100,33 @@ class WeatherForecastViewController: UITableViewController {
     @objc private func handleRefreshControl() {
         locationManager.requestLocation()
     }
-    
-    private func configureLoadingContentsActivityIndicatorViewAndLabel() {
-        tableView.addSubview(loadingContentsActivityIndicatorView)
-        loadingContentsActivityIndicatorView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
-        loadingContentsActivityIndicatorView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
         
-        loadingContentsActivityIndicatorView.addSubview(loadingContentslabel)
-        loadingContentslabel.textColor = loadingContentsActivityIndicatorView.color
-        loadingContentslabel.centerXAnchor.constraint(equalTo: loadingContentsActivityIndicatorView.centerXAnchor).isActive = true
-        loadingContentslabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: loadingContentsActivityIndicatorView.bottomAnchor, multiplier: 1).isActive = true
-    }
-    
-    private func startLoadingContentsAnimation() {
-        tableView.setSeparatorVisible(false)
-        loadingContentsActivityIndicatorView.startAnimating()
-    }
-    
-    private func stopAndHideLoadingContentsAnimation() {
-        loadingContentsActivityIndicatorView.stopAnimating()
-        tableView.setSeparatorVisible(true)
-    }
-    
-    private func showRetryView(with message: String? = nil) {
-        retryView = RetryView(message: message)
-        guard let retryView = retryView else {
+    private func createAndConfigureLoadingView() {
+        loadingView = LoadingView()
+        guard let loadingView = loadingView else {
             return
         }
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        
+        tableView.addSubview(loadingView)
+        loadingView.leadingAnchor.constraint(equalTo: tableView.leadingAnchor).isActive = true
+        loadingView.trailingAnchor.constraint(equalTo: tableView.trailingAnchor).isActive = true
+        loadingView.topAnchor.constraint(equalTo: tableView.topAnchor).isActive = true
+        loadingView.bottomAnchor.constraint(equalTo: tableView.bottomAnchor).isActive = true
+        loadingView.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        loadingView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+    }
+    
+    private func removeLoadingView() {
+        loadingView?.removeFromSuperview()
+        loadingView = nil
+    }
+    
+    private func createAndConfigureRetryView(with message: String? = nil) {
+        guard retryView == nil else {
+            return
+        }
+        let retryView = RetryView(message: message)
         retryView.translatesAutoresizingMaskIntoConstraints = false
         
         tableView.addSubview(retryView)
@@ -147,14 +138,18 @@ class WeatherForecastViewController: UITableViewController {
         retryView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
 
         retryView.retryButton.addTarget(self, action: #selector(touchUpRetryButton), for: .touchUpInside)
+        self.retryView = retryView
     }
     
     @objc private func touchUpRetryButton() {
+        removeRetryView()
+        createAndConfigureLoadingView()
+        locationManager.requestLocation()
+    }
+    
+    private func removeRetryView() {
         retryView?.removeFromSuperview()
         retryView = nil
-        
-        startLoadingContentsAnimation()
-        locationManager.requestLocation()
     }
         
     private func openSettings() {
@@ -183,7 +178,8 @@ class WeatherForecastViewController: UITableViewController {
     
     private func alertError(title: String?, message: String?) {
         let okAction = UIAlertAction(title: "확인", style: .default) { _ in
-            self.stopAndHideLoadingContentsAnimation()
+            self.removeLoadingView()
+            self.endRefreshing()
         }
         
         let alert = UIAlertController(title: title,
