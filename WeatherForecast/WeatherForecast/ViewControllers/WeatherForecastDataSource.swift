@@ -9,8 +9,8 @@ import UIKit
 import CoreLocation
 
 class WeatherForecastDataSource: NSObject {
-    typealias CurrentWeahterUpdatedAction = () -> Void
-    typealias FiveDayForecastUpdatedAction = () -> Void
+    typealias DataLoadedAction = () -> Void
+    typealias DataRequestFailedAction = () -> Void
     
     enum WeathrForecastSection: Int, CaseIterable {
         case currentWeather
@@ -26,34 +26,39 @@ class WeatherForecastDataSource: NSObject {
         }
     }
     
-//    private lazy var locationManager: LocationManager = {
-//        let locationManager = LocationManager(locationUpdatedAction: { location in
-//            self.requestAllData(by: location)
-//        })
-//        locationManager.requestAuthorization()
-//
-//        return locationManager
-//    }()
+    private var dataLoadedAction: DataLoadedAction?
+    private var dataRequestFailedAction: DataRequestFailedAction?
+
     
     private var currentAddress: Address?
-    private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
-    private var fiveDayForecastUpdatedAction: FiveDayForecastUpdatedAction?
+    private var isCurrentAdressDataLoaded: Bool {
+        return currentAddress != nil
+    }
     private var currentWeatherData: CurrentWeatherData?
-    private var currentWeatherUpdatedAction: CurrentWeahterUpdatedAction?
+    private var isCurrentWeatherDataLoaded: Bool {
+        return currentWeatherData != nil
+    }
+
+    private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
+    private var isFiveDayForecastDataLoaded: Bool {
+        return !fiveDayforecastItems.isEmpty
+    }
+    
+    private var isAlldataLoaded: Bool {
+        return isCurrentAdressDataLoaded && isCurrentWeatherDataLoaded && isFiveDayForecastDataLoaded
+    }
+    private var isDataRequestFailed: Bool = false
     
     func registerCells(with tableView: UITableView) {
         tableView.register(CurrentWeatherCell.self, forCellReuseIdentifier: CurrentWeatherCell.identifier)
         tableView.register(FiveDayForecastCell.self, forCellReuseIdentifier: FiveDayForecastCell.identifier)
     }
     
-    init(currentWeatherUpdatedAction: @escaping CurrentWeahterUpdatedAction,
-         fiveDayForecastUpdatedAction: @escaping FiveDayForecastUpdatedAction) {
-        self.currentWeatherUpdatedAction = currentWeatherUpdatedAction
-        self.fiveDayForecastUpdatedAction = fiveDayForecastUpdatedAction
+    init(dataLoadedAction: @escaping DataLoadedAction, dataRequestFailedAction: @escaping DataRequestFailedAction) {
+        self.dataLoadedAction = dataLoadedAction
+        self.dataRequestFailedAction = dataRequestFailedAction
         super.init()
     }
-    
-    
     
     private func dequeueAndConfigureCell(for indexPath: IndexPath, from tableView: UITableView) -> UITableViewCell {
         guard let section = WeathrForecastSection(rawValue: indexPath.section) else {
@@ -111,34 +116,33 @@ class WeatherForecastDataSource: NSObject {
     
     private func numberOfRows(in section: Int) -> Int {
         guard let section = WeathrForecastSection(rawValue: section),
-              let _ = currentAddress else {
+              isAlldataLoaded else {
             return 0
         }
-        
+
         switch section {
         case .currentWeather:
-            return currentWeatherData == nil ? 0 : 1
+            return 1
         case .fiveDayForecast:
             return fiveDayforecastItems.count
         }
     }
     
-    func removeAllData() {
-        currentAddress = nil
-        currentWeatherData = nil
-        fiveDayforecastItems.removeAll()
-    }
-    
-//    func refresh() {
-//        locationManager.requestLocation()
+//    func removeAllData() {
+//        currentAddress = nil
+//        currentWeatherData = nil
+//        fiveDayforecastItems.removeAll()
 //    }
 }
 
 extension WeatherForecastDataSource {
     func requestAllData(by location: CLLocation) {
-        self.requestCurrentAddress(by: location)
-        self.requestCurrentWeatehrData(by: location.coordinate)
-        self.requestFiveDayForecastData(by: location.coordinate)
+//        removeAllData()
+        isDataRequestFailed = false
+        
+        requestCurrentAddress(by: location)
+        requestCurrentWeatehrData(by: location.coordinate)
+        requestFiveDayForecastData(by: location.coordinate)
     }
     
     private func requestCurrentAddress(by location: CLLocation) {
@@ -159,9 +163,15 @@ extension WeatherForecastDataSource {
             switch result {
             case .success(let data):
                 self.currentWeatherData = data
-                self.currentWeatherUpdatedAction?()
+                if self.isAlldataLoaded {
+                    self.dataLoadedAction?()
+                }
             case .failure(let error):
-                print(error)
+                print(#function, error)
+                if !self.isDataRequestFailed {
+                    self.dataRequestFailedAction?()
+                    self.isDataRequestFailed = true
+                }
             }
         }
     }
@@ -171,9 +181,15 @@ extension WeatherForecastDataSource {
             switch result {
             case .success(let data):
                 self.fiveDayforecastItems = data.items
-                self.fiveDayForecastUpdatedAction?()
+                if self.isAlldataLoaded {
+                    self.dataLoadedAction?()
+                }
             case .failure(let error):
-                print(error)
+                print(#function, error)
+                if !self.isDataRequestFailed {
+                    self.dataRequestFailedAction?()
+                    self.isDataRequestFailed = true
+                }
             }
         }
     }
@@ -197,7 +213,7 @@ extension WeatherForecastDataSource: UITableViewDataSource {
 
 // MARK: - Model Extensions
 
-extension FiveDayForecastData.Item {
+private extension FiveDayForecastData.Item {
     static private let DateAndTimeFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
@@ -214,7 +230,7 @@ extension FiveDayForecastData.Item {
     }
 }
 
-extension Temperature {
+private extension Temperature {
     var currentCelsiusText: String {
         return celsiusText(from: currentCelsius)
     }
@@ -230,7 +246,7 @@ extension Temperature {
     }
 }
 
-extension Weather {
+private extension Weather {
     var iconURL: String {
         return OpenWeatherAPIConstatns.weatherIconBaseURL + "\(iconID).png"
     }
@@ -240,7 +256,7 @@ extension Weather {
     }
 }
 
-extension Address {
+private extension Address {
     var text: String {
         return administrativeArea + " " + locality
     }

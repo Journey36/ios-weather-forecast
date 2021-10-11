@@ -375,6 +375,7 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
+- 
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -410,3 +411,143 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 [👆목차로 가기](#목차)
 <br><br><br>
+
+
+
+## 새로고침 요청 방법
+
+새로고침을 요청하는 방법은 어떻게 해야할까?  
+생각나는 방법
+- 새로 고침 버튼을 눌러서 새로고침 요청
+- 테이블 뷰를 아래로 당겨서 새로고침 요청
+
+### H.I.G 문서를 확인해보자
+
+[H.I.G - Refresh Content Controls](https://developer.apple.com/design/human-interface-guidelines/ios/controls/refresh-content-controls/)
+- Refresh control은 다음에 자동 컨텐츠 업데이트가 발생할 때까지 기다리지 않고, 일반적으로 테이블 뷰에서 컨텐츠를 즉시 다시 로드하기 위해 수동으로 시작됩니다.
+- Refresh control은 activity indicator의 특화된 타입입니다.
+- hidden이 기본값이며 뷰를 리로드하기위해 당길 때 보입니다. (Mail앱 참고)
+- **컨텐츠 업데이트를 자동으로 수행합니다.** 사용자가 refresh하는 방법을 알더라도, 주기적으로 업데이트 될 것을 기대합니다. 사용자가 모든 업데이트의 시작을 책임지게 하지마세요. 데이터를 주기적으로 업데이트하여 데이터를 최신화하세요.
+- **값이 추가되는 경우에만 짧은 제목을 제공하세요.** refresh cotrol은 선택적으로 제목을 포함할 수 있습니다. 대부분의 경우 애니메이션이 컨텐츠가 로딩중임을 나타내기 때문에 제목을 포함할 필요가 없습니다. 제목을 포함한다면 새로고침 방법을 설명하지는 마세요. 대신에 새로고침되는 컨텐츠에 대한 값의 정보를 제공하세요. 예를들어 팟캐스트 앱에서는 마지막으로 업데이트된 팟캐스트를 알려주는 제목을 사용합니다.
+
+### Refresh Control 사용
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 로딩이 길어지는 동안 빈 화면만 보여짐
+
+위치를 파악하는 속도나 API에서 데이터를 받는 시간이 느려지는 경우에는 어떤 문제가 있으며 어떻게 처리해야 할까?
+
+- 정보가 표시 될 때 까지 테이블 뷰가 비어있다.
+- 실패하면 표시할 정보가 없으므로 비어있다.
+
+### H.I.G 문서를 확인해보자
+
+- 처음엔 refreshControl 사용할려 햇음
+- HIG 읽어보니 말그대로 컨텐츠를 다시 로드할 때 사용하는 용도임
+
+[H.I.G - Loading](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/loading/)
+- 컨텐츠를 로딩할 때 빈 화면이나 정지된 화면은 앱이 멈춘 것 처럼 보이게 하여 혼란과 좌절감을 줄 수 있고 잠재적으로 사용자가 앱을 떠날 수 있습니다.
+- **로딩중임을 확실히 인지 시키세요.** 최소한 어떤 일이 일어난다는것을 알려주는 activity spinner를 보여주세요. 더 나은 방법은, 진행률을 보여주어 사용자가 얼마나 기다려야하는지 가늠하게 하세요.
+- 가능한 빨리 컨텐츠를 보여주세요. 
+    - 컨텐츠가 다 로드된 후에 화면을 보이지말고, 일단 화면부터 보여주고 아직 로드되지않는 부분은 플레이스홀더로 텍스트나, 그래픽, 애니메이션으로 어느 컨텐츠가 아직 준비되지 않았는지 보여주라는 내용. 컨텐츠가 로드되면 플레이스홀더를 컨텐츠로 교체.
+    - 가능하면 다음 컨텐츠를 백그라운드에서 미리 로드하세요. (애니메이션이 재생 중이거나 사용자가 네비게이팅 중일 때)
+
+[H.I.G - Progress Indicators](https://developer.apple.com/design/human-interface-guidelines/ios/controls/progress-indicators/)
+- 컨텐츠 로딩이나 데이터 처리를 수행할 때 긴 시간동안 고정된 스크린에서 사용자를 기다리게 하지마라. 
+- Activity Indicator 또는 progress bar를 사용해서 앱이 멈추지 않았다는 것을 인지시키켜라.
+- Activity Indicator는 복잡한 데이터를 로딩이나 동기화하는 것 처럼 계량할 수 없는 작업을 하는 동안에 spin합니다. 작업이 완료되면 사라집니다. 액티비티 인디케이터는 상호작용하지 않습니다. 
+    - 소프트웨어 업데이트 화면 참고
+- Activity indicator다 progress bar를 선호하세요.
+    - 계량할 수 있는 액티비티는 progress bar를 사용
+- Activity indicator를 계속 움직이세요.
+    - 사람은 정지된 Activity indicator를 프로세스가 멈췄다고 연상하므로, 계속 회전시켜서 프로세스가 게속되고 있다고 알려줄 것
+- 도움이 된다면 작업이 완료될 때까지 유용한 정보를 제공한다. 추가 컨텍스트를 제공하려면 Activity indicator위에 레이블을 포함한다. Loading 또는 authentication같은 애매한 용어는 어느 값도 추가하지 않으므로 피하라.
+
+### 처리 방법
+
+- 앱 실행시 컨텐츠 로딩될 때 까지 Activity indicator 표시
+    - Activity indicator에 Label을 추가해서 위치를 찾는 중인지, 데이터를 로딩중인지 표시
+- 당겨서 새로고침할 때는 Refresh Control 사용 
+    - 새로고침 요청후 데이터 로드 완료되면 Refresh 애니메이션 종료
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 위치나 날씨 데이터 요청 실패하면 어떻게 처리할까
+
+### H.I.G 문서를 확인해보자
+
+[H.I.G - Feedback](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/)
+- 피드백은 앱이 무엇을 하는지 알고, 다음에 무엇을 할지 발견하고, 액션의 결과를 이해하는데 도움됨
+- Unobtrusively integrate status and other types of feedback into your interface.
+    - 매일 앱에서는 툴바에서 데이터의 로딩, 업데이트 된 시기를 알려줌
+- Avoid unnecessary alerts.
+    - alert은 강력한 피드백 메커니즘이므로 중요한 정보에만 사용해야 함
+    - 필수 정보가 아닌 너무 많은 alert을 보게되면, 사람들은 이후 alert을 그냥 무시할 것 임
+
+[H.I.G - Modality](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/modality/)
+- Reserve alerts for delivering essential — and ideally actionable — information.
+    - 필수적인 정보를 제공하기위해 경고를 예약한다
+    - 일반적으로 문제가 발생했기 때문에 경고가 보여진다.
+    - 경고는 현재의 경험을 중단시키고 탭해서 해제해야 하기 때문에 이렇게까지 침번하는게 정당다고 느끼는 것이 중요하다. (사용자 입장에서도 중요한 정보를 제공하라는 말)
+
+[H.I.G - Alert](https://developer.apple.com/design/human-interface-guidelines/ios/views/alerts/)
+- Alert은 앱 또는기기의 상태와 관련된 정보를 전달한다.
+- Minimize alerts. 얼럿을 최소화 하라
+    - 얼럿은 사용자 환경을 방해한다.
+    - 구매 컨펌, 삭제 같은 파괴적인액션, 문제에 대해 사람에게 알려주는 것 같은 중요한 상황에서만 사용해야 한다.
+    - 드문 얼럿은 사람이 얼럿을 진지하게 여기게 한다.
+- Test the appearance of alerts in both orientations.
+    - 얼럿은 landscape, portrailt 모드에서 다르게 보일 수 있다.
+    - 어느 방향에서는 스크롤 없이 읽을수 있게 텍스트를 최적화한다
+- Alert Titles and Messages
+    - 제목은 짧고 간결하게.
+    - 메세지를 제공해야한다면 짧고 완전한 문장으로.
+    - 얼럿이 문제에 대해 알려주거나 위험한 상황을 알려준다고 사람들이 알고 있으므로 사운드 경고, 판단이나 모욕적인 것을 피하라
+    - 버튼에 대한 설명을 피하라. 얼럿 제목과 버튼 제목이 클리어하다면 추가 설명이 필요 없을 것
+- Alert Buttons
+    - 간력하고 논리적인 타이틀을 줘라. View All, Reply, or Ignore. Use OK for simple acceptance. Avoid using Yes and No.
+    - 일반적으로 오른쪽 버튼이 누르기 쉽다.
+    - 취소 버튼은 왼쪽으로
+
+### 처리 방법
+
+H.I.G 문서를 봐도 어떻게 처리해야 할지 애매하다.  
+애플 공식 앱의 경우에는 네트워크 느린게 지속되면 얼럿이 아니고 텍스트와 Retry 버튼을 제공한다.
+- 앱스토어 앱, 팟캐스트 앱
+- 날씨 앱은 그냥 빈화면 계속
+
+앱의 기능에 있어서 위치와 날씨 데이터는 필수적이지만 실패시에 Alert이 아닌 재시도 버튼을 제공하는 것이 더 매끄럽다고 생각했다.
+- 그럼 refresh 일 경우에 실패 한다면? 어떻게 처리해야하나?
+    - 앱스토어 앱, 팟캐스트 앱은 첫 로딩후 리프레쉬가 없어서 확인 불가, 매일 앱은 그냥 업데이트 됐다고 처리됌
+    - RetryView를 보여서 이미 보여진 정보를 가리는 것보다는 alert로 표시하는게 더 낭느 방향 같음
+
+흐름
+1. 앱 실행
+2. 현재 위치 요청
+    - 요청 중 Activity indicator와 내용 표시
+    - 위치 정보 허용 안한 경우 Alert으로 허용 요청 (설정 이동 버튼 제공)
+    - 현재 위치 찾기 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
+3. 현재 위치의 날씨 데이터 요청
+    - 요청 중 Activity indicator와 내용 표시
+    - 데이터 로드 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
+        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
+
+### 참고
+
+- [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
+    - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
+    - 아이폰에서는 설정 - 개발자에서 사용가능
+
+## 런치스크린
+
+| 설정 전 | 설정 후 |
+| - | - |
+| ![](./Images/LaunchScreen_Before.gif) | ![](./Images/LaunchScreen_Demo.gif) |
