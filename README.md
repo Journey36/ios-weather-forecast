@@ -543,3 +543,9 @@ H.I.G 문서를 봐도 어떻게 처리해야 할지 애매하다.
 - [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
     - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
     - 아이폰에서는 설정 - 개발자에서 사용가능
+
+## 런치스크린
+
+| 설정 전 | 설정 후 |
+| - | - |
+| ![](./Images/LaunchScreen_Before.gif) | ![](./Images/LaunchScreen_Demo.gif) |
