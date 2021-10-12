@@ -1,6 +1,6 @@
 # 날씨 정보 앱
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+<!-- [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) -->
 
 | 📺 데모 | 💡 개요 |
 | ------- | ------- |
@@ -16,8 +16,15 @@
     - [기능](#기능)
     - [그라운드 룰](#그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-2. [다크 모드 지원](#다크-모드-지원)
-3. [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
+2. Human Interface Guidelines 준수
+    - [다크 모드 지원](#다크-모드-지원)
+    - [위치 서비스 접근 권한 허용하지 않은 경우 예외 처리](#위치-서비스-접근-권한-허용하지-않은-경우-예외-처리)
+    - 런치스크린
+    - Readable Content Guides
+    - 새로고침 요청
+    - 로딩 인지시키기
+    - 데이터 로드 실패시 처리
+    
 
 ### 정리 예정
 
@@ -30,9 +37,6 @@
     - 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
     - API 리퀘스트 객체의 재사용성
     - 다이나믹 폰트
-    - 앱 실행시 데이터 받기 전까지 테이블 뷰 비어보임
-        - 이전의 마지막 데이터 보이는 방법?
-        - 로딩 애니메이션 보이는 방법?
 
 <br><br><br>
 
@@ -104,38 +108,47 @@
 
 
 
+## Human Interface Guidelines 준수하기
+
+Human Interface Guidelines을 준수.
+
+[👆목차로 가기](#목차)
+<br><br><br>
+
+
+
 ## 다크 모드 지원
 
-다크 모드는 눈 피로도 감소, 사용 전력 감소 등의 장점이 있고 사용자가 원하는 기능이라 생각하여 지원했다.
-  
-| 모드 설정 변경 | 라이트 모드 | 다크 모드 |
+| 라이트 모드 | 다크 모드 | 라이트/다크 변경 |
 | - | - | - |
-| ![](./Images/DarkMode-Demo.gif) | ![](./Images/DarkMode-Light.png) | ![](./Images/DarkMode-Dark.png) |
+| ![](./Images/DarkMode-Light.png) | ![](./Images/DarkMode-Dark.png) | ![](./Images/DarkMode-Demo.gif) |
+| iOS 12 이하에서 기본 화면 <br> iOS 13 이상에서 라이트 모드 | iOS 13 이상에서 다크 모드 | 라이트/다크 모드 변경 즉시 적용 |
 
-### 공식 문서 참고
+### HIG와 공식문서 참고
 
-실무에서는 디자이너나 기획자가 구체적인 가이드를 주겠지만, 여의치 않은 경우 구체적인 가이드 없이 개발자가 작업할 수도 있을 것이다.  
-다행히 애플은 손쉽게 다크 모드를 지원할 수 있는 방법들을 마련해 두었다.  
-  
-애플 공식 문서를 참고하여 다크 모드 관련 내용을 정리했다.
+다크 모드를 어떻게 지원해야 하는지 HIG와 공식 문서를 살펴봤다.
 
-- [H.I.G - Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
-    - 다크 모드는 iOS 13부터 지원
-    - 설정에서 다크 모드를 선택하는 방법을 준수하기 (앱 자체 설정을 만들지 말고 설정 앱의 설정을 따르라는 것)
-    - 앱 자체의 설정 옵션으로 만든다면 더 힘들 것이고, 최악의 경우 앱이 깨질 수 있음.
-    - 라이트 모드, 다크 모드 둘 다 테스트 해봐야 한다.
-- [H.I.G - Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
+- [HIG - Dark Mode](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/dark-mode/)
+    - iOS 13 `설정`에서 다크 모드를 선택할 수 있다. 사용자는 모든 앱이 자신의 설정을 따르길 기대할 것 이다. (라이트/다크 모드를 선택할 수 있으니 사용자는 앱이 당연히 지원할 것이라 생각할 것)
+    - 설정에서 선택한 모드를 준수하라. (앱안의 설정을 만들지 말고 시스템 설정을 따르는게 작업도 줄어들고 사용자 입장에서도 자연스러움)
+    - 라이트/다크 모드에서 디자인을 테스트하라. (라이트 모드에서 좋은 디자인이라도 다크 모드에서는 이상할 수 있음)
+    - 현재 모드에 적응하는 다이나믹 컬러를 사용하라. 하드 코딩된 컬러 값이나 적응하지 않는 컬러는 피하라. (Semantic color를 사용하면 현재 모드에 자동으로 적응할 수 있다.)
+    - Label에는 시스템 제공하는 label color를 사용하라. (현재 모드에 자동으로 적응)
+- [HIG - Color](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/color/)
     - 시스템 컬러를 사용하면 라이트/다크 모드를 자동으로 지원할 수 있음 (같은 색이라도 모드별로 색상 값이 살짝 다르다)
     - semantic color로 Label, Placeholder text, link 등의 색상이 정의되어 자동으로 다크 모드를 지원한다.
 - [Providing Images for Different Appearances](https://developer.apple.com/documentation/uikit/uiimage/providing_images_for_different_appearances) (이미지에 다크 모드 지원하기)
     - different appearances를 관리하는 좋은 방법은 에셋 카탈로그를 사용하는 것
     - 시스템이 자동으로 현재 설정에 맞는 적절한 이미지를 그린다. 설정을 변경하면 새로운 설정으로 다시 그린다
 
-### 구현 방법
+### 다크 모드 지원이 필요한 요소
 
-화면에 배경 이미지와 텍스트만 있으므로 이 두가지만 다크 모드를 지원하면 되겠다.
+이제 앱의 화면을 구성하는 아래 요소들에 다크 모드를 지원한다.
+1. 배경 이미지
+2. Table View
+3. Label
 
-#### 1. 배경 이미지 다크 모드 지원
+#### 1. 배경 이미지 - 에셋 카탈로그 사용
 
 배경 이미지를 라이트/다크 모드로 나누어 에셋 카탈로그에 Imges Set으로 등록한다.
 
@@ -152,17 +165,20 @@ private let backgroundImageView: UIImageView = {
 }()
 ~~~
 
-#### 2. 텍스트에 다크 모드 지원
+#### 2. Table View - 백그라운드 뷰 설정
 
-이 앱에 사용된 텍스트는 모두 Label로 구현했다.  
-Label은 `semantic color - Label`를 사용하면 자동으로 다크 모드를 지원하므로 이 것을 사용하며, Label 텔스트의 기본값이므로 추가 작업 없이 그대로 사용하면 된다.
+테이블 뷰의 백그라운드 뷰로 `1`의 이미지 뷰를 설정해주면 간단하다.
 
-### 트러블 슈팅
+~~~swift
+tableView.backgroundView = backgroundImageView
+~~~
 
-#### 1. 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+테이블 뷰의 구분선인 `separator`는 `semantic color`가 기본값이므로 추가 작업이 필요 없다.
 
-- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없었다.
-- 해결 방법: backgroundImageView를 tableView.backgroundView로 set 해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토 레이아웃을 따로 추가할 필요가 없다), 이때 테이블 뷰 셀의 backgroundColor을 clear로 해주어야 테이블 뷰의 배경 이미지가 보인다.
+#### 3. Label - 추가 작업 불필요
+
+이 앱의 텍스트는 모두 Label로 구현했다.  
+Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원하는 `semantic color`인 `Label`이므로 추가 작업이 필요 없다.
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -376,6 +392,11 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
     - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
     - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
 - 
+
+### 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+
+- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없었다.
+- 해결 방법: backgroundImageView를 tableView.backgroundView로 set 해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토 레이아웃을 따로 추가할 필요가 없다), 이때 테이블 뷰 셀의 backgroundColor을 clear로 해주어야 테이블 뷰의 배경 이미지가 보인다.
 
 [👆목차로 가기](#목차)
 <br><br><br>
