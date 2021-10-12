@@ -164,6 +164,8 @@ class WeatherForecastViewController: UITableViewController {
         }
         let cancelAction = UIAlertAction(title: "위치 사용 안함", style: .default) { _ in
             self.tableView.refreshControl?.endRefreshing()
+            self.removeLoadingView()
+            self.createAndConfigureRetryView(with: "현재 위치를 찾을 수 없습니다.")
         }
         
         let alert = UIAlertController(title: "이 앱은 위치 서비스가 켜져 있을 때 사용할 수 있습니다.",
