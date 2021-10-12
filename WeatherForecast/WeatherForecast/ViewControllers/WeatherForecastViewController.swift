@@ -14,8 +14,8 @@ class WeatherForecastViewController: UITableViewController {
             DispatchQueue.main.async {
                 self.removeLoadingView()
                 self.endRefreshing()
-                self.tableView.setSeparatorVisible(true)
                 self.tableView.reloadData()
+                self.tableView.setSeparatorVisible(true)
                 self.configureRefreshControl()
             }
         }, dataRequestFailedAction: {
@@ -79,7 +79,7 @@ class WeatherForecastViewController: UITableViewController {
         tableView.backgroundView = backgroundImageView
         tableView.dataSource = dataSource
         tableView.allowsSelection = false
-        tableView.separatorStyle = .none
+        tableView.setSeparatorVisible(false)
     }
     
     private func configureRefreshControl() {
