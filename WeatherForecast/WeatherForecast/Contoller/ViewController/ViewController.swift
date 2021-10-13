@@ -94,7 +94,7 @@ extension ViewController: CLLocationManagerDelegate {
             case .success(let data):
                 self?.currentWeatherData = data
                 DispatchQueue.main.async {
-                    self?.forecastListView.reloadSections(IndexSet.init(integer: 0), with: .none)
+                    self?.forecastListView.reloadSections(IndexSet(integer: 0), with: .none)
                 }
             case .failure:
                 print(ErrorHandler.SystemError(type: .invalidData))
@@ -106,7 +106,7 @@ extension ViewController: CLLocationManagerDelegate {
             case .success(let data):
                 self?.forecastListData = data
                 DispatchQueue.main.async {
-                    self?.forecastListView.reloadSections(IndexSet.init(integer: 1), with: .none)
+                    self?.forecastListView.reloadSections(IndexSet(integer: 1), with: .none)
                 }
             case .failure:
                 print (ErrorHandler.SystemError(type: .invalidData))
@@ -154,9 +154,9 @@ extension ViewController: CLLocationManagerDelegate {
 // MARK: Table View
 extension ViewController: UITableViewDelegate ,UITableViewDataSource {
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return TableView.estimateRowHeight(of: indexPath.section)
+        return UITableView.automaticDimension
     }
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return ForecastType.allCases.count
     }
@@ -185,7 +185,7 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
             return currentWeatherCell
         }
         
-        guard let forecastListCell: ForecastListCell = tableView.dequeueReusableCell(withIdentifier: ForecastListCell.identifier) as? ForecastListCell else {
+        guard let forecastListCell: ForecastListCell = tableView.dequeueReusableCell(withIdentifier: ForecastListCell.identifier, for: indexPath) as? ForecastListCell else {
             return UITableViewCell()
         }
         
