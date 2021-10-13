@@ -23,30 +23,44 @@ class CurrentWeatherCell: UITableViewCell {
         let labelStackView: UIStackView = .init()
         labelStackView.axis = .vertical
         labelStackView.distribution = .equalSpacing
+        labelStackView.spacing = 5
         return labelStackView
     }()
     
     let currentLocationLabel: UILabel = {
         let currentLocationLabel: UILabel = .init()
-        currentLocationLabel.text = "-"
-        currentLocationLabel.font = .preferredFont(forTextStyle: .footnote)
+        currentLocationLabel.setDynamicType(style: .footnote)
         currentLocationLabel.numberOfLines = 0
+        currentLocationLabel.lineBreakMode = .byWordWrapping
+        if #available(iOS 13.0, *) {
+            currentLocationLabel.textColor = .label
+        } else {
+            currentLocationLabel.textColor = .white
+        }
         return currentLocationLabel
     }()
     
     let temperatureMinAndMaxLabel: UILabel = {
         let temperatureMinAndMaxLabel: UILabel = .init()
-        temperatureMinAndMaxLabel.text = "-"
-        temperatureMinAndMaxLabel.font = .preferredFont(forTextStyle: .footnote)
+        temperatureMinAndMaxLabel.setDynamicType(style: .footnote)
         temperatureMinAndMaxLabel.numberOfLines = 0
+        if #available(iOS 13.0, *) {
+            temperatureMinAndMaxLabel.textColor = .label
+        } else {
+            temperatureMinAndMaxLabel.textColor = .white
+        }
         return temperatureMinAndMaxLabel
     }()
     
     let currentTemperatureLabel: UILabel = {
         let currentTemperatureLabel: UILabel = .init()
-        currentTemperatureLabel.text = "-"
-        currentTemperatureLabel.font = .preferredFont(forTextStyle: .largeTitle)
+        currentTemperatureLabel.setDynamicType(style: .largeTitle)
         currentTemperatureLabel.numberOfLines = 0
+        if #available(iOS 13.0, *) {
+            currentTemperatureLabel.textColor = .label
+        } else {
+            currentTemperatureLabel.textColor = .white
+        }
         return currentTemperatureLabel
     }()
     
@@ -81,15 +95,17 @@ class CurrentWeatherCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             weatherIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            weatherIconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            weatherIconImageView.widthAnchor.constraint(equalTo: labelStackView.widthAnchor, multiplier: 0.4),
+            weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            weatherIconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            weatherIconImageView.trailingAnchor.constraint(equalTo: labelStackView.leadingAnchor, constant: -10),
+            weatherIconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            weatherIconImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
 
             labelStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            labelStackView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.7),
-            labelStackView.leadingAnchor.constraint(equalTo: weatherIconImageView.trailingAnchor, constant: 20)
+            labelStackView.topAnchor.constraint(equalTo: weatherIconImageView.topAnchor),
+            labelStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            labelStackView.bottomAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor)
         ])
-        
-        labelStackView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
     // MARK: - Initializers
