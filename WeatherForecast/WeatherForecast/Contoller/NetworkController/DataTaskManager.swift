@@ -30,9 +30,8 @@ struct DataTaskManager {
             
             do {
                 let decoder: JSONDecoder = .init()
-                // FIXME: 네이밍 변경 요망
-                let currentWeatherData: T = try decoder.decode(T.self, from: data)
-                return completion(.success(currentWeatherData))
+                let weatherData: T = try decoder.decode(T.self, from: data)
+                return completion(.success(weatherData))
             } catch {
                 completion(.failure(.SystemError(type: .invalidData)))
             }
