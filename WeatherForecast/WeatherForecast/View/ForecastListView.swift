@@ -8,6 +8,7 @@
 import UIKit
 
 final class ForecastListView: UITableView {
+    private let sideInsets: UIEdgeInsets = .init(top: 0, left: 10, bottom: 0, right: 10)
     // MARK: - Methods
     // MARK: Custom
     private func registerCells() {
@@ -16,7 +17,7 @@ final class ForecastListView: UITableView {
     }
     
     private func configureAttributes() {
-        separatorInset = TableView.separateInset
+        separatorInset = sideInsets
         allowsSelection = false
         let backgroundImageLiteral: UIImage = .init(imageLiteralResourceName: "Background")
         backgroundView = UIImageView(image: backgroundImageLiteral)
