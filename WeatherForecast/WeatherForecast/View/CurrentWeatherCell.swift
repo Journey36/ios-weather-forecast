@@ -11,6 +11,12 @@ class CurrentWeatherCell: UITableViewCell {
     // MARK: - Properties
     // MARK: Type Properties
     static let identifier: String = .init(describing: CurrentWeatherCell.self)
+    private var commonConstraints: [NSLayoutConstraint] = []
+    private var generalConstraints: [NSLayoutConstraint] = []
+    private var accessibilityConstraints: [NSLayoutConstraint] = []
+    private let imageViewSize: CGFloat = 120
+    private let imageViewSizeForA11y: CGFloat = 150
+    private let anchorIntervalConstant: CGFloat = 10
     
     // MARK: UI Components
     let weatherIconImageView: UIImageView = {
@@ -92,32 +98,60 @@ class CurrentWeatherCell: UITableViewCell {
         currentLocationLabel.translatesAutoresizingMaskIntoConstraints = false
         temperatureMinAndMaxLabel.translatesAutoresizingMaskIntoConstraints = false
         currentTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            weatherIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            weatherIconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            weatherIconImageView.trailingAnchor.constraint(equalTo: labelStackView.leadingAnchor, constant: -10),
-            weatherIconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            weatherIconImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
 
+        commonConstraints = [
+            weatherIconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: anchorIntervalConstant),
+            labelStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -anchorIntervalConstant),
+            labelStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -anchorIntervalConstant)
+        ]
+        generalConstraints = [
+            weatherIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            weatherIconImageView.trailingAnchor.constraint(equalTo: labelStackView.leadingAnchor, constant: -anchorIntervalConstant),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewSize),
+            weatherIconImageView.widthAnchor.constraint(equalToConstant: imageViewSize),
             labelStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            labelStackView.topAnchor.constraint(equalTo: weatherIconImageView.topAnchor),
-            labelStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            labelStackView.bottomAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor)
-        ])
+            labelStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: anchorIntervalConstant),
+        ]
+        accessibilityConstraints = [
+            weatherIconImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            weatherIconImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: anchorIntervalConstant),
+            weatherIconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -anchorIntervalConstant),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewSizeForA11y),
+            labelStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            labelStackView.topAnchor.constraint(equalTo: weatherIconImageView.bottomAnchor, constant: anchorIntervalConstant),
+            labelStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: anchorIntervalConstant),
+        ]
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateLayoutConstraints()
+        }
+    }
+
+    private func updateLayoutConstraints() {
+        configureConstraints()
+        NSLayoutConstraint.activate(commonConstraints)
+        if !traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+            NSLayoutConstraint.activate(generalConstraints)
+            NSLayoutConstraint.deactivate(accessibilityConstraints)
+        } else {
+            labelStackView.alignment = .center
+            NSLayoutConstraint.activate(accessibilityConstraints)
+            NSLayoutConstraint.deactivate(generalConstraints)
+        }
     }
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configureConstraints()
+        updateLayoutConstraints()
         hideLeftSeparatorInset()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        configureConstraints()
+        updateLayoutConstraints()
         hideLeftSeparatorInset()
     }
 }
