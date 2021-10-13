@@ -16,6 +16,7 @@ final class ForecastListCell: UITableViewCell {
     private var accessibilityConstraints: [NSLayoutConstraint] = []
     private let anchorIntervalConstant: CGFloat = 10
     private let imageViewHeight: CGFloat = 30
+    private let imageViewHeightForA11y: CGFloat = 105
     
     // MARK: UI Components
     let dateTimeLabel: UILabel = {
@@ -89,7 +90,7 @@ final class ForecastListCell: UITableViewCell {
             averageTemperatureLabel.trailingAnchor.constraint(equalTo: weatherIconImageView.leadingAnchor, constant: -anchorIntervalConstant),
             averageTemperatureLabel.topAnchor.constraint(equalTo: dateTimeLabel.bottomAnchor, constant: anchorIntervalConstant),
             averageTemperatureLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -anchorIntervalConstant),
-            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewHeight * 4)
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewHeightForA11y)
         ]
         averageTemperatureLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         averageTemperatureLabel.setContentHuggingPriority(.required, for: .vertical)
