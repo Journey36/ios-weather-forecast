@@ -11,15 +11,34 @@ final class ForecastListCell: UITableViewCell {
     // MARK: - Properties
     // MARK: Type Properties
     static let identifier: String = .init(describing: ForecastListCell.self)
+    private var commonConstraints: [NSLayoutConstraint] = []
+    private var generalConstraints: [NSLayoutConstraint] = []
+    private var accessibilityConstraints: [NSLayoutConstraint] = []
+    private let anchorIntervalConstant: CGFloat = 10
+    private let imageViewHeight: CGFloat = 30
     
     // MARK: UI Components
     let dateTimeLabel: UILabel = {
         let dateTimeLabel: UILabel = .init()
+        dateTimeLabel.setDynamicType(style: .body)
+        dateTimeLabel.lineBreakMode = .byWordWrapping
+        dateTimeLabel.numberOfLines = 0
+        if #available (iOS 13, *) {
+            dateTimeLabel.textColor = .label
+        } else {
+            dateTimeLabel.textColor = .white
+        }
         return dateTimeLabel
     }()
     
     let averageTemperatureLabel: UILabel = {
         let averageTemperatureLabel: UILabel = .init()
+        averageTemperatureLabel.setDynamicType(style: .body)
+        if #available(iOS 13, *) {
+            averageTemperatureLabel.textColor = .label
+        } else {
+            averageTemperatureLabel.textColor = .white
+        }
         return averageTemperatureLabel
     }()
     
@@ -48,22 +67,50 @@ final class ForecastListCell: UITableViewCell {
         dateTimeLabel.translatesAutoresizingMaskIntoConstraints = false
         averageTemperatureLabel.translatesAutoresizingMaskIntoConstraints = false
         weatherIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            dateTimeLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            dateTimeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            dateTimeLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.5),
-            
-            averageTemperatureLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            averageTemperatureLabel.trailingAnchor.constraint(equalTo: weatherIconImageView.leadingAnchor, constant: -10),
-            averageTemperatureLabel.heightAnchor.constraint(equalTo: dateTimeLabel.heightAnchor),
 
+        commonConstraints = [
+            dateTimeLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: anchorIntervalConstant),
+            dateTimeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: anchorIntervalConstant),
             weatherIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            weatherIconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            weatherIconImageView.heightAnchor.constraint(equalTo: averageTemperatureLabel.heightAnchor)
-        ])
-        
-        dateTimeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+            weatherIconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -anchorIntervalConstant),
+            weatherIconImageView.widthAnchor.constraint(equalTo: weatherIconImageView.heightAnchor)
+        ]
+        generalConstraints = [
+            dateTimeLabel.trailingAnchor.constraint(lessThanOrEqualTo: averageTemperatureLabel.leadingAnchor, constant: -anchorIntervalConstant),
+            dateTimeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -anchorIntervalConstant),
+            dateTimeLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            averageTemperatureLabel.lastBaselineAnchor.constraint(equalTo: dateTimeLabel.lastBaselineAnchor),
+            averageTemperatureLabel.trailingAnchor.constraint(equalTo: weatherIconImageView.leadingAnchor, constant: -anchorIntervalConstant),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewHeight)
+        ]
+        accessibilityConstraints = [
+            dateTimeLabel.trailingAnchor.constraint(lessThanOrEqualTo: weatherIconImageView.leadingAnchor, constant: anchorIntervalConstant),
+            averageTemperatureLabel.leadingAnchor.constraint(equalTo: dateTimeLabel.leadingAnchor),
+            averageTemperatureLabel.trailingAnchor.constraint(equalTo: weatherIconImageView.leadingAnchor, constant: -anchorIntervalConstant),
+            averageTemperatureLabel.topAnchor.constraint(equalTo: dateTimeLabel.bottomAnchor, constant: anchorIntervalConstant),
+            averageTemperatureLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -anchorIntervalConstant),
+            weatherIconImageView.heightAnchor.constraint(equalToConstant: imageViewHeight * 4)
+        ]
+        averageTemperatureLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        averageTemperatureLabel.setContentHuggingPriority(.required, for: .vertical)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateLayoutConstraints()
+        }
+    }
+
+    private func updateLayoutConstraints() {
+        configureConstraints()
+        NSLayoutConstraint.activate(commonConstraints)
+        if traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+            NSLayoutConstraint.deactivate(generalConstraints)
+            NSLayoutConstraint.activate(accessibilityConstraints)
+        } else {
+            NSLayoutConstraint.activate(generalConstraints)
+            NSLayoutConstraint.deactivate(accessibilityConstraints)
+        }
     }
     
     private func format(date: String) -> String? {
@@ -99,11 +146,11 @@ final class ForecastListCell: UITableViewCell {
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        configureConstraints()
+        updateLayoutConstraints()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        configureConstraints()
+        updateLayoutConstraints()
     }
 }
