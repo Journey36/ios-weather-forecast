@@ -8,54 +8,53 @@
 import UIKit
 
 struct DataTaskManager {
-    let session: URLSession = .shared
+    private let session: URLSession = .shared
     
-    func fetchWeatherData<T: Decodable>(on coordinates: CurrentLocation, type: ForecastType, completion: @escaping (Result<T, ErrorHandler>) -> Void) {
+    func fetchWeatherData<T: Decodable>(on coordinates: CurrentLocation, type: ForecastType, completion: @escaping (Result<T, ErrorTransactor.NetworkError>) -> Void) {
         guard let apiURL: URL = try? URLManager.setURL(coordinates, with: type) else {
-            return completion(.failure(.SystemError(type: .invalidURL)))
+            return
         }
         
         session.dataTask(with: apiURL) { (data: Data?, response: URLResponse?, error: Error?) in
             if let _: Error = error {
-                return completion(.failure(.SystemError(type: .unableToComplete)))
+                completion(.failure(ErrorTransactor.NetworkError.invalidURL))
             }
             
             guard let response: HTTPURLResponse = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-                return completion(.failure(.SystemError(type:  .invalidResponse)))
+                return completion(.failure(ErrorTransactor.NetworkError.unexpactableResponse))
             }
             
             guard let data: Data = data else {
-                return completion(.failure(.SystemError(type: .invalidData)))
+                return completion(.failure(ErrorTransactor.NetworkError.dataFetchingFailure))
             }
             
             do {
                 let decoder: JSONDecoder = .init()
                 let weatherData: T = try decoder.decode(T.self, from: data)
-                return completion(.success(weatherData))
+                completion(.success(weatherData))
             } catch {
-                completion(.failure(.SystemError(type: .invalidData)))
+                completion(.failure(.dataFetchingFailure))
             }
             
         }.resume()
     }
 
-    func fetchWeatherIcon(_ imageID: String, completion: @escaping (Result<UIImage, ErrorHandler>) -> Void) {
+    func fetchWeatherIcon(_ imageID: String, completion: @escaping (Result<UIImage, ErrorTransactor.NetworkError>) -> Void) {
         guard let targetURL: URL = try? URLManager.setImageURL(of: imageID) else {
-            // TODO: 에러 핸들링
             return
         }
 
         session.dataTask(with: targetURL) { (data: Data?, response: URLResponse?, error: Error?) in
             if let _: Error = error {
-                return
+                completion(.failure(ErrorTransactor.NetworkError.invalidURL))
             }
 
             guard let response: HTTPURLResponse = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-                return
+                return completion(.failure(ErrorTransactor.NetworkError.unexpactableResponse))
             }
 
             guard let data: Data = data, let iconImage: UIImage = .init(data: data) else {
-                return
+                return completion(.failure(ErrorTransactor.NetworkError.dataFetchingFailure))
             }
             
             return completion(.success(iconImage))
