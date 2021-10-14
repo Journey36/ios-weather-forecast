@@ -20,6 +20,7 @@
     - [다크 모드 지원](#다크-모드-지원)
     - [위치 접근 허용하지 않은 경우 예외 처리](#위치-접근-허용하지-않은-경우-예외-처리)
     - [Activity Indicator로 로딩 표시](#Activity-Indicator로-로딩-표시)
+    - [Refresh Control로 당겨서 새로 고침](#Refresh-Control로-당겨서-새로-고침)
     - 런치스크린
     - Readable Content Guides
     - 새로고침 요청
@@ -241,9 +242,9 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ## Activity Indicator로 로딩 표시
 
-<img src = ./Images/LoadingView_Demo.gif width="300px">
-
 ### 📺 데모
+
+<img src = ./Images/LoadingView_Demo.gif width="300px">
 
 1. 앱을 실행하면 현재 위치를 찾고, 현재 위치의 날씨 데이터를 로드한다.
 2. Activity Indicator 애니메이션과 함께 무엇을 로드하는 중인지 표시한다.
@@ -251,7 +252,7 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
     - 날시 데이터 로딩 표시: "날씨 데이터 로드 중..."
 3. 로딩이 완료되면 Activity Indicator는 사라지고 날씨 정보를 표시한다.
 
-### ❓ 개선할 문제 파악
+### 🔍 개선할 문제 파악
 
 좋은 환경에서는 로딩이 빨라서 날씨 정보가 금방 표시되므로 문제가 없지만,  
 만약 GPS 위치 파악이 힘들거나 통신속도가 느린 환경에서는 로딩이 길어질 것이고,
@@ -287,15 +288,15 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ## Refresh Control로 당겨서 새로 고침
 
-<img src = ./Images/RefreshControl_Demo.gif width="300px">
-
 ### 📺 데모
+
+<img src = ./Images/RefreshControl_Demo.gif width="300px">
 
 1. 화면을 아래로 끌어당기면 Refresh Control 애니메이션이 시작되며 새로 고침을 요청한다.
 2. 현재 위치를 다시 파악하고 현재 위치의 날씨 데이터를 다시 로드한다.
 3. 로드 완료되면 Refresh Control 애니메이션이 사라지고 새로운 날씨 정보로 업데이트된다.
 
-### ❓ 개선할 문제 파악
+### 🔍 개선할 문제 파악
 
 새로 고침은 어떤 방법으로 요청해야 할까?  
   
