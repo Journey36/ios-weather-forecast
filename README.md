@@ -245,12 +245,13 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ### 📺 데모와 설명
 
-| Launch Screen 적용 | 느리게 보기 | 적용 전 느리게 보기 |
+| 데모 | 느리게 보기 | 적용 전 느리게 보기 |
 | - | - | - |
-|  ![](./Images/LaunchScreen_Demo.gif) | ![](./Images/LaunchScreen_Slow_After.gif) | ![](./Images/LaunchScreen_Slow_Before.gif) |
+| ![](./Images/LaunchScreen_Demo.gif) | ![](./Images/LaunchScreen_Slow_After.gif) | ![](./Images/LaunchScreen_Slow_Before.gif) |
 
+- Launch Screen을 적용하면 앱이 실행되는 애니메이션의 첫 장면부터 앱의 첫 화면과 같은 배경의 Launch Screen이 보여서 앱을 누르자마자 앱이 바로 시작되는 느낌을 준다.
+- 영상을 느리게 보면 Launch Screen 적용 전에는 아무것도 없는 흰 화면으로 시작하여 첫 화면으로 변환되는 것을 확인할 수 있다.
 - 앱의 규모가 작아서 매우 빨리 로드되기에 런치 스크린 체감이 잘 되지는 않는다. 큰 규모의 앱이라면 느낄 수 있을 것 같다.
-- 영상을 느리게 보면 적용 전에는 아무것도 없는 흰 화면으로 시작하여 첫 화면으로 변환 되는게 보이긴 한다.
 
 ### 🔍 개선할 문제 파악
 
