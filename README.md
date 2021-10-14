@@ -19,6 +19,7 @@
 2. Human Interface Guidelines 준수
     - [다크 모드 지원](#다크-모드-지원)
     - [위치 접근 허용하지 않은 경우 예외 처리](#위치-접근-허용하지-않은-경우-예외-처리)
+    - [Launch Screen 적용](#Launch-Screen-적용)
     - [Activity Indicator로 로딩 표시](#Activity-Indicator로-로딩-표시)
     - [Refresh Control로 당겨서 새로 고침](#Refresh-Control로-당겨서-새로-고침)
     - 런치스크린
@@ -240,9 +241,50 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
+## Launch Screen 적용
+
+### 📺 데모와 설명
+
+| Launch Screen 적용 | 느리게 보기 | 적용 전 느리게 보기 |
+| - | - | - |
+|  ![](./Images/LaunchScreen_Demo.gif) | ![](./Images/LaunchScreen_Slow_After.gif) | ![](./Images/LaunchScreen_Slow_Before.gif) |
+
+- 앱의 규모가 작아서 매우 빨리 로드되기에 런치 스크린 체감이 잘 되지는 않는다. 큰 규모의 앱이라면 느낄 수 있을 것 같다.
+- 영상을 느리게 보면 적용 전에는 아무것도 없는 흰 화면으로 시작하여 첫 화면으로 변환 되는게 보이긴 한다.
+
+### 🔍 개선할 문제 파악
+
+- 앱이 처음 시작할 때의 화면은 어떻게 처리될까?
+- 큰 규모의 앱일수록 앱이 켜지는 속도가 느릴텐대 처리하는 방법이 있을까?
+
+### 📝 HIG에서 개선 방안 찾기
+
+- [HIG - Launching](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/launching/)
+    - 앱 실행(Launch) 경험은 앱에 대한 느낌에 큰 영향을 미친다. 어느 기기를 사용하던 앱을 언제 열었든 간에 **앱의 실행은 빠르고 매끄러워야** 한다.
+    - **Launch Screen을 제공하라**. 시스템은 앱의 시작에 Launch Screen을 표시하고 앱의 첫 화면으로 빠르게 전환된다. 이 과정은 앱이 빠르게 반응한다는 느낌을 준다. 매끄럽게 전환되기 위해 앱의 첫 화면과 유사하게 디자인한다.
+- [HIG - Launch Screen](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/launch-screen)
+    - 런치 스크린은 앱 시작 즉시 보여지고 앱의 첫 화면으로 빠르게 전환되어 앱이 빠르고 반응적인 느낌을 준다. 
+    - 예술적인 표현을 위한 기회는 아니다.
+    - 앱이 빠르게 시작되고 즉시 사용 준비된다는 것을 인지 시키기 위한 목적의 기능이다.
+    - **모든 앱은 런치 스크린을 제공해야 한다. (must!!!)**
+    - 앱의 첫 화면과 거의 비슷하게 디자인 하라. 다르게 디자인하면 화면 전환시 불편하게 보일 것. 기기의 현재 화면 모드에 맞게 하라 (라이트/다크 모드)
+    - 런치 스크린에 텍스트는 넣지 마라. 런치 스크린의 컨텐츠는 바뀌지 않으며, 텍스트는 로컬라이즈 되지 않는다.
+
+### 💡 개선 방법 결정
+
+- LaunchScreen.storyboard를 사용하여 런치 스크린을 설정한다.
+- 런치 스크린에 배경 이미지만 지정한다.
+    - 첫 화면에 특별한 디자인 요소가 없고, 배경 이미지 위에 테이블 뷰로 날씨 정보가 표시되는게 전부다.
+    - 에셋 카탈로그를 사용하여 배경 이미지 리소스를 만들어서 자동으로 다크 모드가 지원된다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
 ## Activity Indicator로 로딩 표시
 
-### 📺 데모
+### 📺 데모와 설명
 
 <img src = ./Images/LoadingView_Demo.gif width="300px">
 
@@ -288,7 +330,7 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ## Refresh Control로 당겨서 새로 고침
 
-### 📺 데모
+### 📺 데모와 설명
 
 <img src = ./Images/RefreshControl_Demo.gif width="300px">
 
@@ -582,9 +624,3 @@ H.I.G 문서를 봐도 어떻게 처리해야 할지 애매하다.
 - [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
     - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
     - 아이폰에서는 설정 - 개발자에서 사용가능
-
-## 런치스크린
-
-| 설정 전 | 설정 후 |
-| - | - |
-| ![](./Images/LaunchScreen_Before.gif) | ![](./Images/LaunchScreen_Demo.gif) |
