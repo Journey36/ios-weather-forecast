@@ -366,7 +366,7 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ### 📺 데모와 설명
 
-<img src = ./Images/ReadableContentGuide_Demo.gif width="300px">
+<img src = ./Images/ReadableContentGuide_Demo.gif width="700px">
 
 - 아이패드처럼 더 큰 화면에서도 컨텐츠의 레이아웃이 가운데로 읽기 편하게 배치된다.
 
@@ -407,7 +407,7 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 - readableContentGuide가 layoutMarginGuide보다 작으며 가운데로 배치된 것을 알 수 있다.
 - Dynamic Type Size가 작을수록 차이가 커지고, 일정 크기가 넘어가면 차이가 적어지다가 없어진다.
 
-<img src = ./Images/ReadableContentGuide_iPad.gif width="700px">
+<img src = ./Images/ReadableContentGuide_iPad.gif width="500px">
 
 - 아이패드는 가로방향에서 차이가 더 크지만, 세로방향에서도 차이를 확인할 수 있다.
 - 아이폰은 큰 기기더라도 세로 화면의 너비가 작아서 차이가 없지만, 아이패드는 세로방향에서도 너비가 넓으므로 차이를 둔다고 생각된다.
@@ -419,7 +419,7 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 - **readableContentGuide을 사용할 때 장점**으로는 아이패드 대응도 간단히 해볼 수 있다는 점이다. 물론 아이패드 화면을 제대로 지원하려면 아이폰과 아이패드 레이아웃을 따로 구성하는 것이 가장 보기 좋겠지만, 개발 시간이 부족하거나, UI가 간단한 화면이라면 readableContentGuide 사용만으로도 사용자가 느끼는 UX는 훨씬 좋아질 것 같다.  
   
 | layoutMarginGuide 적용 | readableContentGuide 적용 |
-| - | - |
+| :-: | :-: |
 | <img src = ./Images/ReadableContentGuide_Before.gif width="500px"> | <img src = ./Images/ReadableContentGuide_After.gif width="500px"> |
 | 컨텐츠를 한눈에 보기 불편 | 컨텐츠를 한눈에 보기 편함 |
 
