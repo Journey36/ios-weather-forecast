@@ -22,10 +22,7 @@
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [Activity Indicator로 로딩 표시](#Activity-Indicator로-로딩-표시)
     - [Refresh Control로 당겨서 새로 고침](#Refresh-Control로-당겨서-새로-고침)
-    - 런치스크린
-    - Readable Content Guides
-    - 새로고침 요청
-    - 로딩 인지시키기
+    - [Readable Content Guides로 큰 화면에서도 읽기 편한 레이아웃 지원](#Readable-Content-Guides로-큰-화면에서도-읽기-편한-레이아웃-지원)
     - 데이터 로드 실패시 처리
     
 
@@ -365,6 +362,72 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
+## Readable Content Guides로 큰 화면에서도 읽기 편한 레이아웃 지원
+
+### 📺 데모와 설명
+
+<img src = ./Images/ReadableContentGuide_Demo.gif width="300px">
+
+- 아이패드처럼 더 큰 화면에서도 컨텐츠의 레이아웃이 가운데로 읽기 편하게 배치된다.
+
+### 🔍 개선할 문제 파악
+
+- 오토 레이아웃으로 화면의 레이아웃을 구성할 때 적합한 기준은 무엇일까?
+- Layout Margins Guide로 충분한가?
+
+### 📝 HIG와 공식 문서에서 개선 방안 찾기
+
+-  [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
+    - 시스템은 컨텐츠와 읽기에 적합한 제한된 텍스트의 너비에 스탠다드 마진을 적용하기 쉽게 해주는 미리 정의된 layout guide를 포함합니다.
+    - 주요 컨텐츠가 기본 크기에서 명확하게 하라. 중요한 텍스트를 읽기위해 가로방향 스크롤을 할 필요가 없게 하라.
+    - **더 큰 기기에서 텍스트를 표시할 때 Readability margins을 적용하라**. 이 마진은 편안한 읽기 경험을 보장하기위해 텍스트 라인을 짧게 유지한다.
+- HIG에서는 layout guide를 사용하라고 나와있지만 정확히 어떤 프로퍼티를 사용하라는지는 나와있지 않아 애매하다. Auto Layout Guide도 찾아보자.
+- [Auto Layout Guide - Working with Constraints in Interface Builder - iOS-Only Features - Readable Content Guides](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
+    - 뷰의 readableContentGuide 프로퍼티는 뷰 내부의 텍스트 오브젝트를 위한 최대 적절 너비를 정의하는 layout guide를 포함한다.
+    - 이상적으로 컨텐츠는 사용자가 머리를 움직일 필요 없이 읽을 수 있을만 큼 충분히 좁아야 한다.
+    - **이 가이드의 사이즈는 시스템의 다Dynamic Type Size에 따라서 달라진다.**
+    - 대부분의 기기에서 readable content guides와 layout margins는 거의 또는 전혀 차이가 없다. 아이패드의 가로 방향에서 차이가 분명해진다.
+- [UIView - readableContentGuide](https://developer.apple.com/documentation/uikit/uiview/1622644-readablecontentguide)
+    - 뷰 안에서 readable한 너비의 영역을 나타내는 레이아웃 가이드.
+    - 이 레이아웃 가이드는 사용자가 라인을 따라가기 위해 억지로 머리를 움직일 필요 없이 읽기 쉽게 할 수 있는 영역을 정의한다.
+
+### ⁉️ readableContentGuide와 layoutMarginGuide의 차이 확인
+
+공식 문서를 통해 읽는 컨텐츠에는 readableContentGuide 사용을 권장한다는 것을 알았다. 하지만 구체적인 차이는 설명되지 않아서 예제 프로젝트를 만들어 확인해 봤다.
+  
+- readableContentGuide는 녹색, layoutMarginGuide는 노란색
+
+<img src = ./Images/ReadableContentGuide_Vertical.gif width="300px">
+
+- 아이폰의 세로 방향에서는 Dynamic Type Size의 최저, 최고 크기에도 차이점이 없다.
+
+<img src = ./Images/ReadableContentGuide_Horizontal.gif width="600px">
+
+- 아이폰의 가로 방향에서는 차이를 확인할 수 있다.
+- readableContentGuide가 layoutMarginGuide보다 작으며 가운데로 배치된 것을 알 수 있다.
+- Dynamic Type Size가 작을수록 차이가 커지고, 일정 크기가 넘어가면 차이가 적어지다가 없어진다.
+
+<img src = ./Images/ReadableContentGuide_iPad.gif width="700px">
+
+- 아이패드는 가로방향에서 차이가 더 크지만, 세로방향에서도 차이를 확인할 수 있다.
+- 아이폰은 큰 기기더라도 세로 화면의 너비가 작아서 차이가 없지만, 아이패드는 세로방향에서도 너비가 넓으므로 차이를 둔다고 생각된다.
+- 아이패드에서도 Dynamic Type Size가 일정 크기가 넘어가면 차이가 없어지는데, Dynamic Type Size가 클수록 (텍스트의 크기를 키울수록) 사용자는 기기를 더 멀리서 볼 테니 머리를 움직일 필요가 적어져서 그렇다고 생각된다.
+
+### 💡 개선 방법 결정
+
+- 화면에 컨텐츠 말고 다른 UI 요소가 없고, 컨텐츠가 모두 읽는 정보이므로 readableContentGuide에 맞춰서 레이아웃 하기로 결정했다.
+- **readableContentGuide을 사용할 때 장점**으로는 아이패드 대응도 간단히 해볼 수 있다는 점이다. 물론 아이패드 화면을 제대로 지원하려면 아이폰과 아이패드 레이아웃을 따로 구성하는 것이 가장 보기 좋겠지만, 개발 시간이 부족하거나, UI가 간단한 화면이라면 readableContentGuide 사용만으로도 사용자가 느끼는 UX는 훨씬 좋아질 것 같다.  
+  
+| layoutMarginGuide 적용 | readableContentGuide 적용 |
+| - | - |
+| <img src = ./Images/ReadableContentGuide_Before.gif width="500px"> | <img src = ./Images/ReadableContentGuide_After.gif width="500px"> |
+| 컨텐츠를 한눈에 보기 불편 | 컨텐츠를 한눈에 보기 편함 |
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
 ## API Response 데이터 모델 리팩토링
 
 ### 1. 하위 모델 통합
@@ -532,22 +595,7 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 - 결론: 폰트 사이즈에 따라 결정됨
     - constraint(equalToSystemSpacingBelow:multiplier:) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
 
-### Readable Content Guides로 아이패드까지 지원해 보기
 
-> [Auto Layout Guide - Working with Constraints in Interface Builder - Readable Content Guides](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
->
-> For most devices there is little or no difference between the readable content guides and the layout margins. The difference becomes obvious only when working on an iPad in landscape orientation.
-
-- 사용자가 텍스트를 읽을 때 머리를 움직일 필요없도록 충분히 좁게하기 위함
-- most devicews 표현이 애매해서 테스트 해본 결과, 아이폰에서는 layoutMarginGuide와 같고, 아이패드에선 다름
-- 시스템의 다이나믹 타입에따라 크기가 달라짐. 사용자가 더 큰 폰트를 선택하면 시스템은 더 넓은 가이드를 생성한다. 폰트 크기가 커지면 사용자는 기기를 더 멀리서 볼테니 이 가이드도 커진다고 되어있음
-
-> [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
->
-> Apply readability margins when displaying text on larger devices. These margins keep text lines short enough to ensure a comfortable reading experience.
-
-[👆목차로 가기](#목차)
-<br><br><br>
 
 
 
