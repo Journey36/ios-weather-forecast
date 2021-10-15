@@ -399,9 +399,9 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 <img src = ./Images/ReadableContentGuide_Vertical.gif width="300px">
 
-- 아이폰의 세로 방향에서는 Dynamic Type Size의 최저, 최고 크기에도 차이점이 없다.
-
-<img src = ./Images/ReadableContentGuide_Horizontal.gif width="600px">
+- 아이폰의 세로 방향에서는 Dynamic Type Size의 최저, 최고 크기에도 차이점이 없다.  
+  
+<img src = ./Images/ReadableContentGuide_Horizontal2.gif width="500px">
 
 - 아이폰의 가로 방향에서는 차이를 확인할 수 있다.
 - readableContentGuide가 layoutMarginGuide보다 작으며 가운데로 배치된 것을 알 수 있다.
