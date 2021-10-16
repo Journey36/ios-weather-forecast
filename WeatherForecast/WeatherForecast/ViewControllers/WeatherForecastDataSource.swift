@@ -31,23 +31,34 @@ class WeatherForecastDataSource: NSObject {
 
     
     private var currentAddress: Address?
-    private var isCurrentAdressDataLoaded: Bool {
+    private var isCurrentAddressDataRequestFailed: Bool? = nil
+    private var isCurrentAddressDataLoaded: Bool {
         return currentAddress != nil
     }
     private var currentWeatherData: CurrentWeatherData?
+    private var isCurrentWeatherDataRequestFailed: Bool? = nil
     private var isCurrentWeatherDataLoaded: Bool {
         return currentWeatherData != nil
     }
-
+    
     private var fiveDayforecastItems: [FiveDayForecastData.Item] = []
+    private var isFiveDayForecastDataRequestFailed: Bool? = nil
     private var isFiveDayForecastDataLoaded: Bool {
         return !fiveDayforecastItems.isEmpty
     }
     
     private var isAlldataLoaded: Bool {
-        return isCurrentAdressDataLoaded && isCurrentWeatherDataLoaded && isFiveDayForecastDataLoaded
+        return isCurrentAddressDataLoaded && isCurrentWeatherDataLoaded && isFiveDayForecastDataLoaded
     }
-    private var isDataRequestFailed: Bool = false
+    private var isAnyDataRequestFailed: Bool {
+        guard let isCurrentAddressDataRequestFailed = isCurrentAddressDataRequestFailed,
+              let isCurrentWeatherDataRequestFailed = isCurrentWeatherDataRequestFailed,
+              let isFiveDayForecastDataRequestFailed = isFiveDayForecastDataRequestFailed else {
+            return false
+        }
+        
+        return isCurrentAddressDataRequestFailed || isCurrentWeatherDataRequestFailed || isFiveDayForecastDataRequestFailed
+    }
     
     func registerCells(with tableView: UITableView) {
         tableView.register(CurrentWeatherCell.self, forCellReuseIdentifier: CurrentWeatherCell.identifier)
@@ -127,68 +138,76 @@ class WeatherForecastDataSource: NSObject {
             return fiveDayforecastItems.count
         }
     }
-    
-//    func removeAllData() {
-//        currentAddress = nil
-//        currentWeatherData = nil
-//        fiveDayforecastItems.removeAll()
-//    }
 }
 
 extension WeatherForecastDataSource {
     func requestAllData(by location: CLLocation) {
-//        removeAllData()
-        isDataRequestFailed = false
-        
         requestCurrentAddress(by: location)
         requestCurrentWeatehrData(by: location.coordinate)
         requestFiveDayForecastData(by: location.coordinate)
     }
     
     private func requestCurrentAddress(by location: CLLocation) {
+        isCurrentAddressDataRequestFailed = nil
+        
         CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
             if let errorCode = error {
-                print(errorCode)
+                print(#function, errorCode)
+                self.isCurrentAddressDataRequestFailed = true
+                if self.isAnyDataRequestFailed {
+                    self.dataRequestFailedAction?()
+                }
                 return
             }
-            if let administrativeArea = placemarks?.first?.administrativeArea,
-               let locality = placemarks?.first?.locality {
-                self.currentAddress = Address(administrativeArea: administrativeArea, locality: locality)
+            guard let administrativeArea = placemarks?.first?.administrativeArea,
+                  let locality = placemarks?.first?.locality else {
+                return
+            }
+            self.currentAddress = Address(administrativeArea: administrativeArea, locality: locality)
+            self.isCurrentAddressDataRequestFailed = false
+            if self.isAlldataLoaded {
+                self.dataLoadedAction?()
             }
         }
     }
-    
+        
     private func requestCurrentWeatehrData(by coordinate: CLLocationCoordinate2D) {
+        isCurrentWeatherDataRequestFailed = nil
+        
         OpenWeatherAPIConstatns.currentWeatherAPI.request(by: coordinate) { result in
             switch result {
             case .success(let data):
                 self.currentWeatherData = data
+                self.isCurrentWeatherDataRequestFailed = false
                 if self.isAlldataLoaded {
                     self.dataLoadedAction?()
                 }
             case .failure(let error):
                 print(#function, error)
-                if !self.isDataRequestFailed {
+                self.isCurrentWeatherDataRequestFailed = true
+                if self.isAnyDataRequestFailed {
                     self.dataRequestFailedAction?()
-                    self.isDataRequestFailed = true
                 }
             }
         }
     }
     
     private func requestFiveDayForecastData(by coordinate: CLLocationCoordinate2D) {
+        isFiveDayForecastDataRequestFailed = nil
+        
         OpenWeatherAPIConstatns.fiveDayForecastAPI.request(by: coordinate) { result in
             switch result {
             case .success(let data):
                 self.fiveDayforecastItems = data.items
+                self.isFiveDayForecastDataRequestFailed = false
                 if self.isAlldataLoaded {
                     self.dataLoadedAction?()
                 }
             case .failure(let error):
                 print(#function, error)
-                if !self.isDataRequestFailed {
+                self.isFiveDayForecastDataRequestFailed = true
+                if self.isAnyDataRequestFailed {
                     self.dataRequestFailedAction?()
-                    self.isDataRequestFailed = true
                 }
             }
         }

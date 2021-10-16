@@ -20,9 +20,9 @@ class WeatherForecastViewController: UITableViewController {
             }
         }, dataRequestFailedAction: {
             DispatchQueue.main.async {
-                if let _ = self.loadingView {
+                if self.isLoading() {
                     self.removeLoadingView()
-                    self.createAndConfigureRetryView(with: "날씨 데이터를 로드할 수 없습니다.")
+                    self.addRetryView(with: "날씨 데이터를 로드할 수 없습니다.")
                 } else {
                     self.alertError(title: "날씨 데이터를 로드할 수 없습니다.", message: "잠시 후 다시 시도하세요.")
                 }
@@ -45,9 +45,9 @@ class WeatherForecastViewController: UITableViewController {
             }
         }, locationFailedAction: {
             DispatchQueue.main.async {
-                if let _ = self.loadingView {
+                if self.isLoading() {
                     self.removeLoadingView()
-                    self.createAndConfigureRetryView(with: "현재 위치를 찾을 수 없습니다.")
+                    self.addRetryView(with: "현재 위치를 찾을 수 없습니다.")
                 } else {
                     self.alertError(title: "현재 위치를 찾을 수 없습니다.", message: nil)
                 }
@@ -70,7 +70,7 @@ class WeatherForecastViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableViewAndDataSource()
-        createAndConfigureLoadingView()
+        addLoadingView()
         locationManager.requestAuthorization()
     }
     
@@ -91,8 +91,7 @@ class WeatherForecastViewController: UITableViewController {
     }
     
     private func endRefreshing() {
-        if let isRefreshing = tableView.refreshControl?.isRefreshing,
-           isRefreshing {
+        if tableView.refreshControl?.isRefreshing == true {
             tableView.refreshControl?.endRefreshing()
         }
     }
@@ -101,7 +100,7 @@ class WeatherForecastViewController: UITableViewController {
         locationManager.requestLocation()
     }
         
-    private func createAndConfigureLoadingView() {
+    private func addLoadingView() {
         loadingView = LoadingView()
         guard let loadingView = loadingView else {
             return
@@ -122,7 +121,7 @@ class WeatherForecastViewController: UITableViewController {
         loadingView = nil
     }
     
-    private func createAndConfigureRetryView(with message: String? = nil) {
+    private func addRetryView(with message: String? = nil) {
         guard retryView == nil else {
             return
         }
@@ -143,7 +142,7 @@ class WeatherForecastViewController: UITableViewController {
     
     @objc private func touchUpRetryButton() {
         removeRetryView()
-        createAndConfigureLoadingView()
+        addLoadingView()
         locationManager.requestLocation()
     }
     
@@ -165,7 +164,7 @@ class WeatherForecastViewController: UITableViewController {
         let cancelAction = UIAlertAction(title: "위치 사용 안함", style: .default) { _ in
             self.tableView.refreshControl?.endRefreshing()
             self.removeLoadingView()
-            self.createAndConfigureRetryView(with: "현재 위치를 찾을 수 없습니다.")
+            self.addRetryView(with: "현재 위치를 찾을 수 없습니다.")
         }
         
         let alert = UIAlertController(title: "이 앱은 위치 서비스가 켜져 있을 때 사용할 수 있습니다.",
@@ -189,6 +188,14 @@ class WeatherForecastViewController: UITableViewController {
                                       preferredStyle: .alert)
         alert.addAction(okAction)
         present(alert, animated: true)
+    }
+    
+    private func isLoading() -> Bool {
+        if let _ = loadingView {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
