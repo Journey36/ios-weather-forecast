@@ -22,9 +22,9 @@
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [Activity Indicator로 로딩 표시](#Activity-Indicator로-로딩-표시)
     - [Refresh Control로 당겨서 새로 고침](#Refresh-Control로-당겨서-새로-고침)
+    - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
     - [Readable Content Guides로 큰 화면에서도 읽기 편한 레이아웃 지원](#Readable-Content-Guides로-큰-화면에서도-읽기-편한-레이아웃-지원)
-    - 데이터 로드 실패시 처리
-    
+
 
 ### 정리 예정
 
@@ -362,6 +362,58 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
+## 데이터 로드 실패 처리 - Alert
+
+### 📺 데모와 설명
+
+| 최초 로드 실패 | 새로 고침 실패 |
+| :-: | :-: |
+| <img src = ./Images/RequestFailed_RetryView.gif width="300px"> | <img src = ./Images/RequestFailed_Alert.gif width="300px"> |
+| 1. 앱 실행 후 최초 데이터 로드 실패 <br> 2. 화면에 내용과 재시도 버튼 표시 <br> 3. 재시도 버튼으로 다시 요청 | 1. 새로 고침 요청 실패 <br> 2. Alert으로 실패 내용과 확인 버튼 표시 <br> 3. 확인 버튼으로 Alert 끄기 |
+
+### 🔍 개선할 문제 파악
+
+- 날씨 데이터 로드 요청이 실패하면 어떻게 처리해야 할까?
+- 앱 실행 후 처음 로드할 때 실패하면?
+- 날씨 정보가 표시된 상태에서 새로 고침 할 때 실패하면?
+
+### 📝 HIG에서 개선 방안 찾기
+
+- [H.I.G - Feedback](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/)
+    - 피드백은 앱이 무엇을 하는지 알고, 다음에 무엇을 할지 발견하고, 액션의 결과를 이해하는 데 도움 된다.
+    - **불필요한 Alert은 피하라.** alert은 강력한 피드백 메커니즘이므로 중요한 정보에만 사용해야 함. 필수 정보가 아닌 너무 많은 alert을 보게되면, 사람들은 이후 alert을 그냥 무시할 것임
+- [H.I.G - Modality](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/modality/)
+    - **필수적인 정보**를 전달하기 위해 Alert을 준비하라. 일반적으로 문제가 발생했기 때문에 경고가 표시된다. 경고는 현재의 경험을 중단시키고 탭 해서 해제해야 하기 때문에 이렇게까지 침범하는 게 정당하다고 느끼는 것이 중요하다. **(사용자 입장에서도 중요한 정보를 제공하라는 의미)**
+- [H.I.G - Alert](https://developer.apple.com/design/human-interface-guidelines/ios/views/alerts/)
+    - Alert은 앱 또는 기기의 상태와 관련된 정보를 전달한다.
+    - Alert은 최소로 하라.
+        - Alert은 사용자 환경을 방해한다.
+        - 구매 컨펌, 삭제 같은 파괴적인 액션, 문제에 대해 사람에게 알려주는 것 같은 중요한 상황에서만 사용해야 한다.
+        - Alert은 드물게 발생해야 사람이 진지하게 여긴다. (자주 발생하면 큰 문제라 생각하지 않고 그냥 무시할 수 있다는 의미)
+    - landscape, portrailt 어느 방향에서는 스크롤 없이 읽을 수 있게 텍스트를 최적화하라.
+    - Alert의 제목과 메시지
+        - 제목은 짧고 간결하게
+        - 메시지를 제공해야 한다면 짧고 완전한 문장으로
+        - Alert이 문제에 대해 알려주거나 위험한 상황을 알려준다고 사람들이 알고 있으므로 사운드 경고, 판단이나 모욕적인 것을 피하라
+        - 버튼에 대한 설명을 피하라. 얼럿 제목과 버튼 제목이 명확하다면 추가 설명이 필요 없을 것
+    - Alert 버튼
+        - 간결하고 논리적인 제목 사용. View All, Reply, or Ignore. Use OK for simple acceptance. Avoid using Yes and No.
+        - 일반적으로 오른쪽 버튼이 누르기 쉽다.
+        - 취소 버튼은 왼쪽으로
+
+### 💡 개선 방법 결정
+
+- 최초 데이터 로드 실패 시 화면에 내용과 재시도 버튼 표시
+    - 앱에서 날씨 데이터는 필수적이므로 Alert을 사용해도 무리는 아니지만, 아직 화면에 표시된 정보가 없으므로 Alert보다는 화면 자체에 실패 내용과 재시도 버튼을 제공하는 것이 Alert을 줄이고 매끄러운 UX라고 생각했다.
+    - 애플의 `앱스토어`, `팟캐스트` 앱이 이런 방식인 것을 확인했다.
+- 새로 고침 실패 시 Alert으로 실패 내용과 확인 버튼 표시
+    - 이 경우에는 이미 화면에 표시된 날씨 정보를 지우고 재시도 버튼을 보이기보다는 Alert으로 실패를 알리고 이전 정보를 계속 보여주는 것이 낫다고 생각했다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
 ## Readable Content Guides로 큰 화면에서도 읽기 편한 레이아웃 지원
 
 ### 📺 데모와 설명
@@ -418,13 +470,16 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 - 화면에 컨텐츠 말고 다른 UI 요소가 없고, 컨텐츠가 모두 읽는 정보이므로 readableContentGuide에 맞춰서 레이아웃 하기로 결정했다.
 - **readableContentGuide을 사용할 때 장점**으로는 아이패드 대응도 간단히 해볼 수 있다는 점이다. 물론 아이패드 화면을 제대로 지원하려면 아이폰과 아이패드 레이아웃을 따로 구성하는 것이 가장 보기 좋겠지만, 개발 시간이 부족하거나, UI가 간단한 화면이라면 readableContentGuide 사용만으로도 사용자가 느끼는 UX는 훨씬 좋아질 것 같다.  
   
-| layoutMarginGuide 적용 | readableContentGuide 적용 |
+| layoutMarginGuide 기준 | readableContentGuide 기준 |
 | :-: | :-: |
-| <img src = ./Images/ReadableContentGuide_Before.gif width="500px"> | <img src = ./Images/ReadableContentGuide_After.gif width="500px"> |
+| ![](./Images/ReadableContentGuide_Before.gif) | ![](./Images/ReadableContentGuide_After.gif) |
 | 컨텐츠를 한눈에 보기 불편 | 컨텐츠를 한눈에 보기 편함 |
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
+
+
+
 
 
 
@@ -598,78 +653,9 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 
 
-
-
-
-
-
-
-
-
-
-## 위치나 날씨 데이터 요청 실패하면 어떻게 처리할까
-
-### H.I.G 문서를 확인해보자
-
-[H.I.G - Feedback](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/)
-- 피드백은 앱이 무엇을 하는지 알고, 다음에 무엇을 할지 발견하고, 액션의 결과를 이해하는데 도움됨
-- Unobtrusively integrate status and other types of feedback into your interface.
-    - 매일 앱에서는 툴바에서 데이터의 로딩, 업데이트 된 시기를 알려줌
-- Avoid unnecessary alerts.
-    - alert은 강력한 피드백 메커니즘이므로 중요한 정보에만 사용해야 함
-    - 필수 정보가 아닌 너무 많은 alert을 보게되면, 사람들은 이후 alert을 그냥 무시할 것 임
-
-[H.I.G - Modality](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/modality/)
-- Reserve alerts for delivering essential — and ideally actionable — information.
-    - 필수적인 정보를 제공하기위해 경고를 예약한다
-    - 일반적으로 문제가 발생했기 때문에 경고가 보여진다.
-    - 경고는 현재의 경험을 중단시키고 탭해서 해제해야 하기 때문에 이렇게까지 침번하는게 정당다고 느끼는 것이 중요하다. (사용자 입장에서도 중요한 정보를 제공하라는 말)
-
-[H.I.G - Alert](https://developer.apple.com/design/human-interface-guidelines/ios/views/alerts/)
-- Alert은 앱 또는기기의 상태와 관련된 정보를 전달한다.
-- Minimize alerts. 얼럿을 최소화 하라
-    - 얼럿은 사용자 환경을 방해한다.
-    - 구매 컨펌, 삭제 같은 파괴적인액션, 문제에 대해 사람에게 알려주는 것 같은 중요한 상황에서만 사용해야 한다.
-    - 드문 얼럿은 사람이 얼럿을 진지하게 여기게 한다.
-- Test the appearance of alerts in both orientations.
-    - 얼럿은 landscape, portrailt 모드에서 다르게 보일 수 있다.
-    - 어느 방향에서는 스크롤 없이 읽을수 있게 텍스트를 최적화한다
-- Alert Titles and Messages
-    - 제목은 짧고 간결하게.
-    - 메세지를 제공해야한다면 짧고 완전한 문장으로.
-    - 얼럿이 문제에 대해 알려주거나 위험한 상황을 알려준다고 사람들이 알고 있으므로 사운드 경고, 판단이나 모욕적인 것을 피하라
-    - 버튼에 대한 설명을 피하라. 얼럿 제목과 버튼 제목이 클리어하다면 추가 설명이 필요 없을 것
-- Alert Buttons
-    - 간력하고 논리적인 타이틀을 줘라. View All, Reply, or Ignore. Use OK for simple acceptance. Avoid using Yes and No.
-    - 일반적으로 오른쪽 버튼이 누르기 쉽다.
-    - 취소 버튼은 왼쪽으로
-
-### 처리 방법
-
-H.I.G 문서를 봐도 어떻게 처리해야 할지 애매하다.  
-애플 공식 앱의 경우에는 네트워크 느린게 지속되면 얼럿이 아니고 텍스트와 Retry 버튼을 제공한다.
-- 앱스토어 앱, 팟캐스트 앱
-- 날씨 앱은 그냥 빈화면 계속
-
-앱의 기능에 있어서 위치와 날씨 데이터는 필수적이지만 실패시에 Alert이 아닌 재시도 버튼을 제공하는 것이 더 매끄럽다고 생각했다.
-- 그럼 refresh 일 경우에 실패 한다면? 어떻게 처리해야하나?
-    - 앱스토어 앱, 팟캐스트 앱은 첫 로딩후 리프레쉬가 없어서 확인 불가, 매일 앱은 그냥 업데이트 됐다고 처리됌
-    - RetryView를 보여서 이미 보여진 정보를 가리는 것보다는 alert로 표시하는게 더 낭느 방향 같음
-
-흐름
-1. 앱 실행
-2. 현재 위치 요청
-    - 요청 중 Activity indicator와 내용 표시
-    - 위치 정보 허용 안한 경우 Alert으로 허용 요청 (설정 이동 버튼 제공)
-    - 현재 위치 찾기 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
-        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
-3. 현재 위치의 날씨 데이터 요청
-    - 요청 중 Activity indicator와 내용 표시
-    - 데이터 로드 실패하면 잠시 후 다시 시도 표시 (이때, Refresh Control이나 Activity Indicator는 종료)
-        - 테이블 뷰에 컨텐츠 있으면 Alert으로, 없으면 view에 표시
-
-### 참고
+## 참고
 
 - [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
     - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
     - 아이폰에서는 설정 - 개발자에서 사용가능
+
