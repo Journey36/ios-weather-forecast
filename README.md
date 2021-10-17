@@ -122,7 +122,7 @@
 
 ## Table View로 화면 구성
 
-![](./Images/TableView.jpg)
+![](./Images/TableView.png)
 
 ### 🔍 구현할 화면 구조 파악
 
