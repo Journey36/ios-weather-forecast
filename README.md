@@ -16,7 +16,16 @@
     - [기능](#기능)
     - [그라운드 룰](#그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-2. `Human Interface Guidelines`으로 문제 해결 또는 개선한 내용
+2. 설계 및 구현
+    - [Table View로 화면 구성](#Table-View로-화면-구성)
+    - MVC 패턴
+    - 모델
+    - 뷰
+    - 컨트롤러
+    - API 데이터 받아오기
+    - 코드로 오토 레이아웃
+    - 이미지 로컬 캐시
+3. `Human Interface Guidelines`으로 문제 해결 또는 개선한 내용
     - [다크 모드 지원](#다크-모드-지원)
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [위치 설정으로 이동하는 버튼 제공](#위치-설정으로-이동하는-버튼-제공)
@@ -107,6 +116,34 @@
 - [좋은 git 커밋 메시지를 작성하기 위한 8가지 약속](https://djkeh.github.io/articles/How-to-write-a-git-commit-message-kor/)
 
 [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## Table View로 화면 구성
+
+![](./Images/TableView.jpg)
+
+### 🔍 구현할 화면 구조 파악
+
+- 날씨 정보를 보여주는 화면 1개
+- 화면 전체 세로 스크롤
+- 상단에 `현재 날씨` 정보 표시
+- `현재 날씨` 아래에 `5일 예보`를 3시간 단위로 표시
+
+### 💡 구현 방법 결정
+
+- 화면 전체를 Table View로 구성
+    - Table View 선택 이유: `세로 방향`으로 스크롤 되며 컨텐츠가 `행`으로 반복되며 하나의 `열`만 존재
+- Table View는 Section 2개로 구성
+    - Section 0: 현재 날씨 cell 표시
+    - Section 1: 5일 예보 cell 표시
+- 다른 구현 방법
+    - 현재 날씨는 1개만 표시되므로 Header에 표시하고, 5일 예보만 cell로 만들어  Section 1개로 구성
+- 결정 이유
+    - 현재 날씨를 cell로 구현하고 여러 Section을 사용하게 구성해두면, 이후 앱 기능이 변경되거나 추가될 때 쉽게 재사용할 수 있겠다고 생각했다.
+
+### [👆목차로 가기](#목차)
 <br><br><br>
 
 
