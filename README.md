@@ -18,8 +18,7 @@
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. 설계 및 구현
     - [Table View로 화면 구성](#Table-View로-화면-구성)
-    - [MVC 패턴 설계](#MVC-패턴-설계)
-    - [MVC 패턴의 문제 개선](#MVC-패턴의-문제-개선)
+    - [MVC 패턴](#MVC-패턴)
     - API 데이터 받아오기
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
@@ -146,7 +145,9 @@
 
 
 
-## MVC 패턴 설계
+## MVC 패턴
+
+### MVC 패턴으로 앱 구조 설계
 
 ![](./Images/MVC.png)
 
@@ -157,7 +158,7 @@
 
 - MVC 외에 MVP, MVVM 등 다양한 아키텍처 패턴이 있지만, 애플에서 권장하는 기본 MVC 패턴부터 제대로 알고 경험해 봐야 다른 아키텍처와의 차이점과 장단점을 알 수 있겠다는 생각에 MVC 패턴을 사용하기로 결정했다.
 
-###  📝 공식 문서로 MVC 알아보기
+### 📝 공식 문서로 MVC 알아보기
 
 - 애플이 채택한 MVC는 기존에 통용되던 MVC 패턴과는 살짝 다르며 이에 대해 공식 문서에서 설명하고 있다.
 - [Cocoa Core Competencies - MVC](https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/MVC.html#//apple_ref/doc/uid/TP40008195-CH32-SW1)
@@ -182,20 +183,15 @@
         - Controller는 View가 만드는 유저 액션을 해석하며 모델 레이어에 새로 추가되거나 변경된 데이터를 전달한다.
         - Model이 변경될 때, Controller는 새로운 Model 데이터를 View에 전달하여 표시되게 한다.
 
-### [👆목차로 가기](#목차)
-<br><br><br>
+### MVC 패턴의 문제 개선
 
-
-
-## MVC 패턴의 문제 개선
-
-애플의 MVC 패턴은 ViewController에서 대부분의 Massive-View-Controller라고도 불린다.  
+애플의 MVC 패턴은 ViewController에게 너무 많은 역할을 주어서 앱 규모가 커질수록 비대해져 Massive-View-Controller라고도 불린다고 한다.
   
 이 프로젝트에서도 화면 1개를 담당하는 WeatherForeastViewController이 유일한 Controller이며 이 오브젝트 하나로 모든 View와 Model을 관리해야한다. 
 
 애플의 MVC 패턴 사용을 유지하면서 이 문제를 개선할 방법을 생각해봤다.
 
-### UITableViewDataSource 분리
+#### UITableViewDataSource 분리
 
 UITableViewDataSource는 Table View의 데이터를 관리하는 오브젝트다.
   
@@ -204,9 +200,15 @@ ViewController에서 직접 Table View의 데이터를 관리한다면 아래의
 ~~~swift
 class WeatherForecastViewController: UITableViewcontroller, UITableViewDataSource {
     // Table View에 사용할 데이터 모델 프로퍼티 필요
-}
 
-extension WeatherForecastViewController: UITableViewDataSource {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // tableView의 데이터소스로 이 ViewController를 등록
+        tableView.dataSoure.self
+    }
+
+    // UITableViewDataSource 메서드
     func numberOfSections(in tableView: UITableView) -> Int {
     }
 
@@ -226,7 +228,6 @@ UITableViewDataSource의 역할을 ViewController가 하도록 구성되어 Tabl
 
 ~~~swift
 class WeatherForecastViewController: UITableViewController {
-    // MARK: - Properties
     private lazy var dataSource: WeatherForecastDataSource = {
         let dataSource = WeatherForecastDataSource(dataLoadedAction: {
             DispatchQueue.main.async {
@@ -240,6 +241,11 @@ class WeatherForecastViewController: UITableViewController {
         dataSource.registerCells(with: tableView)
         return dataSource
     }()
+
+    private func configureTableViewAndDataSource() {
+        // tableView의 데이터소스로 등록
+        tableView.dataSource = dataSource
+    }
 }
 ~~~
 
@@ -247,7 +253,7 @@ class WeatherForecastViewController: UITableViewController {
 - WeatherForecastDataSource는 데이터를 관리하다가 필요할 때만 ViewController에 Callback 메서드를 통해 알려(Notify) 준다.
 - ViewController는 WeatherForecastDataSource가 알려(Notify) 줄 때, View를 업데이트할 내용을 정의하면 된다.
 
-WeatherForecastDataSource를 예로 들었지만, 다른 기능의 모델 오브젝트도 이런 방식으로 분리하여 MVC 패턴을 준수하면서 ViewController가 비대해지는 것을 개선하려 했다.
+추가로, 앱의 기능에 필수적인 GPS 위치를 담당하는 LocationManager도 이 방식으로 분리하여 MVC 패턴을 준수하면서 ViewController가 비대해지는 것을 개선하려 했다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
