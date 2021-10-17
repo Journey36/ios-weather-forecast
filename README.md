@@ -18,10 +18,8 @@
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. 설계 및 구현
     - [Table View로 화면 구성](#Table-View로-화면-구성)
-    - MVC 패턴
-    - 모델
-    - 뷰
-    - 컨트롤러
+    - [MVC 패턴 설계](#MVC-패턴-설계)
+    - [MVC 패턴의 문제 개선](#MVC-패턴의-문제-개선)
     - API 데이터 받아오기
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
@@ -142,6 +140,114 @@
     - 현재 날씨는 1개만 표시되므로 Header에 표시하고, 5일 예보만 cell로 만들어  Section 1개로 구성
 - 결정 이유
     - 현재 날씨를 cell로 구현하고 여러 Section을 사용하게 구성해두면, 이후 앱 기능이 변경되거나 추가될 때 쉽게 재사용할 수 있겠다고 생각했다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## MVC 패턴 설계
+
+![](./Images/MVC.png)
+
+- MVC 패턴의 핵심은 `Model`과 `View`가 직접 소통하지 않고, `Controller`가 중간에서 이들의 소통을 관리하는 것이며, 이 핵심을 최대한 지키기 노력했다.
+- 공식 문서 [Cocoa Core Competencies - MVC](https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/MVC.html#//apple_ref/doc/uid/TP40008195-CH32-SW1)를 참고하여 MVC 패턴으로 프로젝트를 설계했다.
+
+### 🔍 MVC 패턴을 선택한 이유
+
+- MVC 외에 MVP, MVVM 등 다양한 아키텍처 패턴이 있지만, 애플에서 권장하는 기본 MVC 패턴부터 제대로 알고 경험해 봐야 다른 아키텍처와의 차이점과 장단점을 알 수 있겠다는 생각에 MVC 패턴을 사용하기로 결정했다.
+
+###  📝 공식 문서로 MVC 알아보기
+
+- 애플이 채택한 MVC는 기존에 통용되던 MVC 패턴과는 살짝 다르며 이에 대해 공식 문서에서 설명하고 있다.
+- [Cocoa Core Competencies - MVC](https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/MVC.html#//apple_ref/doc/uid/TP40008195-CH32-SW1)
+    - MVC 패턴은 앱의 오브젝트에 Model, View, Controller 3가지 역할 중에 하나를 할당하며, 오브젝트의 역할뿐 아니라 서로 통신하는 방식을 정의한다.
+    - MVC는 Cocoa 애플리케이션에 적합한 설계를 위한 핵심이다. 이 애플리케이션의 많은 오브젝트는 재사용하기 더 쉬우며, 인터페이스가 더 잘 정의된다.
+    - MVC로 설계된 애플리케이션은 다른 애플리케이션보다 쉽게 확장 가능하다.
+    - 많은 Cocoa 기술과 아키텍처는 MVC에 기반하며 당신의 커스텀 오브젝트도 MVC 역할 중 하나가 요구된다.
+    - Model
+        - Model은 데이터를 캡슐화하며 데이터를 다루고 처리하는 로직과 계산을 정의한다.
+        - Model은 다른 Model과 하나 또는 여러 관계를 가질 수 있다.
+        - 이상적으로 Model은 View와 명시적으로 연결되어 있지 않아야 한다.
+        - 데이터를 생성하거나 수정하는 View의 유저 액션은 Controller를 통해 전달되며 Model을 만들거나 업데이트한다. 
+        - Model이 변경될 때(예를 들면, 네트워크 연결로 새로운 데이터가 수신됐을 때), Model은 Controllr에 알려서 적절한 View를 업데이트한다.
+    - View
+        - 사용자가 앱에서 볼 수 있는 오브젝트.
+        - 자신을 그리는 방법을 알며, 사용자 액션에 반응할 수 있다.
+        - 주요 목적은 앱의 Model로부터 데이터를 표시하는 것, 데이터의 수정을 허용하는 것
+        - View는 Model과 일반적으로 비결합이어야 한다.
+        - View는 Controller를 통해 Model 데이터의 변화에 대해 알고, 사용자의 변경 사항을 모델에 전달한다.
+    - Controller
+        - Controller는 View와 Model 사이를 중개한다.
+        - Controller는 View가 만드는 유저 액션을 해석하며 모델 레이어에 새로 추가되거나 변경된 데이터를 전달한다.
+        - Model이 변경될 때, Controller는 새로운 Model 데이터를 View에 전달하여 표시되게 한다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## MVC 패턴의 문제 개선
+
+애플의 MVC 패턴은 ViewController에서 대부분의 Massive-View-Controller라고도 불린다.  
+  
+이 프로젝트에서도 화면 1개를 담당하는 WeatherForeastViewController이 유일한 Controller이며 이 오브젝트 하나로 모든 View와 Model을 관리해야한다. 
+
+애플의 MVC 패턴 사용을 유지하면서 이 문제를 개선할 방법을 생각해봤다.
+
+### UITableViewDataSource 분리
+
+UITableViewDataSource는 Table View의 데이터를 관리하는 오브젝트다.
+  
+ViewController에서 직접 Table View의 데이터를 관리한다면 아래의 모습일 것이다.
+
+~~~swift
+class WeatherForecastViewController: UITableViewcontroller, UITableViewDataSource {
+    // Table View에 사용할 데이터 모델 프로퍼티 필요
+}
+
+extension WeatherForecastViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    }
+}
+~~~
+
+UITableViewDataSource의 역할을 ViewController가 하도록 구성되어 Table View 데이터를 관리하는 세세한 메서드를 모두 여기서 작성해야 하므로 ViewController의 역할과 코드가 늘어났다.  
+  
+그리고 만약 UITableViewDataSource 외에도 다른 기능이 이런식으로 추가된다면 ViewController는 계속해서 비대해진다.
+  
+이제 UITableViewDataSource를 ViewController와 분리해서 개선해보자.  
+
+~~~swift
+class WeatherForecastViewController: UITableViewController {
+    // MARK: - Properties
+    private lazy var dataSource: WeatherForecastDataSource = {
+        let dataSource = WeatherForecastDataSource(dataLoadedAction: {
+            DispatchQueue.main.async {
+                // 데이터 로드되면 실행되는 View 업데이트 등록
+            }
+        }, dataRequestFailedAction: {
+            DispatchQueue.main.async {
+                // 데이터 요청 실패하면 실행되는 View 업데이트 등록
+            }
+        })
+        dataSource.registerCells(with: tableView)
+        return dataSource
+    }()
+}
+~~~
+
+- Table View의 데이터 관리 역할은 WeatherForecastDataSource로 분리하여 구체적인 데이터 관리는 WeatherForecastDataSource 내부에서 수행된다.
+- WeatherForecastDataSource는 데이터를 관리하다가 필요할 때만 ViewController에 Callback 메서드를 통해 알려(Notify) 준다.
+- ViewController는 WeatherForecastDataSource가 알려(Notify) 줄 때, View를 업데이트할 내용을 정의하면 된다.
+
+WeatherForecastDataSource를 예로 들었지만, 다른 기능의 모델 오브젝트도 이런 방식으로 분리하여 MVC 패턴을 준수하면서 ViewController가 비대해지는 것을 개선하려 했다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
