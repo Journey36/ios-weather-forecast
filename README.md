@@ -22,10 +22,10 @@
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
-    - API 네트워크와 JSON 파싱
-    - 코드로 오토 레이아웃
+    - [네트워킹 객체](#네트워킹-객체)
     - 이미지 로컬 캐시
-3. **Human Interface Guidelines**으로 문제 해결 또는 개선한 내용
+    - 코드로 오토 레이아웃
+3. **Human Interface Guidelines**준수하여 UX 개선
     - [다크 모드 지원](#다크-모드-지원)
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [위치 설정으로 이동하는 버튼 제공](#위치-설정으로-이동하는-버튼-제공)
@@ -37,18 +37,8 @@
 
 ### 정리 예정
 
-- [API Response 데이터 모델 리팩토링](#API-Response-데이터-모델-리팩토링)
-- [API 데이터 요청](#API-데이터-요청)
-- [트러블 슈팅](#트러블-슈팅)
-    - 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
-- 고민
-    - Refresh Control 애니메이션 종료 시점
-- [오토 레이아웃](#오토-레이아웃)
-- 정리 목록
-    - MVC 패턴 준수
-    - 끌어서 새로고침시 새로고침 애니메이션 종료하는 시점
-    - API 리퀘스트 객체의 재사용성
-    - 다이나믹 폰트
+- RefreshControl 애니메이션 종료하는 시점
+- 다이나믹 폰트
 
 <br><br><br>
 
@@ -329,8 +319,8 @@ extension LocationManager: CLLocationManagerDelegate {
 ## 날씨 API의 Response 데이터 모델
 
 날씨 데이터는 [OpentWeather](https://openweathermap.org/)에서 제공하는 API중 2개를 사용한다.
-- 현재 날씨: [Current Weather Data API](https://openweathermap.org/current)
-- 5일 예보: [5 Day / 3 Hour Forecast API](https://openweathermap.org/forecast5)
+- 현재 날씨 API: [Current Weather Data API](https://openweathermap.org/current)
+- 5일 예보 API: [5 Day / 3 Hour Forecast API](https://openweathermap.org/forecast5)
 
 ### 모델 타입 구현
 
@@ -486,6 +476,181 @@ struct CurrentWeatherData: Decodable {
     var weather: Weather? {
         return weathers.first
     }
+}
+~~~
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 네트워킹 객체
+
+| 객체 | 설명 |
+| ---- | ---- |
+| APIClient | API에 직접 데이터를 요청하는 최하단 객체 <br> baseURL과 query로 URL을 만들어 해당 URL의 데이터를 요청하고 로드한다. <br> OpenWeahter뿐 아니라 다른 API가 추가되더라도 사용할 수 있도록 고려했다. |
+| APIClientError | APIClient의 데이터 요청 과정에서 발생할 수 있는 에러 정의 | 
+| OpenWeatherAPI | 사용할 API의 URL, apiKey, 단위, 언어 등을 미리 정의하여 OpenWeather의 API 요청을 간단히 하기 위한 객체 <br> APIClient를 사용하여 요청한다. <br> OpenWeatehrAPI를 쉽게 사용하도록 요청 파라미터를 정의했다.  |
+| OpenWeatherAPIConstants | API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민했다. |
+
+### APIClient
+
+- URLSession의 `dataTask(with:completionHandler:)`를 사용하여 데이터 요청 및 로드
+    - URLSession의 Task는 dataTask(), uploadTask(), downloadTask(), streamTask() 등 다양하지만 API의 데이터 요청에는 dataTask()가 적합하다고 생각했다. 
+        - uploadTask(): 데이터를 업로드하기 위한 요청 작업
+        - downloadTask(): 데이터의 다운로드를 요청하는 작업이므로 비슷하지만 dataTask()보다는 훨씬 큰 규모의 데이터를 다운로드하는데 적합한 작업이라 생각햇다.
+- completionHandler로 Result 객체를 통해 요청 성공 또는 실패 시 반환할 데이터를 구분했다. 
+    - Success
+        - Decodable 프로토콜을 채택한 제네릭 타입을 사용하여 Decodable을 준수하는 모델 타입은 모두 사용할 수 있도록 했다.
+        - 로드된 데이터는 decode 하여 지정한 모델 타입으로 전달한다.
+    - Failure: 실패할 경우 APIClientError로 정의된 에러 케이스를 전달한다.
+
+~~~swift
+struct APIClient<ResponseData: Decodable> {
+    let baseURL: String
+    let queryItems: [URLQueryItem]?
+    
+    private var url: URL? {
+        var urlComponents = URLComponents(string: baseURL)
+        urlComponents?.queryItems = queryItems
+        return urlComponents?.url
+    }
+    
+    init(baseURL: String, queryItems: [URLQueryItem]? = nil) {
+        self.baseURL = baseURL
+        self.queryItems = queryItems
+    }
+    
+    private func decodeData(from: Data) -> ResponseData? {
+        return try? JSONDecoder().decode(ResponseData.self, from: from)
+    }
+    
+    private func checkResponse(with statusCode: Int) throws {
+        switch statusCode {
+        case 200...299:
+            break // success
+        case 400...499:
+            throw APIClientError.clientError
+        case 500...599:
+            throw APIClientError.serverError
+        default:
+            throw APIClientError.unknownResponse
+        }
+    }
+    
+    func request(completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
+        guard let url = url else {
+            completionHandler(.failure(.invalidURL))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data,
+                  let httpResponse = response as? HTTPURLResponse,
+                  error == nil else {
+                completionHandler(.failure(.requestFailed))
+                return
+            }
+            
+            do {
+                try checkResponse(with: httpResponse.statusCode)
+            } catch let apiClientError as APIClientError {
+                completionHandler(.failure(apiClientError))
+                return
+            } catch {
+                completionHandler(.failure(.unknown))
+                return
+            }
+                        
+            if let decodedData = decodeData(from: data) {
+                completionHandler(.success(decodedData))
+            } else {
+                completionHandler(.failure(.jsonError))
+            }
+        }
+        task.resume()
+    }
+}
+~~~
+
+### OpenWeatherAPI
+
+- OpenWeather의 API로 데이터 요청 시 필요한 옵션 값을 쉽게 넣을 수 있게 설계했다.
+- API의 주소에 쿼리로 apiKey와 위도, 경도 정보를 추가하여 해당 위치의 데이터를 요청하게 된다.
+- 실제 요청은 APIClient 객체를 사용하므로 completionHandler는 동일하게 제네릭으로 구성했다.
+
+~~~swift
+struct OpenWeatherAPI<ResponseData: Decodable> {
+    var baseURL: String
+    var apiKey: String
+    var units: Units?
+    var language: Language?
+    var count: Int?
+    
+    private func queryItems(coordinate: CLLocationCoordinate2D) -> [URLQueryItem] {
+        var queryItems = [URLQueryItem]()
+        queryItems += [URLQueryItem(name: "lat", value: "\(coordinate.latitude)"),
+                       URLQueryItem(name: "lon", value: "\(coordinate.longitude)"),
+                       URLQueryItem(name: "appid", value: apiKey),]
+        if let units = units {
+            queryItems.append(units.queryItem())
+        }
+        if let language = language {
+            queryItems.append(language.queryItem())
+        }
+        if let count = count {
+            queryItems.append(URLQueryItem(name: "cnt", value: "\(count)"))
+        }
+        return queryItems
+    }
+  
+    func request(by coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<ResponseData, APIClientError>) -> Void) {
+        let queryItems = queryItems(coordinate: coordinate)
+        let apiClient = APIClient<ResponseData>(baseURL: baseURL, queryItems: queryItems)
+        apiClient.request() { result in
+            switch result {
+            case .success(let data):
+                completionHandler(.success(data))
+            case .failure(let error):
+                completionHandler(.failure(error))
+            }
+        }
+    }
+}
+~~~
+
+### 네트워킹 객체 리팩토링 전
+
+- 문제점 파악
+    - completionHandler의 Result 객체에 제네릭을 적용하지 않아서 메서드를 재사용하지 못하고, API마다 메서드를 정의해야 했다.
+    - API마다 요청에 필요한 옵션 쿼리 값이 다른데, 이를 하드코딩했다.
+    - 네트워크 에러도 각 API의 nested type이라 동일한 에러도 다르게 처리해야 했다.
+
+~~~swift
+func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
+    guard let url = URL(string: "\(baseURL)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=metric&appid=\(apiKey)") else {
+        completionHandler(.failure(.invalidURL))
+        return
+    }
+    
+    let dataTask = urlSession.dataTask(with: url) { data, _, error in
+        if let error = error {
+            print(error.localizedDescription)
+            completionHandler(.failure(.requestFailed))
+            return
+        }
+        guard let data = data else {
+            completionHandler(.failure(.noData))
+            return
+        }
+        
+        if let decodedData: CurrentWeatherData = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
+            completionHandler(.success(decodedData))
+        } else {
+            completionHandler(.failure(.invalidData))
+        }
+    }
+    dataTask.resume()
 }
 ~~~
 
@@ -866,63 +1031,6 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
-## API 데이터 요청
-
-- API 에러 타입을 따로 분리하여 두 API에서 동일하게 사용
-- get 메서드 내부의 기능을 별도 함수로 분리, 제네리사용
-
-### 리팩토링 전
-
-~~~swift
-func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (Result<CurrentWeatherData, APIError>) -> Void) {
-    guard let url = URL(string: "\(baseURL)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=metric&appid=\(apiKey)") else {
-        completionHandler(.failure(.invalidURL))
-        return
-    }
-    
-    let dataTask = urlSession.dataTask(with: url) { data, _, error in
-        if let error = error {
-            print(error.localizedDescription)
-            completionHandler(.failure(.requestFailed))
-            return
-        }
-        guard let data = data else {
-            completionHandler(.failure(.noData))
-            return
-        }
-        
-        if let decodedData: CurrentWeatherData = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
-            completionHandler(.success(decodedData))
-        } else {
-            completionHandler(.failure(.invalidData))
-        }
-    }
-    dataTask.resume()
-}
-~~~
-
-#### API Request 객체
-
-APIClient
-- 직접 request하는 객체
-- 다른 API에서도 두루 쓸수 있도록 고민
-- 에러 처리
-
-OpenWeatherAPI
-- OpenWeatehrAPI 전용으로 고민
-
-OpenWeatehrAPIList
-- API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민
-
-### View 디버깅시 뷰 객체 찾기
-
-http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
-
-
 ## 트러블 슈팅
 
 - 다른 기기 시뮬레이터 실행했더니 새로고침해도 계속 빈화면만 나옴
@@ -963,4 +1071,5 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 - [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
     - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
     - 아이폰에서는 설정 - 개발자에서 사용가능
-
+- View 디버깅시 뷰 객체 찾기
+    - [링크](http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy)
