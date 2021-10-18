@@ -19,8 +19,8 @@
 2. 설계 및 구현
     - [Table View로 화면 구성](#Table-View로-화면-구성)
     - [MVC 패턴 사용](#MVC-패턴-사용)
-    - [MVC 패턴의 문제 개선](#MVC-패턴의-문제-개선)
-    - 위치 정보
+    - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
+    - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
     - API 데이터 받아오기
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
@@ -188,13 +188,13 @@
 
 
 
-## MVC 패턴의 문제 개선
+## MVC 패턴의 문제 개선 - TableViewDataSource 분리
 
 애플의 MVC 패턴은 ViewController가 너무 커지는 문제가 있고, 이를 Massive-View-Controller라고 불린다.
   
 이 프로젝트에서도 화면 1개를 담당하는 WeatherForeastViewController이 유일한 Controller이며 이 오브젝트 하나로 모든 View와 Model을 관리해야한다. 
 
-애플의 MVC 패턴 사용을 유지하면서 이 문제를 개선할 방법을 생각해봤다.
+애플의 MVC 패턴을 준수하면서 이 문제를 개선할 방법을 생각해봤다.
 
 ### UITableViewDataSource 객체 분리
 
@@ -262,22 +262,63 @@ class WeatherForecastViewController: UITableViewController {
 
 ![](./Images/MVC_DataSource.png)
 
-### LocationManager 객체 분리
-
-추가로, 앱의 기능에 필수적인 GPS 위치를 담당하는 LocationManager도 이 방식으로 분리하여 MVC 패턴을 준수하면서 ViewController가 비대해지는 것을 개선하려 했다.
-
-![](./Images/MVC_LocationManager.png)
-
 ### [👆목차로 가기](#목차)
 <br><br><br>
 
 
 
-## 위치 정보
+## 위치 서비스 객체 - LocationManager
 
-### 위치 정보를 
+![](./Images/MVC_LocationManager.png)
 
+- 위치 서비스는 CLLocatiomManager로 사용할 수 있다.
+- 위치 서비스 관리 역할을 담당하는 `LocationManager` 객체를 만들어서 ViewController와 분리하여 MVC 패턴을 준수했다.
+- 커스텀 객체 `LocationManager`을 만들고 `CLLocationManager`을 상속한다.
+- `CLLocationManagerDelegate` 프로토콜을 추가하고, `LocationManager`에 위임한다.
 
+~~~swift
+import CoreLocation
+
+class LocationManager: CLLocationManager {
+    init() {
+        super.init()
+        delegate = self
+    }
+}
+
+extension LocationManager: CLLocationManagerDelegate {
+}
+~~~
+
+### 현재 위치 찾기 흐름
+
+1. 사용자에게 위치 권환 요청
+    - `requestWhenInUseAuthorization()` 메서드 사용
+    - 현재 위치 정보가 계속 필요하지 않기에 `requestAlwaysAuthorization()`보다 `requestWhenInUseAuthorization()`이 맞다고 생각했다.
+2. 현재 위치 요청 
+    - `requestLocation()` 메서드로 한 번만 요청한다.
+    - `startUpdatingLocation()`으로 위치 정보를 계속 받을 수 있지만, 위치 정보 하나면 충분하다 생각해서 `requestLocation()`을 선택했다.
+3. 위치 데이터 받기
+    - 위치 데이터가 업데이트되면 델리게이트 메서드 `locationManager(_:didUpdateLocations:)`를 통해 `CLLocaion`이 전달된다.
+    - 전달된 `CLLocation`데이터를 콜백 메서드 `locationUpdatedAction()`을 통해 `ViewController`에 전달한다.
+4. 에러 처리
+    - 위치 요청이 실패하면 델리게이트 메서드 `locationManager(_:didFailWithError:)`를 통해 `Error`가 전달된다.
+    - Error 종류에 따라서 적절한 처리를 하도록 `ViewController` 콜백 메서드로 알려준다.
+    - 위치 권한 거절 에러는 `ViewController`에서 사용자에게 다시 위치 권한을 요청한다.
+    - 그 외 에러는 위치 데이터 로드 실패 메시지를 보여준다.
+
+### 트러블 슈팅 - 현재 위치를 찾는 속도가 5~10초 정도로 느린 현상
+
+- 문제 파악
+    - 시뮬레이터로 앱 실행 시 위치 찾는 속도가 5~10초 정도로 느리다.
+    - 실 기기라면 GPS 신호 약한 문제 등으로 느리다고 생각할 수 있지만, 시뮬레이터에서도 느리다.
+- 해결 과정
+    - `desiredAccuracy` 프로퍼티를 `kCLLocationAccuracyThreeKilometer`로 변경 후 1~2초 정도로 빨라졌다.
+- 원인
+    - `desiredAccuracy`을 따로 설정하지 않아서 기본값인 `kCLLocationAccuracyBest`가 적용되는데, 이는 높은 정확도를 요구해서 위치 파악에 시간이 더 걸리고, 시뮬레이터라도 그 시간이 적용되는 것 같다.
+- 해결 방법
+    - 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
+    - 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
