@@ -18,11 +18,13 @@
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. 설계 및 구현
     - [Table View로 화면 구성](#Table-View로-화면-구성)
-    - [MVC 패턴](#MVC-패턴)
+    - [MVC 패턴 사용](#MVC-패턴-사용)
+    - [MVC 패턴의 문제 개선](#MVC-패턴의-문제-개선)
+    - 위치 정보
     - API 데이터 받아오기
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
-3. `Human Interface Guidelines`으로 문제 해결 또는 개선한 내용
+3. **Human Interface Guidelines**으로 문제 해결 또는 개선한 내용
     - [다크 모드 지원](#다크-모드-지원)
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [위치 설정으로 이동하는 버튼 제공](#위치-설정으로-이동하는-버튼-제공)
@@ -145,9 +147,7 @@
 
 
 
-## MVC 패턴
-
-### MVC 패턴으로 앱 구조 설계
+## MVC 패턴 사용
 
 ![](./Images/MVC.png)
 
@@ -162,10 +162,10 @@
 
 - 애플이 채택한 MVC는 기존에 통용되던 MVC 패턴과는 살짝 다르며 이에 대해 공식 문서에서 설명하고 있다.
 - [Cocoa Core Competencies - MVC](https://developer.apple.com/library/archive/documentation/General/Conceptual/DevPedia-CocoaCore/MVC.html#//apple_ref/doc/uid/TP40008195-CH32-SW1)
-    - MVC 패턴은 앱의 오브젝트에 Model, View, Controller 3가지 역할 중에 하나를 할당하며, 오브젝트의 역할뿐 아니라 서로 통신하는 방식을 정의한다.
-    - MVC는 Cocoa 애플리케이션에 적합한 설계를 위한 핵심이다. 이 애플리케이션의 많은 오브젝트는 재사용하기 더 쉬우며, 인터페이스가 더 잘 정의된다.
+    - MVC 패턴은 앱의 객체에 Model, View, Controller 3가지 역할 중에 하나를 할당하며, 객체의 역할뿐 아니라 서로 통신하는 방식을 정의한다.
+    - MVC는 Cocoa 애플리케이션에 적합한 설계를 위한 핵심이다. 이 애플리케이션의 많은 객체는 재사용하기 더 쉬우며, 인터페이스가 더 잘 정의된다.
     - MVC로 설계된 애플리케이션은 다른 애플리케이션보다 쉽게 확장 가능하다.
-    - 많은 Cocoa 기술과 아키텍처는 MVC에 기반하며 당신의 커스텀 오브젝트도 MVC 역할 중 하나가 요구된다.
+    - 많은 Cocoa 기술과 아키텍처는 MVC에 기반하며 당신의 커스텀 객체도 MVC 역할 중 하나가 요구된다.
     - Model
         - Model은 데이터를 캡슐화하며 데이터를 다루고 처리하는 로직과 계산을 정의한다.
         - Model은 다른 Model과 하나 또는 여러 관계를 가질 수 있다.
@@ -173,7 +173,7 @@
         - 데이터를 생성하거나 수정하는 View의 유저 액션은 Controller를 통해 전달되며 Model을 만들거나 업데이트한다. 
         - Model이 변경될 때(예를 들면, 네트워크 연결로 새로운 데이터가 수신됐을 때), Model은 Controllr에 알려서 적절한 View를 업데이트한다.
     - View
-        - 사용자가 앱에서 볼 수 있는 오브젝트.
+        - 사용자가 앱에서 볼 수 있는 객체.
         - 자신을 그리는 방법을 알며, 사용자 액션에 반응할 수 있다.
         - 주요 목적은 앱의 Model로부터 데이터를 표시하는 것, 데이터의 수정을 허용하는 것
         - View는 Model과 일반적으로 비결합이어야 한다.
@@ -183,15 +183,20 @@
         - Controller는 View가 만드는 유저 액션을 해석하며 모델 레이어에 새로 추가되거나 변경된 데이터를 전달한다.
         - Model이 변경될 때, Controller는 새로운 Model 데이터를 View에 전달하여 표시되게 한다.
 
-### MVC 패턴의 문제 개선
+### [👆목차로 가기](#목차)
+<br><br><br>
 
-애플의 MVC 패턴은 ViewController에게 너무 많은 역할을 주어서 앱 규모가 커질수록 비대해져 Massive-View-Controller라고도 불린다고 한다.
+
+
+## MVC 패턴의 문제 개선
+
+애플의 MVC 패턴은 ViewController가 너무 커지는 문제가 있고, 이를 Massive-View-Controller라고 불린다.
   
 이 프로젝트에서도 화면 1개를 담당하는 WeatherForeastViewController이 유일한 Controller이며 이 오브젝트 하나로 모든 View와 Model을 관리해야한다. 
 
 애플의 MVC 패턴 사용을 유지하면서 이 문제를 개선할 방법을 생각해봤다.
 
-#### UITableViewDataSource 분리
+### UITableViewDataSource 객체 분리
 
 UITableViewDataSource는 Table View의 데이터를 관리하는 오브젝트다.
   
@@ -253,7 +258,26 @@ class WeatherForecastViewController: UITableViewController {
 - WeatherForecastDataSource는 데이터를 관리하다가 필요할 때만 ViewController에 Callback 메서드를 통해 알려(Notify) 준다.
 - ViewController는 WeatherForecastDataSource가 알려(Notify) 줄 때, View를 업데이트할 내용을 정의하면 된다.
 
+개선 후 Model-Controller 사이의 커뮤니케이션은 아래와 같다.
+
+![](./Images/MVC_DataSource.png)
+
+### LocationManager 객체 분리
+
 추가로, 앱의 기능에 필수적인 GPS 위치를 담당하는 LocationManager도 이 방식으로 분리하여 MVC 패턴을 준수하면서 ViewController가 비대해지는 것을 개선하려 했다.
+
+![](./Images/MVC_LocationManager.png)
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 위치 정보
+
+### 위치 정보를 
+
+
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
