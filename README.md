@@ -1,6 +1,6 @@
 # 날씨 정보 앱
 
-<!-- [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) -->
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FKyungminLeeDev%2FiOS_Weather_Forecast&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 | 📺 데모 | 💡 개요 |
 | ------- | ------- |
@@ -21,7 +21,7 @@
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
-    - [날씨 API의 Response 데이터 모델](날씨-API의-Response-데이터-모델)
+    - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
     - API 네트워크와 JSON 파싱
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
