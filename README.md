@@ -21,7 +21,8 @@
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
-    - API 데이터 받아오기
+    - [날씨 API의 Response 데이터 모델](날씨-API의-Response-데이터-모델)
+    - API 네트워크와 JSON 파싱
     - 코드로 오토 레이아웃
     - 이미지 로컬 캐시
 3. **Human Interface Guidelines**으로 문제 해결 또는 개선한 내용
@@ -319,6 +320,174 @@ extension LocationManager: CLLocationManagerDelegate {
 - 해결 방법
     - 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
     - 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 날씨 API의 Response 데이터 모델
+
+날씨 데이터는 [OpentWeather](https://openweathermap.org/)에서 제공하는 API중 2개를 사용한다.
+- 현재 날씨: [Current Weather Data API](https://openweathermap.org/current)
+- 5일 예보: [5 Day / 3 Hour Forecast API](https://openweathermap.org/forecast5)
+
+### 모델 타입 구현
+
+- [Current Weather Data API](https://openweathermap.org/current)의 Response 데이터 모델: CurrentWeatherData
+- [5 Day / 3 Hour Forecast API](https://openweathermap.org/forecast5)의 Response 데이터 모델: FiveDayForecastData
+
+~~~swift
+struct CurrentWeatherData: Decodable {
+    let coordinate: CLLocationCoordinate2D
+    private let weathers: [Weather]
+    var weather: Weather {
+        return weathers[0]
+    }
+    let temperature: Temperature
+    let utc: Int
+    let cityID: Int
+    let cityName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case coordinate = "coord"
+        case weathers = "weather"
+        case temperature = "main"
+        case utc = "dt"
+        case cityID = "id"
+        case cityName = "name"
+    }
+}
+
+~~~
+
+- API의 Response 데이터는 JSON 포맷이며, 이를 Decode해야 하므로 Decodable 프로토콜을 채택한다.
+    - Codable 프로토콜이 Encodable과 Decodable을 모두 채택하므로 사용할 수 있지만, Decode 기능만 필요하므로 필요 없는 기능은 빼고, Decode만 사용하는 객체라는 것을 명시적으로  나타내기 위해 Decodabl을 채택했다.
+- API 문서에는 프로퍼티가 더 많지만, 모든 프로퍼티를 사용하지는 않으므로 앱에 꼭 필요한 정보만 정의했다.
+- 프로퍼티의 네이밍이 Swift의 네이밍 스타일과는 다르므로 CodingKeys를 사용하여 다시 네이밍 했다.
+- CurrentWeatherData와 FiveDayForecastData는 공통된 정보가 많다. 이러한 정보는 하위 모델을 따로 만들어서 재사용했다.
+
+### 데이터 모델 Unit Test
+
+- 현한 날씨 데이터 모델이 JSON 타입을 제대로 Decode 하는지 Unit Test를 통해 검증해 보았다.
+- 테스트할 JSON 예시 데이터를 만들고 에셋에 추가해두었다.
+
+~~~swift 
+func testDecodeResponseDataOfCurrentWeatherAPI() {
+        // Given-When-Then (준비-실행-검증)
+        // Given
+        guard let dataAsset = NSDataAsset(name: "ExampleResponseOfCurrentWeather") else {
+            XCTFail("Failed to load dataAsset")
+            return
+        }
+        let jsonDecoder = JSONDecoder()
+        let decodedData: CurrentWeatherData
+            
+        do {
+            // When
+            decodedData = try jsonDecoder.decode(CurrentWeatherData.self, from: dataAsset.data)
+            
+            // Then
+            XCTAssertEqual(decodedData.coordinate.longitude, -122.08)
+            XCTAssertEqual(decodedData.coordinate.latitude, 37.39)
+            
+            XCTAssertEqual(decodedData.weather.conditionID, 800)
+            XCTAssertEqual(decodedData.weather.group, "Clear")
+            XCTAssertEqual(decodedData.weather.description, "clear sky")
+            XCTAssertEqual(decodedData.weather.iconID, "01d")
+            
+            XCTAssertEqual(decodedData.temperature.currentCelsius, 282.55)
+            XCTAssertEqual(decodedData.temperature.humanFeelsCelsius, 281.86)
+            XCTAssertEqual(decodedData.temperature.minimumCelsius, 280.37)
+            XCTAssertEqual(decodedData.temperature.maximumCelsius, 284.26)
+            XCTAssertEqual(decodedData.temperature.atmosphericPressure, 1023)
+            XCTAssertEqual(decodedData.temperature.humidity, 100)
+            
+            XCTAssertEqual(decodedData.utc, 1560350645)
+            XCTAssertEqual(decodedData.cityID, 420006353)
+            XCTAssertEqual(decodedData.cityName, "Mountain View")
+        } catch {
+            XCTFail("\(error.localizedDescription)")
+        }
+    }
+~~~
+
+1. 데이터 에셋에서 테스트할 JSON 예시 데이터를 로드한다. 
+2. JSONDecoder를 사용하여 해당 데이터를 Decode 한다.
+3. Decode된 데이터가 JSON 예시 데이터의 값과 일치하는지 테스트한다.
+4. 값이 모두 일치하면 통과하며, 하나라도 다르면 실패한다.
+
+### 모델 리팩토링
+
+프로젝트를 다시보며 모델 타입의 리팩토링이 필요하다고 생각되어 진행했다.
+
+#### 1. 하위 모델 통합
+
+모델마다 구조체로 분리했더니 날씨 데이터 모델 파일만 7개다.
+
+~~~
+// 리팩토링 전 모델
+
+Model
+- CurrentWeather.swift
+- WeatherForecast.swift
+
+SubModel
+- Coordinate.swift
+- Weather.swift
+- temperature.swift
+- WeatherForecastItem.swift
+- City.swift
+~~~
+
+이러다 보니 모델의 프로퍼티에 사용된 서브모델의 내용을 보려면 해당 파일을 열고 확인해야 해서 내용을 파악하기가 불편하다는 생각이 들었다.  
+  
+API Reponse 명세서를 다시 확인하여 `CurrentWeather`와 `WeatherForecast` 두 모델에서 공통적으로 사용되는 서브모델인 `Coordinate`, `Weather`, `temperature`는 남기고, 각 모델에서만 사용하는 서브모델은 해당 모델에서 정의하는 것으로 변경해서 모델의 구성을 좀 더 알아보기 쉽게 리팩토링했다.  
+  
+또, API Response로 전달받는 `데이터`라는 의미를 명확하게 해주기 위해 각 API 모델의 뒤에 `Data`를 붙여주었다.
+
+~~~
+// 리팩토링 후 모델
+
+Model
+- CurrentWeatherData.swift
+- WeatherForecastData.swift
+    - Item
+    - City
+
+SubModel
+- Coordinate.swift
+- Weather.swift
+- temperature.swift
+~~~
+
+#### 2. JSON 데이터의 `Weather` 항목
+
+이유는 모르지만 API Response JSON 데이터의 `Weather` 항목이 원소가 1개만 있는 배열로 구성된다.
+
+~~~json
+{
+  "weather": [
+    {
+      "id": 800,
+      "main": "Clear",
+      "description": "clear sky",
+      "icon": "01d"
+    }
+  ],
+}
+~~~
+
+그러므로 `Weather` 배열은 첫 번째 원소에만 접근해야 한다는 것을 모델 코드만 보고도 유추가 가능하고, 안전하게 사용할 수 있도록 배열에는 `private` 접근 제한을 하고 첫 원소만 반환하는 프로퍼티를 추가했다.
+
+~~~swift
+struct CurrentWeatherData: Decodable {
+    private let weathers: [Weather]
+    var weather: Weather? {
+        return weathers.first
+    }
+}
+~~~
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
@@ -697,83 +866,6 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
-
-
-## API Response 데이터 모델 리팩토링
-
-### 1. 하위 모델 통합
-
-모델마다 구조체로 분리했더니 날씨 데이터 모델 파일만 7개다.
-
-~~~
-// 리팩토링 전 모델
-
-Model
-- CurrentWeather.swift
-- WeatherForecast.swift
-
-SubModel
-- Coordinate.swift
-- Weather.swift
-- temperature.swift
-- WeatherForecastItem.swift
-- City.swift
-~~~
-
-이러다 보니 모델의 프로퍼티에 사용된 서브모델의 내용을 보려면 해당 파일을 열고 확인해야 해서 내용을 파악하기가 불편하다는 생각이 들었다.  
-  
-API Reponse 명세서를 다시 확인하여 `CurrentWeather`와 `WeatherForecast` 두 모델에서 공통적으로 사용되는 서브모델인 `Coordinate`, `Weather`, `temperature`는 남기고, 각 모델에서만 사용하는 서브모델은 해당 모델에서 정의하는 것으로 변경해서 모델의 구성을 좀 더 알아보기 쉽게 리팩토링했다.  
-  
-또, API Response로 전달받는 `데이터`라는 의미를 명확하게 해주기 위해 각 API 모델의 뒤에 `Data`를 붙여주었다.
-
-~~~
-// 리팩토링 후 모델
-
-Model
-- CurrentWeatherData.swift
-- WeatherForecastData.swift
-    - Item
-    - City
-
-SubModel
-- Coordinate.swift
-- Weather.swift
-- temperature.swift
-~~~
-
-### 2. JSON 데이터의 `Weather` 항목
-
-이유는 모르지만 API Response JSON 데이터의 `Weather` 항목이 원소가 1개만 있는 배열로 구성된다.
-
-~~~json
-{
-  "weather": [
-    {
-      "id": 800,
-      "main": "Clear",
-      "description": "clear sky",
-      "icon": "01d"
-    }
-  ],
-}
-~~~
-
-그러므로 `Weather` 배열은 첫 번째 원소에만 접근해야 한다는 것을 모델 코드만 보고도 유추가 가능하고, 안전하게 사용할 수 있도록 배열에는 `private` 접근 제한을 하고 첫 원소만 반환하는 프로퍼티를 추가했다.
-
-~~~swift
-struct CurrentWeatherData: Decodable {
-    private let weathers: [Weather]
-    var weather: Weather? {
-        return weathers.first
-    }
-}
-~~~
-
-[👆목차로 가기](#목차)
-<br><br><br>
-
-
-
 ## API 데이터 요청
 
 - API 에러 타입을 따로 분리하여 두 API에서 동일하게 사용
@@ -833,9 +925,6 @@ http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy
 
 ## 트러블 슈팅
 
-- 현재위치 받는 속도가 느림 5~10초
-    - LocatonManager의 desiredAccuracy 설정을 따로 안해서 기본값인 best로 설정되서 느린걸로 판단
-    - desiredAccuracy설정을 kCLLocationAccuracyThreeKilometer로 변경했더니 빨라집! (1~2초)
 - 다른 기기 시뮬레이터 실행했더니 새로고침해도 계속 빈화면만 나옴
     - 그리고는 원래 되던 기기에서도 같은 증상
     - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
