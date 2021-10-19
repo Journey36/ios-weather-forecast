@@ -24,7 +24,8 @@
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
     - [네트워킹 객체](#네트워킹-객체)
     - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
-3. **Human Interface Guidelines**을 준수하여 UX 개선하기
+3. [Human Interface Guidelines으로 앱 개선하기](#Human-Interface-Guidelines으로-앱-개선하기)
+    > HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리  
     - [모든 폰트 크기 지원 - Dynamic Type](#모든-폰트-크기-지원---Dynamic-Type)
     - [큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides](#큰-화면에서도-가독성-좋은-레이아웃---Readable-Content-Guides)
     - [다크 모드 지원](#다크-모드-지원)
@@ -33,7 +34,11 @@
     - [데이터 로딩 표시 - Activity Indicator](#데이터-로딩-표시---Activity-Indicator)
     - [당겨서 새로 고침 - Refresh Control](#당겨서-새로-고침---Refresh-Control)
     - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
-
+4. [트러블 슈팅](#트러블-슈팅)
+    > 프로젝트 진행 중 발생한 문제와 해결 방법 정리  
+    - [현재 위치 찾는 시간이 5~10초 정도로 느린 문제](#현재-위치-찾는-시간이-5~10초-정도로-느린-문제)
+    - [시뮬레이터 변경 후 위치 찾기 안되는 문제](#시뮬레이터-변경-후-위치-찾기-안되는-문제)
+    - [배경 이미지가 Table View를 가리는 문제](#배경-이미지가-Table-View를-가리는-문제)
 
 
 ### 정리 예정
@@ -105,6 +110,13 @@
 - [github 하나로 1인 개발 워크플로우 완성하기: 이론편](https://www.huskyhoochu.com/issue-based-version-control-101)
 - [github 하나로 1인 개발 워크플로우 완성하기: 실전 편](https://www.huskyhoochu.com/issue-based-version-control-201/#open-issue)
 - [좋은 git 커밋 메시지를 작성하기 위한 8가지 약속](https://djkeh.github.io/articles/How-to-write-a-git-commit-message-kor/)
+
+### 참고 링크
+
+- [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
+    - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
+    - 아이폰에서는 설정 - 개발자에서 사용가능
+- [View 디버깅시 뷰 객체 찾기]((http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy))
 
 [👆목차로 가기](#목차)
 <br><br><br>
@@ -298,19 +310,6 @@ extension LocationManager: CLLocationManagerDelegate {
     - Error 종류에 따라서 적절한 처리를 하도록 `ViewController` 콜백 메서드로 알려준다.
     - 위치 권한 거절 에러는 `ViewController`에서 사용자에게 다시 위치 권한을 요청한다.
     - 그 외 에러는 위치 데이터 로드 실패 메시지를 보여준다.
-
-### 트러블 슈팅 - 현재 위치를 찾는 속도가 5~10초 정도로 느린 현상
-
-- 문제 파악
-    - 시뮬레이터로 앱 실행 시 위치 찾는 속도가 5~10초 정도로 느리다.
-    - 실 기기라면 GPS 신호 약한 문제 등으로 느리다고 생각할 수 있지만, 시뮬레이터에서도 느리다.
-- 해결 과정
-    - `desiredAccuracy` 프로퍼티를 `kCLLocationAccuracyThreeKilometer`로 변경 후 1~2초 정도로 빨라졌다.
-- 원인
-    - `desiredAccuracy`을 따로 설정하지 않아서 기본값인 `kCLLocationAccuracyBest`가 적용되는데, 이는 높은 정확도를 요구해서 위치 파악에 시간이 더 걸리고, 시뮬레이터라도 그 시간이 적용되는 것 같다.
-- 해결 방법
-    - 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
-    - 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
@@ -756,6 +755,14 @@ struct ImageLoader {
 
 
 
+## Human Interface Guidelines으로 앱 개선하기
+
+HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리
+
+<br><br><br>
+
+
+
 ## 모든 폰트 크기 지원 - Dynamic Type
 
 ### 📺 데모와 설명
@@ -1167,21 +1174,53 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 <br><br><br>
 
 
+
 ## 트러블 슈팅
 
-- 다른 기기 시뮬레이터 실행했더니 새로고침해도 계속 빈화면만 나옴
-    - 그리고는 원래 되던 기기에서도 같은 증상
-    - 위치 정보 에러핸들링을 아직 하지않은 상태여서 파악 되지 않았음 (배운점: 에러처리 당장 못할때는 print로 로그라도 남기자)
-    - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치정보를 받아오지못해 API에 요청도 되지않아서 발생
-    - 되다가 안된이유는 시뮬레이터에서도 위치 정보를 캐시해둬서 캐시된 마지막 위치정보를 받아오는 거였음 (최신 데이터인지 확인해야할 필요 있음- 공식문서에 나옴)
-- 
+프로젝트 진행 중 발생한 문제와 해결 방법 정리.
 
-### 배경 이미지를 넣기 위해 ViewController의 view에 `이미지 뷰`로 추가하니 테이블 뷰 위에 그려져서 가려지는 문제
+### 현재 위치 찾는 시간이 5~10초 정도로 느린 문제
 
-- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없었다.
-- 해결 방법: backgroundImageView를 tableView.backgroundView로 set 해서 해결 (문서를 보면 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈 해주므로 오토 레이아웃을 따로 추가할 필요가 없다), 이때 테이블 뷰 셀의 backgroundColor을 clear로 해주어야 테이블 뷰의 배경 이미지가 보인다.
+- 문제 파악
+    - `CLLocationManager`로 위치 찾기 기능 구현 중.
+    - 시뮬레이터로 앱 실행 시 위치 찾는 속도가 5~10초 정도로 느리다.
+    - 실 기기라면 GPS 신호 약한 문제 등으로 느리다고 생각할 수 있지만, 시뮬레이터에서도 느리다.
+- 해결 과정
+    - `desiredAccuracy` 프로퍼티를 `kCLLocationAccuracyThreeKilometer`로 변경 후 1~2초 정도로 빨라졌다.
+    - 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
+    - 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
+- 원인 파악
+    - `desiredAccuracy`을 따로 설정하지 않아서 기본값인 `kCLLocationAccuracyBest`가 적용되는데, 이는 높은 정확도를 요구해서 위치 파악에 시간이 더 걸리고, 시뮬레이터라도 그 시간이 적용되는 것 같다.
 
-[👆목차로 가기](#목차)
+
+### 시뮬레이터 변경 후 위치 찾기 안되는 문제
+
+- 문제 파악
+    - 시뮬레이터를 다른 기기로 변경하여 실행했더니 빈 화면만 보이고, Refreshing 요청은 되지만 날씨 정보 표시되지 않음.
+    - 다시 원래 사용하던 시뮬레이터에서도 같은 증상
+- 해결 과정
+    - 시뮬레이터 위치를 다시 설정해서 해결.
+- 원인 파악
+    - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치 정보를 받지 못해 API 요청으로 넘어가지 않아서 날씨 정보를 로드하지 못했음.
+    - 위치 정보 관련 에러 핸들링이 없는 상태여서 파악 되지 않았음 (배운점: 에러 핸들링 구현 전에는 print로 로그라도 남기자)
+    - 원래 시뮬레이터에서 되다가 안된 이유
+        - 시뮬레이터에 캐시된 마지막 위치 정보를 가져오므로 시뮬레이터 종료 전에는 정상 작동
+        - 다른 시뮬레이터에서 문제 발생해서 다시 원래 시뮬레이터를 재시작해서 위치 정보 캐시가 초기화되어 위치 정보 없음
+
+### 배경 이미지가 Table View를 가리는 문제
+
+- 문제 파악
+    - 배경 이미지를 넣기 위해 ViewController의 view에 `Image View`로 추가하니 배경 이미지가 `Table View`를 가린다.
+- 해결 과정
+    - 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없다.
+    - `UITableView`문서를 배경을 위한 프로퍼티 `backgroundView`가 있어서 여기에 추가하니 이번엔 배경 이미지가 안보인다.
+    - `Table View Cell` 자체에 배경색이 적용되는 것 같아서 `backgroundColor`을 `clear`로 투명하게 하니 배경이미지가 제대로 보인다.
+    - `backgroundImageView`를 `tableView.backgroundView`로 set하고 `Table View Cell` 배경을 투명하게 해서 해결.
+    - [UITableView - backgroundView 문서](https://developer.apple.com/documentation/uikit/uitableview/1614986-backgroundview)를 읽고, 배경 이미지에 적합한 프로퍼티라고 생각했다.
+        - 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈된다.
+        - Background View는 모든 셀, 헤더/푸터 뷰 뒤에 보이며 스크롤 되지 않는다.
+
+### [👆목차로 가기](#목차)
 <br><br><br>
 
 
@@ -1199,13 +1238,3 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 - 결론: 폰트 사이즈에 따라 결정됨
     - constraint(equalToSystemSpacingBelow:multiplier:) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
 
-
-
-
-## 참고
-
-- [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
-    - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
-    - 아이폰에서는 설정 - 개발자에서 사용가능
-- View 디버깅시 뷰 객체 찾기
-    - [링크](http://minsone.github.io/mac/ios/quickly-searching-view-when-debug-view-hierachy)
