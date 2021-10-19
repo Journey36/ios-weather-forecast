@@ -111,7 +111,7 @@ class WeatherForecastDataSource: NSObject {
             let item = fiveDayforecastItems[indexPath.row]
             cell.configure(dateAndTimeText: item.dateAndTimeText, temperatureText: item.temperature.currentCelsiusText)
             
-            ImageLoader(url: item.weather.iconURL).load() { result in
+            ImageLoader(url: item.weather.icon2xURL).load() { result in
                 switch result {
                 case .success(let image):
                     if tableView.indexPath(for: cell)?.row == indexPath.row {
