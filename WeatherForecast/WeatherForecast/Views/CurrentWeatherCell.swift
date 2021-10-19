@@ -63,6 +63,14 @@ class CurrentWeatherCell: UITableViewCell {
         setUp()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        addressLabel.text = nil
+        minAndMaxTemperatureLabel.text = nil
+        currentTemperatureLabel.text = nil
+        weatehrIconImageView.image = nil
+    }
+    
     // MARK: - Public Methods
     
     func configure(addressText: String? = nil, minAndMaxTemperatureText: String? = nil, currentTemperatureText: String? = nil, iconImage: UIImage? = nil) {
