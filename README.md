@@ -10,13 +10,13 @@
 
 
 
-## 목차
+## 📋 목차
 
-1. 프로젝트
+1. **프로젝트**
     - [기능](#기능)
     - [그라운드 룰](#그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-2. 설계 및 구현
+2. **설계 및 구현**
     - [Table View로 화면 구성](#Table-View로-화면-구성)
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
@@ -24,8 +24,7 @@
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
     - [네트워킹 객체](#네트워킹-객체)
     - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
-3. [Human Interface Guidelines으로 앱 개선하기](#Human-Interface-Guidelines으로-앱-개선하기)
-    > HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리  
+3. **Human Interface Guidelines으로 앱 개선하기**: HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리  
     - [모든 폰트 크기 지원 - Dynamic Type](#모든-폰트-크기-지원---Dynamic-Type)
     - [큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides](#큰-화면에서도-가독성-좋은-레이아웃---Readable-Content-Guides)
     - [다크 모드 지원](#다크-모드-지원)
@@ -34,17 +33,14 @@
     - [데이터 로딩 표시 - Activity Indicator](#데이터-로딩-표시---Activity-Indicator)
     - [당겨서 새로 고침 - Refresh Control](#당겨서-새로-고침---Refresh-Control)
     - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
-4. [트러블 슈팅](#트러블-슈팅)
-    > 프로젝트 진행 중 발생한 문제와 해결 방법 정리  
+4. **트러블 슈팅**: 프로젝트 진행 중 발생한 문제와 해결 방법 정리  
     - [현재 위치 찾는 시간이 5~10초 정도로 느린 문제](#현재-위치-찾는-시간이-5~10초-정도로-느린-문제)
     - [시뮬레이터 변경 후 위치 찾기 안되는 문제](#시뮬레이터-변경-후-위치-찾기-안되는-문제)
     - [배경 이미지가 Table View를 가리는 문제](#배경-이미지가-Table-View를-가리는-문제)
 
-
 ### 정리 예정
 
 - RefreshControl 애니메이션 종료하는 시점
-- 다이나믹 폰트
 
 <br><br><br>
 
@@ -755,14 +751,6 @@ struct ImageLoader {
 
 
 
-## Human Interface Guidelines으로 앱 개선하기
-
-HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리
-
-<br><br><br>
-
-
-
 ## 모든 폰트 크기 지원 - Dynamic Type
 
 ### 📺 데모와 설명
@@ -1176,8 +1164,6 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 ## 트러블 슈팅
-
-프로젝트 진행 중 발생한 문제와 해결 방법 정리.
 
 ### 현재 위치 찾는 시간이 5~10초 정도로 느린 문제
 
