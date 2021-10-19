@@ -24,15 +24,16 @@
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
     - [네트워킹 객체](#네트워킹-객체)
     - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
-    - 코드로 오토 레이아웃
-3. **Human Interface Guidelines**준수하여 UX 개선
+3. **Human Interface Guidelines**을 준수하여 UX 개선하기
+    - [모든 폰트 크기 지원 - Dynamic Type](#모든-폰트-크기-지원---Dynamic-Type)
+    - [큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides](#큰-화면에서도-가독성-좋은-레이아웃---Readable-Content-Guides)
     - [다크 모드 지원](#다크-모드-지원)
     - [Launch Screen 적용](#Launch-Screen-적용)
     - [위치 설정으로 이동하는 버튼 제공](#위치-설정으로-이동하는-버튼-제공)
     - [데이터 로딩 표시 - Activity Indicator](#데이터-로딩-표시---Activity-Indicator)
     - [당겨서 새로 고침 - Refresh Control](#당겨서-새로-고침---Refresh-Control)
     - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
-    - [큰 화면에서도 보기 편한 레이아웃 - Readable Content Guides](#큰-화면에서도-보기-편한-레이아웃---Readable-Content-Guides)
+
 
 
 ### 정리 예정
@@ -687,16 +688,17 @@ func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (R
 
 ### 구현
 
-- 이미지 로드 기능을 담당하는 `ImageLoader` 객체를 구현했다.
-- API에 request하는 메서드와 비슷하지만 NSChche를 이용해 메모리캐시를 구현했다.
-- 이미지 로드 흐름
-    1. ImageLoader.load() 메서드 호출
-    2. URL 체크
-    3. URL을 key 값으로 캐시에 저장된 이미지 있는지 체크
-    4. 캐시에 있다면 캐시에서 가져온 이미지를 completionHandler로 전달 후 리턴
-    5. 캐시에 없다면 URL로 이미지 로드 요청
-    6. 이미지 로드 완료되면 캐시에 URL을 key 값으로 이미지 캐싱
-    7. completionHandler로 이미지 전달 후 리턴
+이미지 로드 기능을 담당하는 `ImageLoader` 객체를 구현하고 이미지 캐싱을 적용했다.
+  
+#### 이미지 로드 흐름
+
+1. ImageLoader.load() 메서드 호출
+2. URL 체크
+3. URL을 key 값으로 캐시에 저장된 이미지 있는지 체크
+4. 캐시에 있다면 캐시에서 가져온 이미지를 completionHandler로 전달 후 리턴
+5. 캐시에 없다면 URL로 이미지 로드 요청
+6. 이미지 로드 완료되면 캐시에 URL을 key 값으로 이미지 캐싱
+7. completionHandler로 이미지 전달 후 리턴
 
 ~~~swift
 struct ImageLoader {
@@ -743,11 +745,118 @@ struct ImageLoader {
 
 - 사실 위 코드에서는 이미지 캐싱 처리를 따로 안 해도 된다.  
     - 왜? **URLSession.shared** 인스턴스를 사용하기 때문에.
-- URLSession.shared는 기본적인 URLCache를 지원하기 때문에 특별한 처리 없이 메모리와 디스크 캐시가 자동으로 된다.
+    - URLSession.shared는 기본적인 URLCache를 지원하기 때문에 특별한 처리 없이 메모리와 디스크 캐시가 자동으로 된다.
 - 그럼에도 구현한 이유
     - 특별한 인증이나 캐시 처리된 서버로의 요청이 아니라면 URLSession을 커스터마이징하지 않고 기본 URLSession을 사용해도 된다.
-    - 하지만 현업에서는 커스텀 URLSession을 사용할 수도 있으므로 이미지 캐시를 직접 구현해 보려 했다.
-- 위 데모 영상은 URLSessionConfiguration을 ephemeral로 설정하여 URLCache를 사용하지 않는 환경에서 비교해 본 영상이다.
+    - 현업에서는 커스텀 URLSession을 사용하는 경우도 있고, 여러 데이터에 캐싱 처리가 필요할 수도 있으므로 NSCahce로 캐싱 처리를 경험하려 했다.
+- 위 데모 영상은 캐싱 처리 전후를 확실히 비교해 보기 위해 URLSessionConfiguration을 ephemeral로 설정하여 URLCache를 사용하지 않는 환경의 영상이다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 모든 폰트 크기 지원 - Dynamic Type
+
+### 📺 데모와 설명
+
+<img src = ./Images/DynamicType_Demo.gif width="300px"> 
+
+- Dynamic Type 지원하여 텍스트 작거나 크게 변경해도 컨텐츠를 읽을 수 있게 레이아웃 했다.
+
+### 🔍 개선할 문제 파악
+
+- 코드로 오토 레이아웃을 구현하려는데 Table View Cell을 어떻게 구성해야 할까?
+- 저시력이나 노안으로 텍스트를 크게 설정하는 경우에도 컨텐츠를 볼 수 있게 하려면?
+
+### 📝 HIG와 공식 문서에서 개선 방안 찾기
+
+- [HIG - Accessibility - Text Size and Weight](https://developer.apple.com/design/human-interface-guidelines/accessibility/overview/text-size-and-weight/)
+    - 포괄적(Inclusive)인 앱을 설계할 때는 명확성과 가독성을 위해 **텍스트 크기,** 무게, **레이아웃**을 신경써야한다.
+    - **Dynamic Type**을 사용하고 앱의 레이아웃이 모든 폰트 크기에 적응하는지 테스트하라.
+    - 큰 폰트 크기의 레이아웃을 고려하라.
+    - 현재 폰트 크기에 관계없이 일관된 정보 계층을 유지하라.
+- [HIG - Typography](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/typography/)
+    - 시스템 폰트로 텍스트 스타일을 사용하면 Dynamic Type과 더 큰 Accessibility type sizes를 지원하게되어, 사용자가 텍스트 크기를 선택하면 작동한다.
+    - 가능하면 내장된 텍스트 스타일을 사용하라.
+- [UIFont - Creating Self-Sizing Table View Cells](https://developer.apple.com/documentation/uikit/uifont/creating_self-sizing_table_view_cells)
+    - Table View Cell에 Dynamic Type을 지원하여 셀프 사이징을 구현하는 예제.
+
+### 💡 개선 방법 결정
+
+- 화면 전체가 Table View로 구성되므로 `UITableViewController`를 사용했다.
+- 다이나믹 타입을 지원하면서 모든 크기에서 컨텐츠를 볼 수 있으려면 컨텐츠의 크기에 따라 조절되는 오토 레이아웃을 구현해야 한다.
+- Label
+    - 앱의 모든 텍스트는 Label로 구현했으므로 해당 Label에 적절한 UIFont.TextStyle을 설정하면 다이나믹 타입이 지원된다.
+- Table View Cell
+    - Label 폰트에 다이나믹 타입이 적용됐으므로, 텍스트 크기 설정에 따라 Label의 Intrinsic Size가 변경된다. 그러므로 Label의 사이즈 constraint는 직접 설정할 필요 업이 위치 constaint만 설정하면 된다.
+    - Cell의 높이는 Label의 BaseLineAnchor에 equalToSystemSpacingBelow로 cosntraint를 설정하여 적절한 높이가 자동으로 계산되도록(셀프 사이징) 했다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides
+
+### 📺 데모와 설명
+
+<img src = ./Images/ReadableContentGuide_Demo.gif width="700px">
+
+- 아이패드처럼 더 큰 화면에서도 컨텐츠를 읽기 편하게 가운데로 오토 레이아웃
+
+### 🔍 개선할 문제 파악
+
+- 오토 레이아웃으로 화면의 레이아웃을 구성할 때 적합한 기준은 무엇일까?
+- Layout Margins Guide로 충분한가?
+
+### 📝 HIG와 공식 문서에서 개선 방안 찾기
+
+-  [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
+    - 시스템은 컨텐츠와 읽기에 적합한 제한된 텍스트의 너비에 스탠다드 마진을 적용하기 쉽게 해주는 미리 정의된 layout guide를 포함합니다.
+    - 주요 컨텐츠가 기본 크기에서 명확하게 하라. 중요한 텍스트를 읽기위해 가로방향 스크롤을 할 필요가 없게 하라.
+    - **더 큰 기기에서 텍스트를 표시할 때 Readability margins을 적용하라**. 이 마진은 편안한 읽기 경험을 보장하기위해 텍스트 라인을 짧게 유지한다.
+- HIG에서는 layout guide를 사용하라고 나와있지만 정확히 어떤 프로퍼티를 사용하라는지는 나와있지 않아 애매하다. Auto Layout Guide도 찾아보자.
+- [Auto Layout Guide - Working with Constraints in Interface Builder - iOS-Only Features - Readable Content Guides](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
+    - 뷰의 readableContentGuide 프로퍼티는 뷰 내부의 텍스트 오브젝트를 위한 최대 적절 너비를 정의하는 layout guide를 포함한다.
+    - 이상적으로 컨텐츠는 사용자가 머리를 움직일 필요 없이 읽을 수 있을만 큼 충분히 좁아야 한다.
+    - **이 가이드의 사이즈는 시스템의 다Dynamic Type Size에 따라서 달라진다.**
+    - 대부분의 기기에서 readable content guides와 layout margins는 거의 또는 전혀 차이가 없다. 아이패드의 가로 방향에서 차이가 분명해진다.
+- [UIView - readableContentGuide](https://developer.apple.com/documentation/uikit/uiview/1622644-readablecontentguide)
+    - 뷰 안에서 readable한 너비의 영역을 나타내는 레이아웃 가이드.
+    - 이 레이아웃 가이드는 사용자가 라인을 따라가기 위해 억지로 머리를 움직일 필요 없이 읽기 쉽게 할 수 있는 영역을 정의한다.
+
+### ⁉️ readableContentGuide와 layoutMarginGuide의 차이 확인
+
+공식 문서를 통해 읽는 컨텐츠에는 readableContentGuide 사용을 권장한다는 것을 알았다. 하지만 구체적인 차이는 설명되지 않아서 예제 프로젝트를 만들어 확인해 봤다.
+  
+- readableContentGuide는 녹색, layoutMarginGuide는 노란색
+
+<img src = ./Images/ReadableContentGuide_Vertical.gif width="300px">
+
+- 아이폰의 세로 방향에서는 Dynamic Type Size의 최저, 최고 크기에도 차이점이 없다.  
+  
+<img src = ./Images/ReadableContentGuide_Horizontal2.gif width="500px">
+
+- 아이폰의 가로 방향에서는 차이를 확인할 수 있다.
+- readableContentGuide가 layoutMarginGuide보다 작으며 가운데로 배치된 것을 알 수 있다.
+- Dynamic Type Size가 작을수록 차이가 커지고, 일정 크기가 넘어가면 차이가 적어지다가 없어진다.
+
+<img src = ./Images/ReadableContentGuide_iPad.gif width="500px">
+
+- 아이패드는 가로방향에서 차이가 더 크지만, 세로방향에서도 차이를 확인할 수 있다.
+- 아이폰은 큰 기기더라도 세로 화면의 너비가 작아서 차이가 없지만, 아이패드는 세로방향에서도 너비가 넓으므로 차이를 둔다고 생각된다.
+- 아이패드에서도 Dynamic Type Size가 일정 크기가 넘어가면 차이가 없어지는데, Dynamic Type Size가 클수록 (텍스트의 크기를 키울수록) 사용자는 기기를 더 멀리서 볼 테니 머리를 움직일 필요가 적어져서 그렇다고 생각된다.
+
+### 💡 개선 방법 결정
+
+- 화면에 컨텐츠 말고 다른 UI 요소가 없고, 컨텐츠가 모두 읽는 정보이므로 readableContentGuide에 맞춰서 레이아웃 하기로 결정했다.
+- **readableContentGuide을 사용할 때 장점**으로는 **아이패드 대응**도 간단히 해볼 수 있다는 점이다. 물론 아이패드 화면을 제대로 지원하려면 아이폰과 아이패드 레이아웃을 따로 구성하는 것이 가장 보기 좋겠지만, 개발 시간이 부족하거나, UI가 간단한 화면이라면 readableContentGuide 사용만으로도 사용자가 느끼는 UX는 훨씬 좋아질 것 같다.  
+  
+| layoutMarginGuide 기준 레이아웃 | readableContentGuide 기준 레이아웃 |
+| :-: | :-: |
+| <img src = ./Images/ReadableContentGuide_Before.gif width="400px"> | <img src = ./Images/ReadableContentGuide_After.gif width="400px"> |
+| 컨텐츠를 한눈에 보기 불편하다 | 컨텐츠를 한눈에 보기 편해졌다 |
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
@@ -1056,74 +1165,6 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
-
-
-
-## 큰 화면에서도 보기 편한 레이아웃 - Readable Content Guides
-
-### 📺 데모와 설명
-
-<img src = ./Images/ReadableContentGuide_Demo.gif width="700px">
-
-- 아이패드처럼 더 큰 화면에서도 컨텐츠를 읽기 편하게 가운데로 오토 레이아웃
-
-### 🔍 개선할 문제 파악
-
-- 오토 레이아웃으로 화면의 레이아웃을 구성할 때 적합한 기준은 무엇일까?
-- Layout Margins Guide로 충분한가?
-
-### 📝 HIG와 공식 문서에서 개선 방안 찾기
-
--  [H.I.G - Adaptivity and Layout](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/adaptivity-and-layout/)
-    - 시스템은 컨텐츠와 읽기에 적합한 제한된 텍스트의 너비에 스탠다드 마진을 적용하기 쉽게 해주는 미리 정의된 layout guide를 포함합니다.
-    - 주요 컨텐츠가 기본 크기에서 명확하게 하라. 중요한 텍스트를 읽기위해 가로방향 스크롤을 할 필요가 없게 하라.
-    - **더 큰 기기에서 텍스트를 표시할 때 Readability margins을 적용하라**. 이 마진은 편안한 읽기 경험을 보장하기위해 텍스트 라인을 짧게 유지한다.
-- HIG에서는 layout guide를 사용하라고 나와있지만 정확히 어떤 프로퍼티를 사용하라는지는 나와있지 않아 애매하다. Auto Layout Guide도 찾아보자.
-- [Auto Layout Guide - Working with Constraints in Interface Builder - iOS-Only Features - Readable Content Guides](https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/WorkingwithConstraintsinInterfaceBuidler.html)
-    - 뷰의 readableContentGuide 프로퍼티는 뷰 내부의 텍스트 오브젝트를 위한 최대 적절 너비를 정의하는 layout guide를 포함한다.
-    - 이상적으로 컨텐츠는 사용자가 머리를 움직일 필요 없이 읽을 수 있을만 큼 충분히 좁아야 한다.
-    - **이 가이드의 사이즈는 시스템의 다Dynamic Type Size에 따라서 달라진다.**
-    - 대부분의 기기에서 readable content guides와 layout margins는 거의 또는 전혀 차이가 없다. 아이패드의 가로 방향에서 차이가 분명해진다.
-- [UIView - readableContentGuide](https://developer.apple.com/documentation/uikit/uiview/1622644-readablecontentguide)
-    - 뷰 안에서 readable한 너비의 영역을 나타내는 레이아웃 가이드.
-    - 이 레이아웃 가이드는 사용자가 라인을 따라가기 위해 억지로 머리를 움직일 필요 없이 읽기 쉽게 할 수 있는 영역을 정의한다.
-
-### ⁉️ readableContentGuide와 layoutMarginGuide의 차이 확인
-
-공식 문서를 통해 읽는 컨텐츠에는 readableContentGuide 사용을 권장한다는 것을 알았다. 하지만 구체적인 차이는 설명되지 않아서 예제 프로젝트를 만들어 확인해 봤다.
-  
-- readableContentGuide는 녹색, layoutMarginGuide는 노란색
-
-<img src = ./Images/ReadableContentGuide_Vertical.gif width="300px">
-
-- 아이폰의 세로 방향에서는 Dynamic Type Size의 최저, 최고 크기에도 차이점이 없다.  
-  
-<img src = ./Images/ReadableContentGuide_Horizontal2.gif width="500px">
-
-- 아이폰의 가로 방향에서는 차이를 확인할 수 있다.
-- readableContentGuide가 layoutMarginGuide보다 작으며 가운데로 배치된 것을 알 수 있다.
-- Dynamic Type Size가 작을수록 차이가 커지고, 일정 크기가 넘어가면 차이가 적어지다가 없어진다.
-
-<img src = ./Images/ReadableContentGuide_iPad.gif width="500px">
-
-- 아이패드는 가로방향에서 차이가 더 크지만, 세로방향에서도 차이를 확인할 수 있다.
-- 아이폰은 큰 기기더라도 세로 화면의 너비가 작아서 차이가 없지만, 아이패드는 세로방향에서도 너비가 넓으므로 차이를 둔다고 생각된다.
-- 아이패드에서도 Dynamic Type Size가 일정 크기가 넘어가면 차이가 없어지는데, Dynamic Type Size가 클수록 (텍스트의 크기를 키울수록) 사용자는 기기를 더 멀리서 볼 테니 머리를 움직일 필요가 적어져서 그렇다고 생각된다.
-
-### 💡 개선 방법 결정
-
-- 화면에 컨텐츠 말고 다른 UI 요소가 없고, 컨텐츠가 모두 읽는 정보이므로 readableContentGuide에 맞춰서 레이아웃 하기로 결정했다.
-- **readableContentGuide을 사용할 때 장점**으로는 **아이패드 대응**도 간단히 해볼 수 있다는 점이다. 물론 아이패드 화면을 제대로 지원하려면 아이폰과 아이패드 레이아웃을 따로 구성하는 것이 가장 보기 좋겠지만, 개발 시간이 부족하거나, UI가 간단한 화면이라면 readableContentGuide 사용만으로도 사용자가 느끼는 UX는 훨씬 좋아질 것 같다.  
-  
-| layoutMarginGuide 기준 레이아웃 | readableContentGuide 기준 레이아웃 |
-| :-: | :-: |
-| <img src = ./Images/ReadableContentGuide_Before.gif width="400px"> | <img src = ./Images/ReadableContentGuide_After.gif width="400px"> |
-| 컨텐츠를 한눈에 보기 불편하다 | 컨텐츠를 한눈에 보기 편해졌다 |
-
-### [👆목차로 가기](#목차)
-<br><br><br>
-
-
 
 
 ## 트러블 슈팅
