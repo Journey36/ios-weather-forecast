@@ -23,7 +23,7 @@
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
     - [네트워킹 객체](#네트워킹-객체)
-    - 이미지 로컬 캐시
+    - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
     - 코드로 오토 레이아웃
 3. **Human Interface Guidelines**준수하여 UX 개선
     - [다크 모드 지원](#다크-모드-지원)
@@ -488,10 +488,10 @@ struct CurrentWeatherData: Decodable {
 
 | 객체 | 설명 |
 | ---- | ---- |
-| APIClient | API에 직접 데이터를 요청하는 최하단 객체 <br> baseURL과 query로 URL을 만들어 해당 URL의 데이터를 요청하고 로드한다. <br> OpenWeahter뿐 아니라 다른 API가 추가되더라도 사용할 수 있도록 고려했다. |
-| APIClientError | APIClient의 데이터 요청 과정에서 발생할 수 있는 에러 정의 | 
-| OpenWeatherAPI | 사용할 API의 URL, apiKey, 단위, 언어 등을 미리 정의하여 OpenWeather의 API 요청을 간단히 하기 위한 객체 <br> APIClient를 사용하여 요청한다. <br> OpenWeatehrAPI를 쉽게 사용하도록 요청 파라미터를 정의했다.  |
-| OpenWeatherAPIConstants | API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 고민했다. |
+| APIClient | - API에 직접 데이터를 요청하는 최하단 객체 <br> - baseURL과 query로 URL을 만들어 해당 URL의 데이터를 요청하고 로드한다. <br> - OpenWeahter뿐 아니라 다른 API가 추가되더라도 사용할 수 있도록 고려했다. |
+| APIClientError | - APIClient의 데이터 요청 과정에서 발생할 수 있는 에러 정의 | 
+| OpenWeatherAPI | - 사용할 API의 URL, apiKey, 단위, 언어 등을 미리 정의하여 OpenWeather의 API 요청을 간단히 하기 위한 객체 <br> - APIClient를 사용하여 요청한다. <br> - OpenWeatehrAPI를 쉽게 사용하도록 요청 파라미터를 정의했다.  |
+| OpenWeatherAPIConstants | - API 종류에 따라 요청 파라미터를 상수화해서 사용하기 쉽게 하기 위한 객체 |
 
 ### APIClient
 
@@ -653,6 +653,101 @@ func getData(coordinate: CLLocationCoordinate2D, completionHandler: @escaping (R
     dataTask.resume()
 }
 ~~~
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 날씨 이미지 캐싱 - NSCache
+
+| 이미지 캐싱 전 | 이미지 캐싱 후 |
+| :-: | :-: |
+| <img src = ./Images/ImageCaching_Before.gif width="300px"> | <img src = ./Images/ImageCaching_After.gif width="300px"> |
+| Cell 재사용 될 때마다 이미지를 다시 로드 | 로드된 이미지는 캐시에서 빠르게 로드 |
+
+### 🔍 구현할 문제 파악
+
+- API의 Response 데이터는 날씨 아이콘 이미지 데이터가 아닌 `iconID`를 제공한다.
+- 날씨 이미지의 URL은 따로 제공되므로 URL의 뒤에 `iconID`를 붙여 로드한다.
+- Table View는 cell을 재사용하므로, 밑으로 스크롤 후 돌아오면 `Image View`는 필요한 이미지를 다시 URL에 요청하여 로드한다.
+- 로드했던 이미지를 매번 다시 로드하는 것은 성능과 자원 낭비이므로 캐시를 사용하여 최초에만 이미지를 로드하고 이후에는 재사용해야 한다.
+
+### 메모리 캐싱 vs 디스크 캐싱
+
+- 메모리 캐싱
+    - 앱의 메모리 영역에 캐싱되어 앱이 종료되면 캐싱된 데이터는 사라진다. (앱 재시작하면 다시 데이터 로드 필요)
+    - 시스템이 자동으로 관리하므로 신경 쓰지 않아도 된다.
+- 디스크 캐싱
+    - 앱의 디스크 영역에 저장하여 앱을 재시작해도 데이터를 사용할 수 있다. (앱 재시작해도 캐시된 데이터 사용 가능)
+    - 앱이 차지하는 용량이 점점 커지므로 관리 필요.
+- 메모리 캐싱으로 결정
+    - 두 방법은 장단점이 있고, 두 방법을 같이 사용할 수도 있다.
+    - 앱에 사용되는 이미지는 작은 크기라 메모리 캐싱만으로 충분하다고 생각했다.
+
+### 구현
+
+- 이미지 로드 기능을 담당하는 `ImageLoader` 객체를 구현했다.
+- API에 request하는 메서드와 비슷하지만 NSChche를 이용해 메모리캐시를 구현했다.
+- 이미지 로드 흐름
+    1. ImageLoader.load() 메서드 호출
+    2. URL 체크
+    3. URL을 key 값으로 캐시에 저장된 이미지 있는지 체크
+    4. 캐시에 있다면 캐시에서 가져온 이미지를 completionHandler로 전달 후 리턴
+    5. 캐시에 없다면 URL로 이미지 로드 요청
+    6. 이미지 로드 완료되면 캐시에 URL을 key 값으로 이미지 캐싱
+    7. completionHandler로 이미지 전달 후 리턴
+
+~~~swift
+struct ImageLoader {
+    static private var imageCache = NSCache<NSString, UIImage>()
+
+    let url: String
+    
+    func load(completion: @escaping (Result<UIImage, ImageLoaderError>) -> Void) {
+        // 0. URL 체크
+        guard let url = URL(string: self.url) else {
+            completion(.failure(.invalidURL))
+            return
+        }
+        
+        // 1. 캐시에 이미지 있으면 가져오기
+        let cacheKey = NSString(string: self.url)
+        if let cachedImage = Self.imageCache.object(forKey: cacheKey) {
+            DispatchQueue.main.async {
+                completion(.success(cachedImage))
+            }
+            return
+        }
+        
+        // 2. 캐시에 이미지 없으면 url로 요청
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard (response as? HTTPURLResponse)?.statusCode == 200,
+                  error == nil,
+                  let data = data,
+                  let image = UIImage(data: data) else {
+                completion(.failure(.unknown))
+                return
+            }
+            // 3. 받아온 이미지 캐싱
+            Self.imageCache.setObject(image, forKey: cacheKey)
+            DispatchQueue.main.async {
+                completion(.success(image))
+            }
+        }.resume()
+    }
+}
+~~~
+
+### 이미지 캐싱 필요 없는 경우
+
+- 사실 위 코드에서는 이미지 캐싱 처리를 따로 안 해도 된다.  
+    - 왜? **URLSession.shared** 인스턴스를 사용하기 때문에.
+- URLSession.shared는 기본적인 URLCache를 지원하기 때문에 특별한 처리 없이 메모리와 디스크 캐시가 자동으로 된다.
+- 그럼에도 구현한 이유
+    - 특별한 인증이나 캐시 처리된 서버로의 요청이 아니라면 URLSession을 커스터마이징하지 않고 기본 URLSession을 사용해도 된다.
+    - 하지만 현업에서는 커스텀 URLSession을 사용할 수도 있으므로 이미지 캐시를 직접 구현해 보려 했다.
+- 위 데모 영상은 URLSessionConfiguration을 ephemeral로 설정하여 URLCache를 사용하지 않는 환경에서 비교해 본 영상이다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
