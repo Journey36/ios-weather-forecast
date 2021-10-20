@@ -18,6 +18,7 @@
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. **설계 및 구현**
     - [Table View로 화면 구성](#Table-View로-화면-구성)
+    - [코드로 오토 레이아웃](#코드로-오토-레이아웃)
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
@@ -34,9 +35,10 @@
     - [당겨서 새로 고침 - Refresh Control](#당겨서-새로-고침---Refresh-Control)
     - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
 4. **트러블 슈팅**: 프로젝트 진행 중 발생한 문제와 해결 방법 정리  
-    - [현재 위치 찾는 시간이 5~10초 정도로 느린 문제](#현재-위치-찾는-시간이-5~10초-정도로-느린-문제)
+    - [현재 위치 찾는 시간이 느린 문제](#현재-위치-찾는-시간이-느린-문제)
     - [시뮬레이터 변경 후 위치 찾기 안되는 문제](#시뮬레이터-변경-후-위치-찾기-안되는-문제)
     - [배경 이미지가 Table View를 가리는 문제](#배경-이미지가-Table-View를-가리는-문제)
+    - [Refresh Control 애니메이션이 먼저 종료된 이후 컨텐츠 업데이트 되는 문제](#Refresh-Control-애니메이션이-먼저-종료된-이후-컨텐츠-업데이트-되는-문제)
 
 ### 정리 예정
 
@@ -1106,6 +1108,8 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 - 새로 고침을 위한 버튼을 따로 두기 보다는 Refresh Control이 권장되며, iOS 사용자에게 친숙한 방법이므로 Refresh Control을 사용한다.
 - Acitivity Indicator로 로딩 표시할 때는 무엇을 로드하는지 Label로 표시했지만, Refresh Control에는 표시하지 않았다. 이미 화면에 날씨 정보가 표시되었으므로 새로 고침 중 에러 발생하여 취소되더라도 크리티컬한 문제는 아니며 사용자에게 불필요한 정보라고 생각했다.
 
+
+
 ### [👆목차로 가기](#목차)
 <br><br><br>
 
@@ -1165,46 +1169,151 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 ## 트러블 슈팅
 
-### 현재 위치 찾는 시간이 5~10초 정도로 느린 문제
+## 현재 위치 찾는 시간이 느린 문제
 
-- 문제 파악
-    - `CLLocationManager`로 위치 찾기 기능 구현 중.
-    - 시뮬레이터로 앱 실행 시 위치 찾는 속도가 5~10초 정도로 느리다.
-    - 실 기기라면 GPS 신호 약한 문제 등으로 느리다고 생각할 수 있지만, 시뮬레이터에서도 느리다.
-- 해결 과정
-    - `desiredAccuracy` 프로퍼티를 `kCLLocationAccuracyThreeKilometer`로 변경 후 1~2초 정도로 빨라졌다.
-    - 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
-    - 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
-- 원인 파악
-    - `desiredAccuracy`을 따로 설정하지 않아서 기본값인 `kCLLocationAccuracyBest`가 적용되는데, 이는 높은 정확도를 요구해서 위치 파악에 시간이 더 걸리고, 시뮬레이터라도 그 시간이 적용되는 것 같다.
+### 문제 파악
+
+- `CLLocationManager`로 위치 찾기 기능 구현 중.
+- 시뮬레이터로 앱 실행 시 위치 찾는 속도가 5~10초 정도로 느리다.
+- 실 기기라면 GPS 신호 약한 문제 등으로 느리다고 생각할 수 있지만, 시뮬레이터에서도 느리다.
+
+### 해결 과정
+
+- `desiredAccuracy` 프로퍼티를 `kCLLocationAccuracyThreeKilometer`로 변경 후 1~2초 정도로 빨라졌다.
+- 이 앱은 현재 위치 주소의 `구`단위 정도만 분별하면 되므로 높은 정확도는 필요하지 않다. 
+- 3Km 정도만 구별해도 무방하므로 `kCLLocationAccuracyThreeKilometer`로 설정했다.
+
+### 원인 파악
+
+- `desiredAccuracy`을 따로 설정하지 않아서 기본값인 `kCLLocationAccuracyBest`가 적용되는데, 이는 높은 정확도를 요구해서 위치 파악에 시간이 더 걸리고, 시뮬레이터라도 그 시간이 적용되는 것 같다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
 
 
-### 시뮬레이터 변경 후 위치 찾기 안되는 문제
 
-- 문제 파악
-    - 시뮬레이터를 다른 기기로 변경하여 실행했더니 빈 화면만 보이고, Refreshing 요청은 되지만 날씨 정보 표시되지 않음.
-    - 다시 원래 사용하던 시뮬레이터에서도 같은 증상
-- 해결 과정
-    - 시뮬레이터 위치를 다시 설정해서 해결.
-- 원인 파악
-    - 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치 정보를 받지 못해 API 요청으로 넘어가지 않아서 날씨 정보를 로드하지 못했음.
-    - 위치 정보 관련 에러 핸들링이 없는 상태여서 파악 되지 않았음 (배운점: 에러 핸들링 구현 전에는 print로 로그라도 남기자)
-    - 원래 시뮬레이터에서 되다가 안된 이유
-        - 시뮬레이터에 캐시된 마지막 위치 정보를 가져오므로 시뮬레이터 종료 전에는 정상 작동
-        - 다른 시뮬레이터에서 문제 발생해서 다시 원래 시뮬레이터를 재시작해서 위치 정보 캐시가 초기화되어 위치 정보 없음
+## 시뮬레이터 변경 후 위치 찾기 안되는 문제
 
-### 배경 이미지가 Table View를 가리는 문제
+### 문제 파악
 
-- 문제 파악
-    - 배경 이미지를 넣기 위해 ViewController의 view에 `Image View`로 추가하니 배경 이미지가 `Table View`를 가린다.
-- 해결 과정
-    - 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없다.
-    - `UITableView`문서를 배경을 위한 프로퍼티 `backgroundView`가 있어서 여기에 추가하니 이번엔 배경 이미지가 안보인다.
-    - `Table View Cell` 자체에 배경색이 적용되는 것 같아서 `backgroundColor`을 `clear`로 투명하게 하니 배경이미지가 제대로 보인다.
-    - `backgroundImageView`를 `tableView.backgroundView`로 set하고 `Table View Cell` 배경을 투명하게 해서 해결.
-    - [UITableView - backgroundView 문서](https://developer.apple.com/documentation/uikit/uitableview/1614986-backgroundview)를 읽고, 배경 이미지에 적합한 프로퍼티라고 생각했다.
-        - 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈된다.
-        - Background View는 모든 셀, 헤더/푸터 뷰 뒤에 보이며 스크롤 되지 않는다.
+- 시뮬레이터를 다른 기기로 변경하여 실행했더니 빈 화면만 보이고, Refreshing 요청은 되지만 날씨 정보 표시되지 않음.
+- 다시 원래 사용하던 시뮬레이터에서도 같은 증상
+
+### 해결 과정
+
+- 시뮬레이터 위치를 다시 설정해서 해결.
+
+### 원인 파악
+
+- 시뮬레이터에서 위치 설정을 none으로 꺼둔상태여서 위치 정보를 받지 못해 API 요청으로 넘어가지 않아서 날씨 정보를 로드하지 못했음.
+- 위치 정보 관련 에러 핸들링이 없는 상태여서 파악 되지 않았음 (배운점: 에러 핸들링 구현 전에는 print로 로그라도 남기자)
+- 원래 시뮬레이터에서 되다가 안된 이유
+    - 시뮬레이터에 캐시된 마지막 위치 정보를 가져오므로 시뮬레이터 종료 전에는 정상 작동
+    - 다른 시뮬레이터에서 문제 발생해서 다시 원래 시뮬레이터를 재시작해서 위치 정보 캐시가 초기화되어 위치 정보 없음
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 배경 이미지가 Table View를 가리는 문제
+
+### 문제 파악
+
+- 배경 이미지를 넣기 위해 ViewController의 view에 `Image View`로 추가하니 배경 이미지가 `Table View`를 가린다.
+
+### 해결 과정
+
+- 이미지 뷰와 테이블 뷰가 그려지는 순서 때문이라 생각하고 `bringSubviewToFront()`, `sendSubviewToBack()` 메서드를 사용해 봤지만 변함없다.
+- `UITableView`문서를 배경을 위한 프로퍼티 `backgroundView`가 있어서 여기에 추가하니 이번엔 배경 이미지가 안보인다.
+- `Table View Cell` 자체에 배경색이 적용되는 것 같아서 `backgroundColor`을 `clear`로 투명하게 하니 배경이미지가 제대로 보인다.
+- `backgroundImageView`를 `tableView.backgroundView`로 set하고 `Table View Cell` 배경을 투명하게 해서 해결.
+- [UITableView - backgroundView 문서](https://developer.apple.com/documentation/uikit/uitableview/1614986-backgroundview)를 읽고, 배경 이미지에 적합한 프로퍼티라고 생각했다.
+    - 이 프로퍼티에 뷰를 할당하면 테이블 뷰가 자동으로 리사이즈된다.
+    - Background View는 모든 셀, 헤더/푸터 뷰 뒤에 보이며 스크롤 되지 않는다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## Refresh Control 애니메이션이 먼저 종료된 이후 컨텐츠 업데이트 되는 문제
+
+### 문제 파악
+
+- Refresh Control을 사용하여 새로 고침 기능을 구현.
+- 아래로 당겨서 새로 고침을 요청하면 애니메이션은 바로 종료되고 컨텐츠는 이후 업데이트 된다.
+
+### 원인 파악
+
+[Table Views - UIRefreshControl 문서](https://developer.apple.com/documentation/uikit/uirefreshcontrol)를 참고하여 구현했으니 문서 부터 다시 확인한다.
+
+먼저 예제 코드를 보자
+
+~~~swift
+func configureRefreshControl() {
+   // Add the refresh control to your UIScrollView object.
+   myScrollingView.refreshControl = UIRefreshControl()
+   myScrollingView.refreshControl?.addTarget(self, action:
+                                      #selector(handleRefreshControl),
+                                      for: .valueChanged)
+}
+    
+@objc func handleRefreshControl() {
+   // Update your content…
+
+   // Dismiss the refresh control.
+   DispatchQueue.main.async {
+      self.myScrollingView.refreshControl?.endRefreshing()
+   }
+}
+~~~
+
+예제의 동작 흐름은 아래와 같다.
+1. Refresh Control 구성할 때 `target-action`패턴으로 `handleRefreshControl`을 등록한다
+2. 화면을 아래로 끌어 당겨 Refresh 요청 하면 Refreshing 애니메이션이 시작된다 (회전 애니메이션)
+3. 이때, `handleRefreshControl()`이 호출되며 컨텐츠를 업데이트하고 `endRefreshing()`으로 애니메이션을 종료한다.
+
+사용자가 새로고침을 요청하면 즉시 컨텐츠가 업데이트되고 애니메이션이 종료된다.  
+컨텐츠 로드 속도가 매우 빠르다면 상관없지만 네트워크가 느리다면, refresh 애니메이션부터 종료된 이후 컨텐츠가 업데이트 될 것 이다.  
+이 동작 방식은 네트워크를 통해 업데이트하는 컨텐츠에 부자연스럽다고 느껴졌다.  
+
+### 해결 과정
+
+- `앱스토어` 앱의 업데이트 목록 화면 참고: 당겨서 새로 고침 요청하면, 업데이트 된 후 애니메이션이 종료된다. (네트워크가 느려서 오래 걸리면 그만큼 애니메이션 유지)
+- 위 경우처럼 컨텐츠 업데이트가 완료 된후 애니메이션이 종료되는 게 새로 고침 상태에 대해 사용자에게 적절한 피드백을 준다고 생각했다.
+
+### 해결 방법
+
+컨텐츠 업데이트가 완료되면 Refresh Control 애니메이션을 종료하도록 흐름을 변경했다.
+
+~~~swift
+func configureRefreshControl() {
+    guard tableView.refreshControl == nil else {
+        return
+    }
+    tableView.refreshControl = UIRefreshControl()
+    tableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+}
+
+@objc private func handleRefreshControl() {
+    locationManager.requestLocation()
+}
+
+private func endRefreshing() {
+    if tableView.refreshControl?.isRefreshing == true {
+        tableView.refreshControl?.endRefreshing()
+    }
+}
+~~~
+
+1. Refresh Control 구성할 때 `target-action`패턴으로 `handleRefreshControl`을 등록한다
+2. 화면을 아래로 끌어 당겨 Refresh 요청 하면 Refreshing 애니메이션이 시작된다 (회전 애니메이션)
+3. 이때, 컨텐츠 업데이트 요청이 시작된다.
+4. 컨텐츠 업데이트 요청이 완료되면 알려주는 completionHanlder에서 `endRefreshing()`호출하여 애니메이션을 종료한다.
+
+이제 사용자가 당겨서 새로 고침을 요청하면, 컨텐츠 로드가 완료될 때까지 Refreshing 애니메이션이 유지되어 로드 중임을 알 수 있다.
+잠시 후 컨텐츠가 업데이트되면 Refreshing 애니메이션이 종료되어 업데이트 된 시점을 인지할 수 있다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
