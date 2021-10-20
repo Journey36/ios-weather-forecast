@@ -18,7 +18,7 @@
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
 2. **설계 및 구현**
     - [Table View로 화면 구성](#Table-View로-화면-구성)
-    - [코드로 오토 레이아웃](#코드로-오토-레이아웃)
+    - [오토 레이아웃](#오토-레이아웃)
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
@@ -26,7 +26,7 @@
     - [네트워킹 객체](#네트워킹-객체)
     - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
 3. **Human Interface Guidelines으로 앱 개선하기**: HIG를 적용하여 앱의 완성도와 UX를 개선한 내용 정리  
-    - [모든 폰트 크기 지원 - Dynamic Type](#모든-폰트-크기-지원---Dynamic-Type)
+    - [모든 텍스트 크기 지원- Dynamic Type](#모든-텍스트-크기-지원---Dynamic-Type)
     - [큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides](#큰-화면에서도-가독성-좋은-레이아웃---Readable-Content-Guides)
     - [다크 모드 지원](#다크-모드-지원)
     - [Launch Screen 적용](#Launch-Screen-적용)
@@ -143,6 +143,55 @@
     - 현재 날씨는 1개만 표시되므로 Header에 표시하고, 5일 예보만 cell로 만들어  Section 1개로 구성
 - 결정 이유
     - 현재 날씨를 cell로 구현하고 여러 Section을 사용하게 구성해두면, 이후 앱 기능이 변경되거나 추가될 때 쉽게 재사용할 수 있겠다고 생각했다.
+
+### [👆목차로 가기](#목차)
+<br><br><br>
+
+
+
+## 오토 레이아웃
+
+![](./Images/AutoLayout.png)
+
+### 구현 목표
+
+- 스토리보드 사용하지 않고 코드로만 오토 레이아웃 작성
+- 다이나믹 타입 지원하여 모든 텍스트 크기 지원
+- 컨텐츠 크기에 따라 `Cell` 높이 자동 조절
+- [UIFont - Creating Self-Sizing Table View Cells](https://developer.apple.com/documentation/uikit/uifont/creating_self-sizing_table_view_cells) 문서를 참고하여 셀프 사이징 셀 구현
+
+### CurrentWeatherCell 레이아웃
+
+- 수평 레이아웃
+    - leading/trailing: readableContentGuide에 맞추었다.
+    - iconImageView를 수평의 기준으로 잡고 먼저 배치하고 너비는 readableContentGuide에 비례 축소했다.
+    - Label은 모두 같은 너비를 주어도 되므로 addressLabel로 기준 잡고 나머지를 맞추었다.
+- 수직 레이아웃
+    - 셀프 사이징 셀을 구현하기 위해 first/baseLineAnchor로 컨텐츠 상/하단의 cosntraint을 주었다.
+
+### FiveDayForeCastCell 레이아웃
+
+- 수평 레이아웃
+    - leading/trailing: readableContentGuide에 맞추었다.
+    - 좌측 Label부터 배치하고, iconImageView의 너비는 readableContentGuide에 비례 축소했다.
+- 수직 레이아웃
+    - 셀프 사이징 셀을 구현하기 위해 first/baseLineAnchor로 컨텐츠 상/하단의 cosntraint을 주었다.
+
+### equalToSystemSpacingBelow의 값 기준?
+
+[UIFont - Creating Self-Sizing Table View Cells](https://developer.apple.com/documentation/uikit/uifont/creating_self-sizing_table_view_cells) 문서의 예제가 `equalToSystemSpacingBelow`를 사용하는데, 이것이 무엇을 기준으로 값을 변경하는지 알아보고 테스트했다.
+
+#### 테스트 결과
+
+- iPhone 11 / Text Size 4
+    - dateLabel.firstBaseline = Layout Margin.top + 28
+    - Layout Margins.bottom = label.lastBaseline + 14
+- iPhone 11 / Text Size 10
+    - dateLabel.firstBaseline = Layout Margin.top + 59.5
+    - Layout Margins.bottom = label.lastBaseline + 29.5
+- 결론: 폰트 (텍스트 사이즈) 설정에 따라 결정됨
+    - [constraint(equalToSystemSpacingBelow:multiplier:)](https://developer.apple.com/documentation/uikit/nslayoutyaxisanchor/2866022-constraint) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
+    - 그래서 텍스트 크기를 변경하면 다이나믹 타입이 적용된 경우 시스템에서 텍스트의 크기를 알 수 있으므로 이를 기준으로 스페이싱을 결정한다.
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
@@ -753,7 +802,7 @@ struct ImageLoader {
 
 
 
-## 모든 폰트 크기 지원 - Dynamic Type
+## 모든 텍스트 크기 지원 - Dynamic Type
 
 ### 📺 데모와 설명
 
@@ -1167,8 +1216,6 @@ Label은 텍스트 컬러의 기본값은 자동으로 다크 모드를 지원�
 
 
 
-## 트러블 슈팅
-
 ## 현재 위치 찾는 시간이 느린 문제
 
 ### 문제 파악
@@ -1317,19 +1364,3 @@ private func endRefreshing() {
 
 ### [👆목차로 가기](#목차)
 <br><br><br>
-
-
-
-## 오토 레이아웃
-
-### equalToSystemSpacingBelow는 무엇을 기준으로 값 변경을 주는가?
-
-- iPhone 11 / Font Size 4
-    - dateLabel.firstBaseline = Layout Margin.top + 28
-    - Layout Margins.bottom = label.lastBaseline + 14
-- iPhone 11 / Font Size 10
-    - dateLabel.firstBaseline = Layout Margin.top + 59.5
-    - Layout Margins.bottom = label.lastBaseline + 29.5
-- 결론: 폰트 사이즈에 따라 결정됨
-    - constraint(equalToSystemSpacingBelow:multiplier:) 문서를 보면 system spacing 값은 앵커에서 사용 가능한 정보에 따라 결정되는데, 그 예로 앵커가 text baseline이라면 spacing은 해당 baseline에서 사용된 글꼴에 따라 결정된다고 써있다.
-
