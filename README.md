@@ -4,7 +4,7 @@
 
 | 📺 데모 | 💡 개요 |
 | ------- | ------- |
-| <img src = ./Images/Demo-L.gif width="300px"> | 🚀 현재 위치의 날씨와 3시간 단위의 5일 예보 <br> 🧑🏻‍💻 개인 프로젝트 <br> 🗓 진행 기간 <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 기간: 2021.01.18 ~ 24 (1주) <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 수료 후: 2021.09 ~ 리팩토링 진행 <br> ⚙️ 기능 <br> &nbsp;&nbsp;&nbsp;&nbsp; `현재 위치의 날씨 정보 표시` <br> &nbsp;&nbsp;&nbsp;&nbsp; `당겨서 새로고침` <br> &nbsp;&nbsp;&nbsp;&nbsp; `다크모드 지원` <br>  📝 학습 키워드 <br> &nbsp;&nbsp;&nbsp;&nbsp; `CoreLocation`, `URLSession`, `RefreshControl` |
+| <img src = ./Images/Demo.gif width="300px"> | 🚀 API를 통해 현재 위치의 날씨 정보 표시 <br> &nbsp;&nbsp;&nbsp;&nbsp; - 현재 날씨 정보 <br> &nbsp;&nbsp;&nbsp;&nbsp; - 3시간 단위 5일 예보 <br> 🧑🏻‍💻 개인 프로젝트 <br> 🗓 진행 기간 <br> &nbsp;&nbsp;&nbsp;&nbsp; 캠프 기간: 2021.01.18 ~ 24 <br> &nbsp;&nbsp;&nbsp;&nbsp; 리팩토링 기간: 2021.09 ~ 10 <br> ⚙️ 기능 <br> &nbsp;&nbsp;&nbsp;&nbsp; `현재 위치의 날씨 정보 표시` <br> &nbsp;&nbsp;&nbsp;&nbsp; `당겨서 새로고침` <br> &nbsp;&nbsp;&nbsp;&nbsp; `다크모드 지원` <br> &nbsp;&nbsp;&nbsp;&nbsp; `다크모드 지원` <br> &nbsp;&nbsp;&nbsp;&nbsp; `모든 텍스트 크기 지원` <br> 📝 학습 키워드 <br> &nbsp;&nbsp;&nbsp;&nbsp; `MVC` <br> &nbsp;&nbsp;&nbsp;&nbsp; `CoreLocation` <br> &nbsp;&nbsp;&nbsp;&nbsp; `URLSession` <br> &nbsp;&nbsp;&nbsp;&nbsp; `RefreshControl` <br> &nbsp;&nbsp;&nbsp;&nbsp; `Readable Content Guides` <br> &nbsp;&nbsp;&nbsp;&nbsp; `Dynamic Type` <br> &nbsp;&nbsp;&nbsp;&nbsp; `Activity Indicator`|
 
 <br><br><br>
 
@@ -40,21 +40,23 @@
     - [배경 이미지가 Table View를 가리는 문제](#배경-이미지가-Table-View를-가리는-문제)
     - [Refresh Control 애니메이션이 먼저 종료된 이후 컨텐츠 업데이트 되는 문제](#Refresh-Control-애니메이션이-먼저-종료된-이후-컨텐츠-업데이트-되는-문제)
 
-### 정리 예정
-
-- RefreshControl 애니메이션 종료하는 시점
-
 <br><br><br>
 
 
 
 ## 기능
 
-| 현재 위치의 날씨 정보 | 당겨서 새로고침 | 다크모드 지원 |
-| - | - | - |
-| ![](./Images/Demo.gif) | ![](./Images/Demo-Refresh.gif) | ![](./Images/DarkMode-Demo.gif) |
+| 현재 위치의 날씨 정보 | 당겨서 새로고침 |
+| - | - |
+| ![](./Images/Demo.gif) | ![](./Images/RefreshControl_Demo.gif) |
 
-[👆목차로 가기](#목차)
+<br>
+
+| 모든 텍스트 크기 지원 | 다크 모드 지원 |
+| - | - |
+| ![](./Images/DynamicType_Demo.gif) | ![](./Images/DarkMode_Demo.gif) |
+
+### [👆목차로 가기](#목차)
 <br><br><br>
 
 
@@ -63,11 +65,9 @@
 
 혼자 진행하는 프로젝트지만 그라운드 룰을 지키려고 노력했다.
 
-- 저녁 9시에는 하던 작업 마무리하고 10시까지 TIL 정리하고 끝내기
 - 휴일(수,토,일) 에는 쉬거나 이전 작업내용을 다시 돌아보기
-    - 새로운 작업은 하지말고 리패토링 위주로
-- 프로젝트 기능요구서에 충실하기
-    - 기능요구서 내용을 충실하게 먼저 완료하기
+- 프로젝트 기능 명세서에 충실하기
+    - 기능 명세서 내용을 충실하게 먼저 완료하기
     - 이후 시간이 남으면 추가 구현
 
 ### 프로젝트 규칙
@@ -76,26 +76,21 @@
     - Swift API 디자인 가이드라인을 따르려고 노력하기
     - 클래스, 함수, 변수 명을 명확하고 객관적인 이름으로 하기
     - 가능한 주석 없이 이해가능한 코드 추구하기
-- 브랜치 단위
+- 브랜치 단위 (캠프 기간)
     - 스텝별로 브랜치 만들어서 작업하기 (ex: "step-1", "step-2")
     - 각 스텝의 기능단위로 하위 브랜치 만들고 완료되면 스텝 브랜치로 머지
     - 스텝완료되면 브랜치를 원본 저장소로 PR 보내고 코드 리뷰 받기
+- 브랜치 단위 (리팩토링 기간)
+    - 작업 단위 별로 issue를 등록하고 브랜치 이름에 이슈 번호를 포함하여 등록
+    - 예: issue/2-Networking
 
 ### 커밋 메시지 규칙
 
-- 한글로 작성하기 (단, 제목의 Type은 영문으로 작성)
+- 한글로 작성하기
 - Title
-    - Type과 이슈번호 붙이기
-    - 양식: Type #이슈번호 - 내용  
-    - 예시: Feat #1 - 버튼 기능 추가  
-- Type 리스트
-    - Feat: 코드, 새로운 기능 추가
-    - Fix: 버그 수정
-    - Docs: 문서 수정
-    - Style: 코드 스타일 변경 (기능, 로직 변경 x)
-    - Test: 테스트 관련
-    - Refactor: 코드 리팩토링
-    - Chore: 이외 기타 작업
+    - issue 번호를 대괄호로 붙이기
+    - 양식: [issue번호] 작업 내용
+    - 예시: [#2] - APIClient 구현
 - Description
     - Title은 간단하게 Description은 상세하게
     - Title만으로 설명이 충분하면 Description은 없어도 됨
@@ -103,13 +98,25 @@
 
 ### GitHub 프로젝트 관리기능 사용해보기
 
-- 이슈와 프로젝트 기능 활용
-    - 작업 시작전에 이슈 꼭 등록하고 커밋메세지에 이슈번호 포함!
+![](./Images/GitHub_Issue.png)
+
+#### Issue 트랙킹을 활용한 작업 순서
+
+1. 작업할 내용을 `Issue`로 등록
+2. 부여된 `Issue` 번호와 작업 제목으로 브랜치 생성
+3. 해당 `Issue`와 관련된 커밋은 커밋 메시지에 대괄호에 `Issue` 접두사 추가
+4. 작업 완료되면 메인 브랜치로 PR하며 코멘트에 `close #Issue번호` 추가하여 머지되면 자동으로 `Issue` close.
+5. 해당 PR 셀프 리뷰 후 Merge
+
+#### 참고 링크
+
 - [github 하나로 1인 개발 워크플로우 완성하기: 이론편](https://www.huskyhoochu.com/issue-based-version-control-101)
 - [github 하나로 1인 개발 워크플로우 완성하기: 실전 편](https://www.huskyhoochu.com/issue-based-version-control-201/#open-issue)
 - [좋은 git 커밋 메시지를 작성하기 위한 8가지 약속](https://djkeh.github.io/articles/How-to-write-a-git-commit-message-kor/)
+- 이슈와 프로젝트 기능 활용
+- 작업 시작전에 이슈 꼭 등록하고 커밋메세지에 이슈번호 포함!
 
-### 참고 링크
+### 기타 참고 링크
 
 - [How to simulate poor network conditions on iOS Simulator and iPhone](https://medium.com/macoclock/how-to-simulate-poor-network-conditions-on-ios-simulator-and-iphone-faf35f0da1b5)
     - 시뮬레이터에서 네트워크 테스트하려면 Network Link Conditioner 사용
