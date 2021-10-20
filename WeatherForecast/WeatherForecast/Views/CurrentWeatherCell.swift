@@ -28,7 +28,7 @@ class CurrentWeatherCell: UITableViewCell {
     
     // MARK: - Properties
     
-    private let weatehrIconImageView = makeImageView()
+    private let iconImageView = makeImageView()
     
     private let addressLabel: UILabel = {
         let label = makeLabel()
@@ -68,7 +68,7 @@ class CurrentWeatherCell: UITableViewCell {
         addressLabel.text = nil
         minAndMaxTemperatureLabel.text = nil
         currentTemperatureLabel.text = nil
-        weatehrIconImageView.image = nil
+        iconImageView.image = nil
     }
     
     // MARK: - Public Methods
@@ -84,7 +84,7 @@ class CurrentWeatherCell: UITableViewCell {
             currentTemperatureLabel.text = currentTemperatureText
         }
         if let _ = iconImage {
-            weatehrIconImageView.image = iconImage
+            iconImageView.image = iconImage
         }
     }
     
@@ -97,7 +97,7 @@ class CurrentWeatherCell: UITableViewCell {
     }
     
     private func addSubviews() {
-        contentView.addSubview(weatehrIconImageView)
+        contentView.addSubview(iconImageView)
         contentView.addSubview(addressLabel)
         contentView.addSubview(minAndMaxTemperatureLabel)
         contentView.addSubview(currentTemperatureLabel)
@@ -105,11 +105,11 @@ class CurrentWeatherCell: UITableViewCell {
     
     private func setUpAutoLayout() {
         // 수평 레이아웃
-        weatehrIconImageView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor).isActive = true
-        weatehrIconImageView.widthAnchor.constraint(equalTo: weatehrIconImageView.heightAnchor).isActive = true
-        weatehrIconImageView.widthAnchor.constraint(equalTo: contentView.readableContentGuide.widthAnchor, multiplier: 0.3).isActive = true
+        iconImageView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor).isActive = true
+        iconImageView.widthAnchor.constraint(equalTo: iconImageView.heightAnchor).isActive = true
+        iconImageView.widthAnchor.constraint(equalTo: contentView.readableContentGuide.widthAnchor, multiplier: 0.3).isActive = true
         
-        addressLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: weatehrIconImageView.trailingAnchor, multiplier: 1).isActive = true
+        addressLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: iconImageView.trailingAnchor, multiplier: 1).isActive = true
         addressLabel.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor).isActive = true
         
         minAndMaxTemperatureLabel.leadingAnchor.constraint(equalTo: addressLabel.leadingAnchor).isActive = true
@@ -121,15 +121,15 @@ class CurrentWeatherCell: UITableViewCell {
         
         
         // 수직 레이아웃
-        weatehrIconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         
-        addressLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.layoutMarginsGuide.topAnchor, multiplier: 1).isActive = true
+        addressLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: contentView.readableContentGuide.topAnchor, multiplier: 1).isActive = true
         
         minAndMaxTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: addressLabel.lastBaselineAnchor, multiplier: 1.2).isActive = true
         
         currentTemperatureLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: minAndMaxTemperatureLabel.lastBaselineAnchor, multiplier: 1.4).isActive = true
         
-        contentView.layoutMarginsGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: currentTemperatureLabel.lastBaselineAnchor, multiplier: 1).isActive = true
+        contentView.readableContentGuide.bottomAnchor.constraint(equalToSystemSpacingBelow: currentTemperatureLabel.lastBaselineAnchor, multiplier: 1).isActive = true
     }
     
     
