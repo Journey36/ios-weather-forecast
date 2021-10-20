@@ -60,6 +60,13 @@ class FiveDayForecastCell: UITableViewCell {
         super.init(coder: coder)
         setUp()
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        dateLabel.text = nil
+        temperatureLabel.text = nil
+        iconImageView.image = nil
+    }
             
     // MARK: - Public Methods
     

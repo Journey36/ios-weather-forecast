@@ -106,21 +106,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5608C29626E5FE0D00DC2C2E /* Managers */ = {
-			isa = PBXGroup;
-			children = (
-				5608C29726E5FE2900DC2C2E /* LoacationManager.swift */,
-			);
-			path = Managers;
-			sourceTree = "<group>";
-		};
-		5608C29926E6264E00DC2C2E /* ViewControllers */ = {
+		5608C29926E6264E00DC2C2E /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
 				C79C8CF725ADDDF200EEE3F1 /* WeatherForecastViewController.swift */,
-				5608C29E26E6318F00DC2C2E /* WeatherForecastDataSource.swift */,
 			);
-			path = ViewControllers;
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		5608C29A26E6266400DC2C2E /* Resources */ = {
@@ -143,7 +134,18 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		56A9971E25B5E160001D3DE8 /* Models */ = {
+		5608D7B9271C3BAB000E3154 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5608C29E26E6318F00DC2C2E /* WeatherForecastDataSource.swift */,
+				5608C29726E5FE2900DC2C2E /* LoacationManager.swift */,
+				56A9971E25B5E160001D3DE8 /* DataModels */,
+				56BC489125BC8C6000EE4E99 /* Networks */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		56A9971E25B5E160001D3DE8 /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
 				56A9971F25B5E243001D3DE8 /* CurrentWeatherData.swift */,
@@ -151,7 +153,7 @@
 				56B017C725BAD4FB000E3458 /* Address.swift */,
 				56F94C3B25B73A2B00A98430 /* Submodels */,
 			);
-			path = Models;
+			path = DataModels;
 			sourceTree = "<group>";
 		};
 		56BC489125BC8C6000EE4E99 /* Networks */ = {
@@ -198,11 +200,9 @@
 		C79C8CF225ADDDF200EEE3F1 /* WeatherForecast */ = {
 			isa = PBXGroup;
 			children = (
+				5608D7B9271C3BAB000E3154 /* Models */,
 				5608C2A226EB528700DC2C2E /* Views */,
-				5608C29926E6264E00DC2C2E /* ViewControllers */,
-				5608C29626E5FE0D00DC2C2E /* Managers */,
-				56BC489125BC8C6000EE4E99 /* Networks */,
-				56A9971E25B5E160001D3DE8 /* Models */,
+				5608C29926E6264E00DC2C2E /* Controllers */,
 				5608C29A26E6266400DC2C2E /* Resources */,
 				C79C8CF325ADDDF200EEE3F1 /* AppDelegate.swift */,
 				C79C8CF525ADDDF200EEE3F1 /* SceneDelegate.swift */,
