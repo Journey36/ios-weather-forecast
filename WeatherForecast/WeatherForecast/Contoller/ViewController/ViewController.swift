@@ -89,7 +89,7 @@ extension ViewController: CLLocationManagerDelegate {
         let currentCoordinate: CurrentLocation = (latitude, longitude)
         convertAddress(from: currentLocation)
         
-        dataTaskManager.fetchWeatherData(on: currentCoordinate, type: .current) { [weak self] (result: Result<CurrentWeather, ErrorTransactor.NetworkError>) in
+        dataTaskManager.fetchWeatherData(on: currentCoordinate, type: .current) { [weak self] (result: Result<CurrentWeather, ErrorTransactor>) in
             switch result {
             case .success(let data):
                 self?.currentWeatherData = data
@@ -97,11 +97,11 @@ extension ViewController: CLLocationManagerDelegate {
                     self?.forecastListView.reloadSections(IndexSet(integer: 0), with: .none)
                 }
             case .failure:
-                print(ErrorTransactor.NetworkError.dataFetchingFailure)
+                print(ErrorTransactor.networkError(.dataFetchingFailure))
             }
         }
         
-        dataTaskManager.fetchWeatherData(on: currentCoordinate, type: .forecast) { [weak self] (result: Result<ForecastList, ErrorTransactor.NetworkError>) in
+        dataTaskManager.fetchWeatherData(on: currentCoordinate, type: .forecast) { [weak self] (result: Result<ForecastList, ErrorTransactor>) in
             switch result {
             case .success(let data):
                 self?.forecastListData = data
@@ -109,7 +109,7 @@ extension ViewController: CLLocationManagerDelegate {
                     self?.forecastListView.reloadSections(IndexSet(integer: 1), with: .none)
                 }
             case .failure:
-                print(ErrorTransactor.NetworkError.dataFetchingFailure)
+                print(ErrorTransactor.networkError(.dataFetchingFailure))
             }
         }
     }
@@ -119,8 +119,10 @@ extension ViewController: CLLocationManagerDelegate {
         switch manager.authorizationStatus {
         case .authorizedAlways, .authorizedWhenInUse:
             manager.requestLocation()
-        case .denied, .notDetermined, .restricted:
-            // TODO: 설정창 열어줌
+        case .denied, .restricted:
+            presentAlert(.locationSevicesRefusal)
+            break
+        case .notDetermined:
             break
         @unknown default:
             break
@@ -131,8 +133,9 @@ extension ViewController: CLLocationManagerDelegate {
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
             manager.requestLocation()
-        case .denied, .notDetermined, .restricted:
-            // TODO: 설정창 열어줌
+        case .denied, .restricted:
+            presentAlert(.locationSevicesRefusal)
+        case .notDetermined:
             break
         @unknown default:
             break
@@ -142,10 +145,8 @@ extension ViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         switch error {
         case CLError.denied:
-            // TODO: 설정 열어서 변경하도록 권유
-            break
+            presentAlert(.locationSevicesRefusal)
         default:
-            // TODO: 재시도 하거나 다른 기타 처리 필요
             manager.stopUpdatingLocation()
         }
     }
@@ -170,14 +171,14 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
             let currentWeatherCell: CurrentWeatherCell = .init()
             currentWeatherCell.configureCell(with: currentWeatherData, at: currentAddress)
             if let weatherIcon: [Weather] = currentWeatherData?.weather, let imageID: String = weatherIcon.first?.icon {
-                dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorTransactor.NetworkError>) in
+                dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorTransactor>) in
                     switch result {
                     case .success(let data):
                         DispatchQueue.main.async {
                             currentWeatherCell.weatherIconImageView.image = data
                         }
                     case .failure:
-                        print(ErrorTransactor.NetworkError.dataFetchingFailure)
+                        print(ErrorTransactor.networkError(.dataFetchingFailure))
                     }
                 }
             }
@@ -191,14 +192,14 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
         
         forecastListCell.configureCell(with: forecastListData, indexPath: indexPath)
         if let weatherIcons: [Weather] = forecastListData?.list[indexPath.row].weather, let imageID: String = weatherIcons.first?.icon {
-            dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorTransactor.NetworkError>) in
+            dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorTransactor>) in
                 switch result {
                 case .success(let data):
                     DispatchQueue.main.async {
                         forecastListCell.weatherIconImageView.image = data
                     }
                 case .failure:
-                    print(ErrorTransactor.NetworkError.dataFetchingFailure)
+                    print(ErrorTransactor.networkError(.dataFetchingFailure))
                 }
             }
         }
