@@ -11,7 +11,7 @@
 		3D1A5D0E26F5C58100901469 /* Namespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A5D0D26F5C58100901469 /* Namespace.swift */; };
 		3D21D70A26F424A200C693B1 /* CurrentWeatherCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D21D70926F424A200C693B1 /* CurrentWeatherCell.swift */; };
 		3D2F012926E5F84E00F84191 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012826E5F84E00F84191 /* ViewController.swift */; };
-		3D2F012D26E6751600F84191 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012C26E6751600F84191 /* ErrorHandler.swift */; };
+		3D2F012D26E6751600F84191 /* ErrorTransactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F012C26E6751600F84191 /* ErrorTransactor.swift */; };
 		3D2F013326E7228600F84191 /* DataTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2F013226E7228600F84191 /* DataTaskManager.swift */; };
 		3D3AB3D626FBF4C700E75164 /* Configuration.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 3D20D3E426EA87E10079A30E /* Configuration.xcconfig */; };
 		3D5654C326E9A6E5006A054E /* CurrentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5654C226E9A6E5006A054E /* CurrentLocation.swift */; };
@@ -36,7 +36,7 @@
 		3D20D3E426EA87E10079A30E /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
 		3D21D70926F424A200C693B1 /* CurrentWeatherCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherCell.swift; sourceTree = "<group>"; };
 		3D2F012826E5F84E00F84191 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		3D2F012C26E6751600F84191 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
+		3D2F012C26E6751600F84191 /* ErrorTransactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTransactor.swift; sourceTree = "<group>"; };
 		3D2F013226E7228600F84191 /* DataTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTaskManager.swift; sourceTree = "<group>"; };
 		3D5654C226E9A6E5006A054E /* CurrentLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentLocation.swift; sourceTree = "<group>"; };
 		3D6F02F426D86C5000434EA6 /* URLManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLManager.swift; sourceTree = "<group>"; };
@@ -80,7 +80,7 @@
 		3D5654BA26E99F2A006A054E /* Error */ = {
 			isa = PBXGroup;
 			children = (
-				3D2F012C26E6751600F84191 /* ErrorHandler.swift */,
+				3D2F012C26E6751600F84191 /* ErrorTransactor.swift */,
 			);
 			path = Error;
 			sourceTree = "<group>";
@@ -252,7 +252,7 @@
 				3DB2E86026D4CB4F00013463 /* ForecastWeather.swift in Sources */,
 				3D2F012926E5F84E00F84191 /* ViewController.swift in Sources */,
 				3D6F02F526D86C5000434EA6 /* URLManager.swift in Sources */,
-				3D2F012D26E6751600F84191 /* ErrorHandler.swift in Sources */,
+				3D2F012D26E6751600F84191 /* ErrorTransactor.swift in Sources */,
 				3DB2E85E26D4C92100013463 /* Temperature.swift in Sources */,
 				C79C8CF425ADDDF200EEE3F1 /* AppDelegate.swift in Sources */,
 				3D21D70A26F424A200C693B1 /* CurrentWeatherCell.swift in Sources */,
