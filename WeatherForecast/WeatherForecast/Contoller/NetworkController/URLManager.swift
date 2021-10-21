@@ -15,7 +15,7 @@ enum URLManager {
     
     static func setURL(_ coordinates: CurrentLocation, with type: ForecastType) throws -> URL? {
         guard let unwrappedAppID: String = appID else {
-            throw ErrorTransactor.NetworkError.invalidURL
+            throw ErrorTransactor.networkError(.invalidURL)
         }
         
         var components: URLComponents? = .init(string: baseAPIURL)
