@@ -35,11 +35,12 @@
 
 ## 목차
 
-1. [프로젝트](#프로젝트)
+1. **프로젝트**
+    - [프로젝트 개요](#프로젝트-개요)
     - [기능](#기능)
     - [그라운드 룰](#그라운드-룰)
     - [GitHub 프로젝트 관리기능 사용해보기](#GitHub-프로젝트-관리기능-사용해보기)
-2. 🤩 [Human Interface Guidelines 문서를 통한 UI 개선](#Human-Interface-Guidelines-문서를-통한-UI-개선)
+2. 🤩 **Human Interface Guidelines 문서를 통한 UI 개선**
     - [모든 텍스트 크기 지원 - Dynamic Type](#모든-텍스트-크기-지원---Dynamic-Type)
     - [큰 화면에서도 가독성 좋은 레이아웃 - Readable Content Guides](#큰-화면에서도-가독성-좋은-레이아웃---Readable-Content-Guides)
     - [다크 모드 지원](#다크-모드-지원)
@@ -48,17 +49,17 @@
     - [데이터 로딩 표시 - Activity Indicator](#데이터-로딩-표시---Activity-Indicator)
     - [당겨서 새로 고침 - Refresh Control](#당겨서-새로-고침---Refresh-Control)
     - [데이터 로드 실패 처리 - Alert](#데이터-로드-실패-처리---Alert)
-3. 🔧 [MVC 패턴을 준수하며 문제점인 Massive-ViewController 개선](#MVC-패턴을-준수하며-문제점인-Massive-ViewController-개선)
+3. 🔧 **MVC 패턴을 준수하며 문제점인 Massive-ViewController 개선**
     - [MVC 패턴 사용](#MVC-패턴-사용)
     - [MVC 패턴의 문제 개선 - TableViewDataSource 분리](#MVC-패턴의-문제-개선---TableViewDataSource-분리)
     - [위치 서비스 객체 - LocationManager](#위치-서비스-객체---LocationManager)
-4. 📡 [API 통신을 담당하는 네트워킹 객체의 재사용을 고려한 설계](#API-통신을-담당하는-네트워킹-객체의-재사용을-고려한-설계)
+4. 📡 **API 통신을 담당하는 네트워킹 객체의 재사용을 고려한 설계**
     - [네트워킹 객체](#네트워킹-객체)
     - [날씨 API의 Response 데이터 모델](#날씨-API의-Response-데이터-모델)
-5. 📱 [화면 설계](#화면-설계)
+5. 📱 **화면 설계**
     - [Table View로 화면 구성](#Table-View로-화면-구성)
     - [오토 레이아웃](#오토-레이아웃)
-6. ⁉️ [트러블 슈팅](#트러블-슈팅)
+6. ⁉️ **트러블 슈팅**
     - [날씨 이미지 캐싱 - NSCache](#날씨-이미지-캐싱---NSCache)
     - [현재 위치 찾는 시간이 느린 문제](#현재-위치-찾는-시간이-느린-문제)
     - [시뮬레이터 변경 후 위치 찾기 안되는 문제](#시뮬레이터-변경-후-위치-찾기-안되는-문제)
@@ -70,6 +71,8 @@
 
 
 ## 프로젝트
+
+## 프로젝트 개요
 
 - 🚀 현재 위치의 날씨 정보를 알려주는 앱
     - 현재 위치의 위도와 경도 및 주소 알아내기
