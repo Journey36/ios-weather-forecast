@@ -4,7 +4,7 @@
 
 | 📺 데모 | 💡 개요 |
 | ------- | ------- |
-| <img src = ./Images/Demo.gif width="300px"> | 🚀 **현재 위치의 날씨 정보를 알려주는 앱** <br><br> &nbsp;&nbsp;&nbsp;&nbsp; 🗓 기간: 2021.09 ~ 2021.10 <br> &nbsp;&nbsp;&nbsp;&nbsp; 📌 사용 언어: `Swift`, 사용 기술: `CoreLocation`, `URLSession` <br><br> &nbsp;&nbsp;&nbsp;&nbsp; 🤩 `HIG` 문서를 통해 `UI` 개선한 경험이 가장 재미있었음 <br> &nbsp;&nbsp;&nbsp;&nbsp; 🔧 `MVC` 패턴을 준수하며 문제점인 `Massive-ViewController` 개선 <br> &nbsp;&nbsp;&nbsp;&nbsp; 📡 `API 통신`을 담당하는 네트워킹 객체의 `재사용`을 고려한 설계 |
+| <img src = ./Images/Demo.gif width="300px"> | 🚀  **현재 위치의 날씨 정보를 알려주는 앱** <br><br> 🗓  기간: 2021.09 ~ 2021.10 <br> 📌  사용 언어: `Swift`, 사용 기술: `CoreLocation`, `URLSession` <br><br> 🤩  `HIG` 문서를 통해 `UI` 개선한 경험이 가장 재미있었음 <br> 🔧  `MVC` 패턴을 준수하며 문제점인 `Massive-ViewController` 개선 <br>  📡  `API 통신`을 담당하는 네트워킹 객체의 `재사용`을 고려한 설계 |
 
 <br><br><br>
 
