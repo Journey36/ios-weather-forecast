@@ -11,8 +11,8 @@ import CoreLocation
 final class ViewController: UIViewController {
     // MARK: - Properties -
     // MARK: Stored Properties
-    private var manager: CLLocationManager = .init()
-    private var dataTaskManager: DataTaskManager = .init()
+    private let manager: CLLocationManager = .init()
+    private let dataTaskManager: DataTaskManager = .init()
     private var currentWeatherData: CurrentWeather?
     private var forecastListData: ForecastList?
     private var currentAddress: String?
