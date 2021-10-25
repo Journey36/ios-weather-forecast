@@ -168,7 +168,10 @@ extension ViewController: UITableViewDelegate ,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let currentWeatherCell: CurrentWeatherCell = .init()
+            guard let currentWeatherCell: CurrentWeatherCell = tableView.dequeueReusableCell(withIdentifier: CurrentWeatherCell.identifier, for: indexPath) as? CurrentWeatherCell else {
+                return UITableViewCell()
+            }
+
             currentWeatherCell.configureCell(with: currentWeatherData, at: currentAddress)
             if let weatherIcon: [Weather] = currentWeatherData?.weather, let imageID: String = weatherIcon.first?.icon {
                 dataTaskManager.fetchWeatherIcon(imageID) { (result: Result<UIImage, ErrorTransactor>) in
