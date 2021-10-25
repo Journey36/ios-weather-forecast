@@ -1,0 +1,11 @@
+//
+//  Configuration.xcconfig
+//  WeatherForecast
+//
+//  Created by Journey36 on 2021/09/10.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+API_KEY = 799620b941986e2acc5aa451c0f3b1d5
