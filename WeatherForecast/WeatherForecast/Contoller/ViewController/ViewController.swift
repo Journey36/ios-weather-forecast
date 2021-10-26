@@ -17,6 +17,7 @@ final class ViewController: UIViewController {
     private var forecastListData: ForecastList?
     private var currentAddress: String?
     private lazy var forecastListView: ForecastListView = .init()
+    private let refreshControl: UIRefreshControl = .init()
     
     // MARK: - Methods -
     // MARK: Custom
@@ -49,18 +50,24 @@ final class ViewController: UIViewController {
         }
     }
     
-    func configureRefreshControl() {
-        let refresh: UIRefreshControl = .init()
-        refresh.addTarget(self, action: #selector(updateUI(_:)), for: .valueChanged)
-        forecastListView.refreshControl = refresh
+    private func configureRefreshControl() {
+        refreshControl.addTarget(self, action: #selector(updateUI), for: .valueChanged)
+        forecastListView.refreshControl = refreshControl
     }
     
-    @objc func updateUI(_ refreshCotnrol: UIRefreshControl) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.manager.startUpdatingLocation()
+    @objc func updateUI() {
+        manager.startUpdatingLocation()
+        DispatchQueue.main.async {
             self.forecastListView.reloadData()
-            self.manager.stopUpdatingLocation()
-            refreshCotnrol.endRefreshing()
+        }
+    }
+
+    func finishRefreshing() {
+        if forecastListView.refreshControl?.isRefreshing == true {
+            manager.stopUpdatingLocation()
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+            }
         }
     }
     
@@ -112,8 +119,10 @@ extension ViewController: CLLocationManagerDelegate {
                 print(ErrorTransactor.networkError(.dataFetchingFailure))
             }
         }
+
+    finishRefreshing()
     }
-    
+
     @available(iOS 14, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         switch manager.authorizationStatus {

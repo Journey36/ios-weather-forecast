@@ -52,6 +52,7 @@ extension ViewController {
         """
         let alertController: UIAlertController = UIAlertController(title: error.description, message: message, preferredStyle: .alert)
         let moveToSettingAction: UIAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
+            self.finishRefreshing()
             if let appSetting: URL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(appSetting, options: [:], completionHandler: nil)
             }
